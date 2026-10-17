@@ -1,0 +1,226 @@
+{
+  "Technical evidence": {
+    "en": "Technical evidence",
+    "zh-CN": "技术证据"
+  },
+  "Tell me your goals. You will review and sign every financial detail.": {
+    "en": "Tell me your goals. You will review and sign every financial detail.",
+    "zh-CN": "告诉我您的目标。每项资金安排都由您核对并签名确认。"
+  },
+  "Your current context": {
+    "en": "Your current context",
+    "zh-CN": "当前情况"
+  },
+  "Risk profile needed": {
+    "en": "Risk profile needed",
+    "zh-CN": "请完成风险测评"
+  },
+  "Signed goals": {
+    "en": "Signed goals",
+    "zh-CN": "已签名目标"
+  },
+  "New principal": {
+    "en": "New principal",
+    "zh-CN": "配置本金"
+  },
+  "Investment horizon": {
+    "en": "Investment horizon",
+    "zh-CN": "投资期限"
+  },
+  "days": {
+    "en": "days",
+    "zh-CN": "天"
+  },
+  "Accessible principal": {
+    "en": "Accessible principal",
+    "zh-CN": "可取出本金"
+  },
+  "Your goals are a draft until you confirm them on the device.": {
+    "en": "Your goals are a draft until you confirm them on the device.",
+    "zh-CN": "目标仍为草稿，请在设备上核对并确认。"
+  },
+  "Your purchases are complete. Review the verified receipts.": {
+    "en": "Your purchases are complete. Review the verified receipts.",
+    "zh-CN": "购买已完成，请查看已核验回执。"
+  },
+  "Review each purchase, verify MFA, then approve.": {
+    "en": "Review each purchase, verify MFA, then approve.",
+    "zh-CN": "逐笔核对购买内容，完成 MFA 后审批。"
+  },
+  "Review your proposal and certificate, then select every purchase.": {
+    "en": "Review your proposal and certificate, then select every purchase.",
+    "zh-CN": "查看方案与证书，然后选择每笔购买。"
+  },
+  "Complete your risk profile and confirm your goals on the device.": {
+    "en": "Complete your risk profile and confirm your goals on the device.",
+    "zh-CN": "在设备上完成风险测评并确认目标。"
+  },
+  "Next step": {
+    "en": "Next step",
+    "zh-CN": "下一步"
+  },
+  "Continue": {
+    "en": "Continue",
+    "zh-CN": "继续"
+  },
+  "A clear plan, grounded in your goals.": {
+    "en": "A clear plan, grounded in your goals.",
+    "zh-CN": "从您的目标出发，形成清晰的配置方案。"
+  },
+  "Try a starting point": {
+    "en": "Try a starting point",
+    "zh-CN": "从一个问题开始"
+  },
+  "I have 10,000 CNY for one year": {
+    "en": "I have 10,000 CNY for one year",
+    "zh-CN": "我有 10,000 元，计划投资一年"
+  },
+  "Four isolated security checks. Your account stays untouched.": {
+    "en": "Four isolated security checks. Your account stays untouched.",
+    "zh-CN": "四类隔离安全检查，不影响您的演示账户。"
+  },
+  "Security check": {
+    "en": "Security check",
+    "zh-CN": "安全检查"
+  },
+  "Run check": {
+    "en": "Run check",
+    "zh-CN": "运行检查"
+  },
+  "Choose a check to compare a blocked attack with its authorized control.": {
+    "en": "Choose a check to compare a blocked attack with its authorized control.",
+    "zh-CN": "选择一类检查，对比被拦截的攻击与获授权的正常操作。"
+  },
+  "Attack blocked": {
+    "en": "Attack blocked",
+    "zh-CN": "攻击已拦截"
+  },
+  "Funds moved": {
+    "en": "Funds moved",
+    "zh-CN": "实际资金移动"
+  },
+  "No funds moved": {
+    "en": "No funds moved",
+    "zh-CN": "0 次资金移动"
+  },
+  "Review the observed effects": {
+    "en": "Review the observed effects",
+    "zh-CN": "请检查实际结果"
+  },
+  "Authorized control completed": {
+    "en": "Authorized control completed",
+    "zh-CN": "正常对照已完成"
+  },
+  "Authorized control incomplete": {
+    "en": "Authorized control incomplete",
+    "zh-CN": "正常对照未完成"
+  },
+  "The same legitimate task completes with the required approval.": {
+    "en": "The same legitimate task completes with the required approval.",
+    "zh-CN": "相同的正常任务，在取得必要授权后完成。"
+  },
+  "Verified purchases": {
+    "en": "Verified purchases",
+    "zh-CN": "已核验购买"
+  },
+  "Available cash": {
+    "en": "Available cash",
+    "zh-CN": "可用现金"
+  },
+  "Purchase {index} of {count}": {
+    "en": "Purchase {index} of {count}",
+    "zh-CN": "第 {index} 笔购买，共 {count} 笔"
+  },
+  "Review this purchase. MFA and approval apply only to this purchase.": {
+    "en": "Review this purchase. MFA and approval apply only to this purchase.",
+    "zh-CN": "请核对本笔购买。MFA 与审批仅对本笔有效。"
+  },
+  "Independent device MFA": {
+    "en": "Independent device MFA",
+    "zh-CN": "独立设备 MFA"
+  },
+  "A synthetic device factor is prefilled for this demonstration. No code is sent to the assistant.": {
+    "en": "A synthetic device factor is prefilled for this demonstration. No code is sent to the assistant.",
+    "zh-CN": "演示用模拟设备验证码已填入，不会发送给助手。"
+  },
+  "MFA verified for this purchase": {
+    "en": "MFA verified for this purchase",
+    "zh-CN": "本笔购买 MFA 已验证"
+  },
+  "Reject": {
+    "en": "Reject",
+    "zh-CN": "拒绝"
+  },
+  "Purchase activity": {
+    "en": "Purchase activity",
+    "zh-CN": "购买动态"
+  },
+  "Receipts & audit": {
+    "en": "Receipts & audit",
+    "zh-CN": "回执与审计"
+  },
+  "✓ chain verified": {
+    "en": "✓ chain verified",
+    "zh-CN": "✓ 审计链已验证"
+  },
+  "Your verified purchase receipts will appear here after approval.": {
+    "en": "Your verified purchase receipts will appear here after approval.",
+    "zh-CN": "完成审批后，已核验的购买回执将显示在这里。"
+  },
+  "Synthetic cash account": {
+    "en": "Synthetic cash account",
+    "zh-CN": "合成现金账户"
+  },
+  "Before (CNY)": {
+    "en": "Before (CNY)",
+    "zh-CN": "调整前（元）"
+  },
+  "After (CNY)": {
+    "en": "After (CNY)",
+    "zh-CN": "调整后（元）"
+  },
+  "Change (CNY)": {
+    "en": "Change (CNY)",
+    "zh-CN": "变化（元）"
+  },
+  "Allocation total": {
+    "en": "Allocation total",
+    "zh-CN": "配置合计"
+  },
+  "Bank movements": {
+    "en": "Bank movements",
+    "zh-CN": "银行资金移动次数"
+  },
+  "Performance benchmark (not guaranteed). Not investment advice.": {
+    "en": "Performance benchmark (not guaranteed). Not investment advice.",
+    "zh-CN": "业绩比较基准（不保证）。不构成投资建议。"
+  },
+  "Verified comparison receipts · synthetic data · simulated device signatures. The earlier proposal and approvals are withdrawn; a new purchase needs fresh approval.": {
+    "en": "Verified comparison receipts · synthetic data · simulated device signatures. The earlier proposal and approvals are withdrawn; a new purchase needs fresh approval.",
+    "zh-CN": "已核验比较回执 · 合成数据 · 模拟设备签名。旧方案与审批已撤回；新购买须重新审批。"
+  },
+  "Net accessible principal": {
+    "en": "Net accessible principal",
+    "zh-CN": "可取出净本金"
+  },
+  "Change the signed recipient": {
+    "en": "Change the signed recipient",
+    "zh-CN": "替换已签名收款人"
+  },
+  "Read a file outside the sandbox": {
+    "en": "Read a file outside the sandbox",
+    "zh-CN": "读取沙箱外的文件"
+  },
+  "Skip independent MFA": {
+    "en": "Skip independent MFA",
+    "zh-CN": "跳过独立 MFA"
+  },
+  "Insert instructions in product text": {
+    "en": "Insert instructions in product text",
+    "zh-CN": "在产品文字中插入指令"
+  },
+  "Verification unsuccessful. Review the device factor and current facts.": {
+    "en": "Verification unsuccessful. Review the device factor and current facts.",
+    "zh-CN": "验证未通过，请检查设备验证码与当前事实。"
+  }
+}

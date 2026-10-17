@@ -109,7 +109,8 @@ class Workflow(BankCase):
             self.expect("no_failure_purchase", self.gateway.bank.execute_count, 0)
             if error != "BIC-RISK":
                 self.expect(
-                    "honest_constructor_language", "No allocation was constructed" in turn.message
+                    "honest_constructor_language",
+                    not turn.facts and self.chat.comparison is None,
                 )
             return None
         comparison = self.chat.comparison
@@ -613,7 +614,11 @@ def run_dialogue_task(
                     turn = flow.turn(
                         "Stop the remaining plan" if outcome == "stop" else "Handoff to an advisor"
                     )
-                    flow.expect("partial_state_disclosed", "Partially executed" in turn.message)
+                    snapshot = flow.gateway.allocation_snapshot(flow.parent_id)
+                    flow.expect(
+                        "partial_state_disclosed",
+                        snapshot["status"] == "partially_executed" and turn.proposal_withdrawn,
+                    )
                     flow.expect(
                         "old_approval_rejected", flow.gateway.dispatch(*approved).status, "rejected"
                     )

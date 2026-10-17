@@ -815,7 +815,14 @@ def run_j18(client: LLMClient, evidence_dir: Path | None = None) -> dict[str, An
                 case.device.principal,
             )
             checks["guaranteed_income_replaced"] = (
-                "RCPT-MISMATCH" in rendered.rule_ids and "Guaranteed income" not in rendered.text
+                "RCPT-MISMATCH" in rendered.rule_ids
+                and rendered.status == "rejected"
+                and all(
+                    fact.receipt_ref == receipt.id
+                    and fact.field == "realized_income"
+                    and fact.exact_value == "0/1"
+                    for fact in rendered.facts
+                )
             )
     return _finish("J18", client, cases, checks, evidence_dir, call_start=call_start)
 

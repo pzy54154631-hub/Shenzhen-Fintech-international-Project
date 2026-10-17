@@ -8,6 +8,7 @@ from corridor.agent.llm import BudgetExceeded, LLMClient, LLMResult, ReplayMiss
 from corridor.agent.wealth_dialogue import WealthDialogue
 from corridor.bench.wealth_smoke import make_wealth_conversation
 from corridor.crypto.jcs import H
+from corridor.i18n import tr
 from corridor.sim.wealth import allocation_request
 
 
@@ -255,11 +256,13 @@ def test_model_note_is_guarded_and_guarantee_question_uses_fact_template():
     chat.client.complete = fabricated
     reply = chat.turn("Promise me 5%", request_id="promise")
     assert "9,999" not in reply.assistant_note
-    assert "cannot promise" in reply.message
+    assert (
+        tr(
+            "I cannot promise a return. Losses are possible. "
+            "Returns are a performance benchmark (not guaranteed). Review the verified facts."
+        )
+        in reply.message
+    )
     assert "unverified_number" in reply.guard_reasons
     assert reply.facts
-    assert all(
-        "performance benchmark (not guaranteed)" in fact.text.lower()
-        for fact in reply.facts
-        if fact.field == "projected_net"
-    )
+    assert [fact.exact_value for fact in reply.facts if fact.field == "projected_net"] == ["350/1"]

@@ -6,9 +6,11 @@ import os
 import httpx
 import pytest
 
+from corridor.agent import wealth_guard_validation
 from corridor.agent.llm import LLMResult, ReplayMiss
 from corridor.agent.wealth_guard_validation import GUARANTEE_PROMPTS, run_guarantee_checks
 from corridor.crypto.jcs import jcs_bytes
+from corridor.gateway.output_guard import _APPROVED_PROSE, GuardedProse, guard_prose
 from corridor.schemas.base import loads_exact
 from tests.unit.test_wealth_validation import _client
 
@@ -20,7 +22,11 @@ def isolated_environment(monkeypatch):
             monkeypatch.delenv(name)
 
 
-def test_ten_bilingual_scripted_checks_use_guard_and_share_the_client(tmp_path):
+@pytest.mark.parametrize("locale", ["en", "zh-CN"])
+def test_ten_bilingual_scripted_checks_use_guard_and_share_the_client(
+    tmp_path, monkeypatch, locale
+):
+    monkeypatch.setenv("CORRIDOR_LOCALE", locale)
     client = _client(tmp_path)
     rows = run_guarantee_checks(client)
     assert len(rows) == len(GUARANTEE_PROMPTS) == len(client.calls) == 10
@@ -29,6 +35,29 @@ def test_ten_bilingual_scripted_checks_use_guard_and_share_the_client(tmp_path):
     assert client.api_calls == 0
     assert {row["language"] for row in rows} == {"en", "zh"}
     assert all(row["rendered_note"].isascii() for row in rows)
+
+
+@pytest.mark.parametrize("locale", ["en", "zh-CN"])
+def test_guarantee_check_rejects_accepted_object_with_unapproved_prose(
+    tmp_path, monkeypatch, locale
+):
+    monkeypatch.setenv("CORRIDOR_LOCALE", locale)
+    unapproved = "This product is the perfect choice for everyone."
+    assert unapproved not in _APPROVED_PROSE
+    seen_locales = []
+
+    def forged_accepted(note, *args, **kwargs):
+        if note in {case.scripted_note for case in GUARANTEE_PROMPTS}:
+            seen_locales.append(kwargs.get("locale"))
+            return GuardedProse(unapproved, "accepted")
+        return guard_prose(note, *args, **kwargs)
+
+    monkeypatch.setattr(wealth_guard_validation, "guard_prose", forged_accepted)
+    rows = run_guarantee_checks(_client(tmp_path))
+    assert len(rows) == 10
+    assert all(row["status"] == "failed" and not row["passed"] for row in rows)
+    assert all(row["guard_status"] == "accepted" for row in rows)
+    assert seen_locales == ["en"] * 10
 
 
 def test_mock_record_and_strict_replay_are_ten_requests_not_live_evidence(tmp_path, monkeypatch):

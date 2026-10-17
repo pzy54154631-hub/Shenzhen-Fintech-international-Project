@@ -1,150 +1,215 @@
 # Corridor Wealth Technical Document
 
-Corridor Wealth implements an inspectable advisory and simulated purchase workflow for Fintechathon 2026 International AI Track Topic B. The client clarifies goals, reviews a policy-checked allocation and separately approves every purchase. All institutions, products, people, accounts and CNY transactions are synthetic. No real financial account is connected.
-
-This final integration edition follows the official technical-document structure. [FINAL-RESULTS](../../results/FINAL-RESULTS.md) is the authoritative measurement record, with evidence mode, denominator, confidence bound and artifact path for each result. Team registration and external submission have not been performed by this repository task.
-
 ## 01 Project Overview
 
-### Client need and delivered workflow
+### Wealth advice that remains inspectable at execution
 
-A client must understand which products fit a signed risk profile, the fees charged, the amount accessible by a deadline, and the consequences of approval. Plausible model prose cannot establish these facts. Corridor makes them reproducible from signed goals, a declared catalogue and a bank-signed policy, then links each permitted purchase to a verified synthetic-bank receipt.
+Corridor Wealth is a synthetic advisory and purchase workflow for International AI Track Topic B. A client clarifies goals, reviews a complete declared product comparison, receives a policy-checked allocation and separately approves each purchase. The model proposes; an independent checking path decides whether the proposal may execute.
 
-The English Advisor collects an unsigned draft of amount, horizon, liquidity need and objective. The simulated device reviews and signs goals and questionnaire answers. A deterministic comparison provides the complete eligible set, exclusion reasons, rankings and costs. The client can review a default allocation, explicitly adjust it within policy, inspect a sourced difference, or stop. Device approval and simulated MFA remain separate for every purchase. Partial completion and unknown outcomes remain visible.
+The motivating failure is a persuasive recommendation that cannot justify its numbers, suitability or authority. A model may omit a cheaper eligible product, repeat an issuer's promotional claim, or treat a malicious document as an instruction to buy. Corridor requires financial facts and permissions to survive deterministic checks even when model output is hostile.
 
-The scope is one client, a CNY funding account and **new money**. Existing holdings do not enter allocation weights. There is no automatic rebalancing, real investment execution, market forecast or professional suitability assessment.
+The Best-Interest Allocation Certificate, or BIAC, carries the signed context, eligible alternatives, selected amounts, costs and constraints needed to recompute a proposal. The client can inspect what was excluded and why. The gateway then binds approval to the current canonical facts and checks again before execution.
 
-### Contribution and claim boundaries
+**Claim boundary.** The allocation is a **policy-checked heuristic**, and is **sponsor-independent within the declared catalogue and policy**. These are technical properties of a bounded synthetic workflow, not a legal best-interest certification. All institutions, products, accounts and people use **synthetic data**. Authentication uses **simulated MFA**. This prototype is **not investment advice**.
 
-The Best-Interest Certificate (BIC) covers single-product comparisons. The Best-Interest Allocation Certificate (BIAC) adds a complete eligible set, exact per-product amounts, risk bands, concentration, fees and net-liquidity checks. These are recomputable technical witnesses, not legal best-interest certifications.
+### What the judge can inspect
 
-The selector is a **policy-checked heuristic**. A bounded greedy construction can miss a feasible allocation. Failure means **No allocation was constructed**, not proof that no allocation exists. The sponsor claim is **sponsor-independent within the declared catalogue and policy**: changing untrusted marketing leaves the trusted economic decision unchanged. A signed but incomplete catalogue, poor policy or inaccurate product grade remains a trust risk.
+The following pages connect the client workflow to its trust boundary, certificate computation, approval lifecycle and reported evaluation. The companion security assessment states threat assumptions and residual risks. The execution evidence document distinguishes retained F5 measurements from retained I1 scripted UI evidence captured before W1 and records current offline replay verification.
 
-Compared with permission-only workflow designs, Corridor makes the declared alternatives and client objective inspectable. Compared with a demonstration alone, its evidence retains expected outcomes, refusals, actual bank effects and replay provenance. These are comparison dimensions, not claims of measured superiority over other systems.
+<!-- pagebreak -->
 
-| Topic B capability | Implemented path | Evidence family |
+### Topic B is an end to end client workflow
+
+Current Advisor clarification screen. Scripted UI evidence using synthetic inputs; no live-model result is implied. (not included in public checkout: `docs/submission/figures/screens/01-clarification-doc.png`)
+
+| Required capability | Client experience | Inspectable mechanism |
 |---|---|---|
-| Product comparison | Exact fee, benchmark and liquidity ranking over complete eligible products | W03 and W09 |
-| Risk profiling | Device answers, scoring, freshness, retake limits and effective caps | W01–W02; suitability regressions |
-| Advisory dialogue | Multiturn draft slots, sourced explanation, correction and what-if | WealthDialogue; live coverage table |
-| Explainable allocation | Signed policy, BIAC, explicit deviations and bounded alternatives | W04–W10; independent oracle |
-| Safe execution | Immutable parent plan, child authority, separate MFA and approval | W11–W12; bank receipts |
+| Product comparison | Review eligible and excluded products, fees and liquidity | Complete declared catalogue with deterministic rankings |
+| Client risk profiling | Review and sign questionnaire answers on the device | Freshness, consumption, scoring and effective suitability checks |
+| Advisory dialogue | Clarify missing goals; ask why; correct or stop | Unsigned draft slots, sourced facts and explicit state transitions |
+| Explainable allocation | Review weights, costs and differences before selection | Signed policy and recomputable BIAC |
+
+The prototype allocates new money from a CNY funding account for a single synthetic client. Existing holdings do not enter the allocation-weight denominator. Historical holdings still remain visible after a partial purchase. There is no automatic rebalancing, real financial account connection or market forecast.
+
+The official Topic B wording asks for a professional-style workflow. Corridor implements the interaction and evidence chain within a synthetic domain; it does not equate a short questionnaire or a certificate name with professional suitability.
+
+Source: official topic requirements (not included in public checkout: `docs/submission/templates/international-topics-rules-en.docx`), accepted wealth design decisions (not included in public checkout: `docs/DECISIONS.md`), and [current workflow source](../../src/corridor/agent/wealth_dialogue.py).
+
+<!-- pagebreak -->
 
 ## 02 System Architecture
 
-```mermaid
-flowchart LR
-  U[Client and simulated device] --> G[Gateway]
-  L[Untrusted dialogue and planner] --> G
-  G --> K[Pure checking kernel]
-  K --> S[Signed trusted state]
-  G --> B[Independent synthetic bank]
-  B --> G
-  G --> R[Canonical facts and audit]
-```
+### The trust boundary separates proposals from authority
 
-The model proposes typed references. It never signs goals, authorizations, MFA grants or approvals, and cannot supply executable financial literals. The gateway resolves permitted references, renders the canonical card, verifies signatures, serializes dispatch and records results. The kernel contains no model or network client. It reads trusted state and recomputes financial obligations rather than trusting certificate booleans.
+Architecture and trust boundary. Rule counts are source inventory, not experimental outcomes. Model-side content cannot supply signatures or executable money literals. (not included in public checkout: `docs/submission/figures/architecture.png`)
 
-The application trusted computing base includes `schemas`, `crypto`, `kernel`, `stores` and `gateway`. The [generated rule and TCB inventory](rule-matrix.md) states exact source sizes, direct dependencies and rule/test references. Import-linter and AST tests enforce the boundary. The in-process Python boundary does not protect against a malicious local process with memory or key access.
+The application trusted computing base comprises schemas, crypto, kernel, stores and gateway. The pure kernel reads trusted state and checks proposals without a model client or network dependency. The gateway resolves permitted references, renders the approval card, validates device evidence, serializes dispatch and writes the result.
 
-The independently implemented synthetic bank and wealth oracle check actual effects and financial expectations. Oracle independence reduces shared implementation errors but cannot eliminate a mistaken shared specification. D0 and D3 evaluation baselines have their own deliberately weaker execution adapter; the protected CCA application always uses the gateway.
+The untrusted dialogue and planner may propose tool calls and typed references. The configured primary model is gpt-6.1-sol. Its role is to clarify intent and choose available operations; it cannot sign an input, issue an approval, fabricate a receipt or bypass the gateway. Input minimization precedes model calls. A fact gate and output guard constrain what the application presents as verified financial information.
 
-### Exact data and signatures
+The synthetic bank independently executes submitted operations and signs its receipts. The reference oracle does not import the production kernel or stores. This independence helps reveal shared-code errors, but a mistaken shared specification remains possible. The in-process Python boundary is logical isolation; it does not protect against hostile code with host memory or signing-key access.
 
-Money uses `Fraction` in memory and reduced rational strings such as `1000/1` in JSON. Actions require whole cents. JSON floating-point values are rejected. Display rounding uses two decimal places and half-even rounding without changing signed values. IDs and business times are deterministic; financial time comes from the simulated clock.
+Source: [rule and dependency inventory](rule-matrix.md), [import contracts](../../pyproject.toml), and [AST boundary tests](../../tests/unit/test_import_boundaries.py).
 
-Device inputs, catalogue, policy, risk records, approvals and bank receipts use distinct signature contexts. Demo Ed25519 keys derive deterministically from a labelled seed and are unsuitable for production. The rule registry is `kernel/rules.py`; coverage requires executed positive assertions, not just markers.
+<!-- pagebreak -->
+
+### Authority has distinct owners
+
+Authority split. The model proposes, the verifier decides, the device authorizes and the gateway executes. These roles remain distinct even when hosted in one process. (not included in public checkout: `docs/submission/figures/authority-split.png`)
+
+| Component | Responsibility | It does not establish |
+|---|---|---|
+| Device and signed state | Explicit goals, answers, policy and operation scope | Real identity, civil capacity or production key management |
+| Planner and prover | Typed proposal and candidate certificate | Correct arithmetic, client consent or execution permission |
+| Pure kernel | Recompute provenance, costs, suitability and constraints | Truth of a signed catalogue or global allocation optimality |
+| Gateway and bank | Current-card approval, dispatch checks and signed effects | Atomic completion of an entire allocation |
+
+Money remains exact as rational values in memory and reduced rational strings on the wire. Executable amounts require whole cents. JSON floating-point values are rejected; display rounding does not alter signed values. Business time comes from the simulated clock, while deterministic identities keep repeated requests reproducible.
+
+Device inputs, policies, catalogues, approvals and receipts use distinct signing contexts. Demonstration keys derive from a deterministic labelled seed. They are suitable for repeatable synthetic tests and unsuitable for production key management. See [cryptography implementation](../../src/corridor/crypto/) and [demo key derivation](../../src/corridor/sim/keys.py).
+
+<!-- pagebreak -->
 
 ## 03 Agent Design
 
-### Goal capture and truthful explanation
+### A conversation becomes authority only after device confirmation
 
-The dialogue accumulates explicitly sourced unsigned slots. Missing or ambiguous values cause clarification. “Something safe” cannot assign a risk grade or authorize an amount. The device displays and signs the completed goal sheet. Questionnaire answers stay outside model authority.
+Device-signed goals in the retained I1 UI capture. Scripted evidence; goals and questionnaire answers remain separate explicit client actions. (not included in public checkout: `docs/submission/figures/screens/03-signed-goals-doc.png`)
 
-Financial explanations use validated `FactRef` references to signed receipts. Raw model numbers, guarantees, private material and unsupported prose cannot become verified narration. A bounded output guard uses approved English templates; any assistant note remains clearly unverified. Projection fields retain the original fact path. Every displayed return reads **performance benchmark (not guaranteed)**.
+The dialogue accumulates explicitly sourced, unsigned slots for amount, horizon, liquidity need and objective. Missing or ambiguous values cause clarification. A phrase such as "something safe" cannot set a risk grade or become an executable purchase amount. The device reviews the completed goal sheet and signs the structured request.
 
-Corrections supersede old inputs and invalidate approval. Read-only what-if produces no new authority. Failed construction can offer at most three bounded unsigned previews with exact changes and unmet checks. Selecting one requires a new device signature and ordinary kernel validation; it is not an executable BIAC. A missing alternative is not proof of infeasibility.
+Questionnaire answers remain outside model authority. Raw answers and scoring evidence are preserved; effective suitability can be tightened by signed goals and trusted session signals. A higher raw grade cannot erase a tighter effective cap. Requests to coach answers toward a target rating are refused and audited.
 
-### Allocation computation
+Read-only explanation turns preserve an existing execution or reconciliation result. Stop withdraws authority before optional model work, so a model failure or strict-cache miss cannot prevent cancellation. Corrections supersede old inputs and terminate relevant pending plans; the new goal requires fresh device confirmation.
 
-ADR-012 makes bank-signed model weights authoritative, superseding the earlier midpoint proposal. Product risk cannot exceed effective client grade: a C2 client cannot buy R3 because a policy band mentions it.
+All model calls pass through the guarded LLM entry point. The API profile and bounded output settings are part of replay identity. A strict miss fails; it cannot silently substitute a scripted response into a live-model result.
 
-The signed catalogue contract supports at most twelve products; oversized inputs reject rather than being truncated. The kernel validates current policy/catalogue/risk bindings and constructs the full eligible set using each product's acceptable amount interval. It ranks eligible products at a common reference amount and horizon, labelled comparison-only. Actual amounts are priced separately. Fees round upward per operation, rather than after aggregating raw fees.
+<!-- pagebreak -->
 
-The bounded selector satisfies liquidity within signed risk-sleeve budgets before filling remaining amounts. It then rechecks cents, principal conservation, product limits, concentration, all individual/group bands, available funds and net liquidity. Accessible value is conservative net principal after holding/redemption fees by the signed deadline. Projected return and uninvested cash do not satisfy this invested-principal requirement.
+### The BIAC exposes the complete declared comparison
 
-Explicit weights or items require a device-signed request tied to a reconstructible default in the same economic context. Their cards permanently retain the deviation label and exact amount, percentage-point, fee, benchmark and liquidity differences. They cannot override hard policy or suitability checks.
+Complete proposal and BIAC in the retained I1 UI capture. Scripted evidence using synthetic data and simulated authentication; factual fields and source links remain inspectable. (not included in public checkout: `docs/submission/figures/screens/04-proposal-biac-detail.png`)
 
-### Suitability lifecycle
+The certificate exposes the selected products, risk bands, costs, constraints and source bindings together. Its checks are technical statements under the declared synthetic catalogue and policy, not a real-world suitability certification.
 
-Raw answers, scores and signatures remain unchanged. Effective suitability can be lower: zero loss capacity caps the client at C1; a signed net-return objective with a horizon below one year caps it at C2. Trusted same-session caps can only tighten. A no-loss signal prompts clarification and revokes stale approval; coaching requests cannot generate answers or authority.
+<!-- pagebreak -->
 
-`RISK-RETAKE-LIMIT` rejects assessments above two per UTC+8 simulated business day or eight per rolling twelve calendar months, including bootstrap and unresolved assessment events. A signed policy may tighten these limits. `RISK-UPGRADE-REVIEW` escalates an upgrade after a same-session purchase refusal. There is no automatic advisor approval path.
+### Recomputing the certificate keeps its claims bounded
+
+The kernel checks the current signed policy, catalogue and risk record before constructing the eligible set. Eligibility asks whether a product can accept an allowed candidate amount. This avoids excluding a useful partial holding merely because that product cannot accept the entire request principal. Every exclusion retains its applicable reasons.
+
+Eligible products are ranked at a common reference amount and horizon. That ranking is explicitly comparison-only. Actual purchase amounts are priced separately, and fees are rounded upward per operation before aggregation. All displayed return estimates carry **performance benchmark (not guaranteed)**.
+
+| BIAC makes recomputable | BIAC does not prove |
+|---|---|
+| Complete eligible set within the signed catalogue | Market-wide availability or an unbiased catalogue |
+| Exact amounts, costs and net-liquidity checks | Future realized returns or liquidity under market stress |
+| Signed risk bands, concentration and explicit deviations | Whole-household diversification or legal suitability |
+| Binding from goals to the selected parent plan | Global optimality or atomic completion of every purchase |
+
+Source: [allocation kernel](../../src/corridor/kernel/allocation.py) and accepted design decisions (not included in public checkout: `docs/DECISIONS.md`).
+
+### The allocation algorithm fails conservatively
+
+The selector is a bounded greedy construction. It allocates within signed risk-sleeve budgets, first addressing the net-liquidity requirement and then filling remaining capacity. It finally recomputes principal conservation, amount resolution, product limits, concentration, individual and group bands, fees, available funds and liquidity. The certificate cannot replace these recomputations with a claimed pass flag.
+
+Accessible value is net principal after the synthetic contract's holding and redemption fees by the signed deadline. Projected return is excluded from this liquidity amount. Cash left outside the requested investment does not count toward the invested-principal requirement.
+
+**Failure is not an infeasibility proof.** A feasible allocation can be missed by this heuristic. The correct outcome is "No allocation was constructed under this policy and these inputs." Construction failure remains a completion cost and does not authorize a weaker policy or an unverified alternative.
+
+<!-- pagebreak -->
+
+### Client corrections remain explicit and visible
+
+Goal correction and comparison differences in the retained I1 UI capture. Scripted evidence; revised goals require fresh device confirmation and invalidate earlier approval. (not included in public checkout: `docs/submission/figures/screens/06-correction-doc.png`)
+
+Explicit weights or selected products bind to a reconstructible default in the same economic context. The card retains the deviation and exact changes in amount, weight, fees, benchmark and liquidity. An unsigned what-if preview grants no authority. Selecting a preview must pass ordinary device signing and kernel validation again.
+
+The comparison view connects each displayed change to authenticated before-and-after facts. A lower principal changes product amounts and derived benchmarks, while the old proposal and its approvals are withdrawn. The client can review the effect before deciding whether to sign and approve the revised plan. Chat does not make that decision for them.
+
+A changed goal cannot erase a settled purchase. If execution has started, the workflow preserves the actual parent result and its holdings. Stop blocks later legs before optional model work. A new request requires a new device-confirmed intent; it cannot reuse a terminal plan or its consumed authority. This keeps correction, cancellation and reconciliation distinct and visible.
+
+<!-- pagebreak -->
 
 ## 04 Security Design
 
-### Approval and dispatch
+### Every purchase is checked at the moment it can move money
 
-The client selects the entire intended positive allocation. The device creates BIAC-bound child inputs and separate one-use authorizations. Each purchase receives a current card, separate scoped MFA grant and device approval. The gateway validates the token and reruns `kernel.check(phase="dispatch")` under its lock. `AUTH-CONSUMED`, `APR-DRIFT`, nonce consumption and all existing MFA checks remain active.
+Allocation approval sequence. APR-BUDGET is checked before the first leg; each leg retains its own current card, simulated MFA and one-use approval. (not included in public checkout: `docs/submission/figures/approval-sequence.png`)
 
-M1 shares approval accounting between propose and MFA for an unchanged card. Different or drifted requests still count; the sixth distinct request within the configured window still locks. `APR-BUDGET` checks all remaining legs before the first dispatch; insufficient capacity yields no dispatch. It is not a concurrent reservation of future capacity.
+The device selects the complete intended positive allocation and derives BIAC-bound child intents and separate authorizations. Each purchase receives a current canonical card, its own scoped simulated MFA grant and device approval. The gateway verifies the approval token and reruns the pure check in dispatch phase under its lock.
 
-Later legs reconstruct the original budget by adding back only this parent plan's verified settled debit. Unrelated spending, policy/catalogue changes, expired risk or superseded input still cause drift. F3 scopes plan dependencies to the relevant principal and parent, preventing unrelated plans from invalidating a legitimate card. MFA is consumed only after dispatch validation succeeds.
+`AUTH-CONSUMED` prevents reused authority after reserved, unknown or settled effects. Approval nonce consumption is separate from a business reservation. A failed attempt may release reserved funds without making the same approval reusable. Material card drift still rejects.
 
-### Failure and privacy
+`APR-BUDGET` checks whether approval capacity covers the remaining plan before the first dispatch. An unchanged propose/MFA lifecycle shares its count; distinct or drifted requests still count. This is a preflight check, not a reservation of future capacity: concurrent activity can still stop a plan after an earlier leg succeeds.
 
-Purchases are not atomic as a group. Stop, failure or handoff blocks later legs while preserving settled holdings. Unknown outcomes retain reservations and require signed bank lookup, never a resend. A correction cannot erase a prior effect or silently restart a terminated plan.
+Source: [approval budget regressions](../../tests/unit/test_approval_budget.py), [gateway orchestration](../../src/corridor/gateway/orchestration.py), and [rule inventory](rule-matrix.md).
 
-Secret-bearing utterances are rejected before tokenization/model calls. F5 extends the shared privacy projection to Unicode digit values, Chinese ordinary/financial digit glyphs and enclosed-zero variants. Audits retain a private HMAC commitment rather than raw utterances. Canonical JSON audit records append in binary mode, with chain and retained-head verification. Replacing both log and trusted checkpoint remains outside this integrity guarantee.
+<!-- pagebreak -->
 
-Read-only recommendation and explanation turns preserve the existing execution or reconciliation result. Stop withdraws authority before any optional model update; a cache miss cannot prevent it. Terminal partial plans remain visible with signed settled holdings, available cash and remaining items. Recomputing an unexecuted comparison uses a distinct deterministic revision, and all completed dialogue branches preserve request idempotency.
+### Truthful recovery preserves the effect that actually happened
 
-The analysis worker offers a restricted AST language over minimized owner-bound data with resource limits. It is not an operating-system security sandbox. Generated analysis cannot supply executable financial provenance or claim an operation completed.
+Partial completion after Stop in the retained I1 UI capture. Scripted evidence; the settled holding remains visible while the later purchase is cancelled. (not included in public checkout: `docs/submission/figures/screens/13-partial-stop-doc.png`)
 
-The [self-assessment](security-self-assessment.md) retains review findings, regressions and risks. Its regulatory mapping is a design interpretation, not compliance certification.
+Purchases are not atomic as a group. Stop, failure or handoff blocks later legs while retaining settled holdings. An unknown result retains its reservation and requires a signed lookup; the system does not resend an order to manufacture certainty. A correction cannot erase an earlier effect or silently restart a terminated plan.
+
+Later legs reconstruct the original budget using only this parent's verified settled debit. Unrelated spending, changed policy or catalogue, expired risk or superseded inputs can invalidate the remaining operation. Dependencies are scoped to the relevant principal and parent, preventing unrelated plans from invalidating a legitimate card.
+
+Private or secret-bearing utterances are rejected before model calls. Model-visible state uses minimized role-filtered handles. Verified receipt references preserve their original source paths; raw model numbers and guarantees cannot become verified narration. Finite privacy and output guards remain bounded checks, not proof against all encodings or meanings.
+
+Audit records append canonical bytes, retaining decisions, rule identifiers and commitments. A write failure blocks protected execution. Chain verification assumes the custodian preserves a trusted head or checkpoint; replacing every local copy is outside that guarantee.
+
+<!-- pagebreak -->
 
 ## 05 Deployment and Testing
 
-Python 3.11, uv and the frozen `uv.lock` reproduce the application. Run the key-free scripted path first. The gateway runs in the Streamlit process on loopback. The [README](../../README.md) gives installation, evaluation, evidence packaging and raw replay regeneration commands.
+### Completion and replay answer different questions
 
-All model calls use `agent/llm.py`, Responses strict tools, bounded output and pre-reserved call/USD budgets. Strict replay requires matching model/API/reasoning/output-limit identity and fails on a miss without credentials, provider SDKs or network fallback. Guided/scripted interaction never substitutes into a live denominator.
+Reported F5 task completion. Live-recorded results and transport-disabled strict-replay agreement are retained-report evidence; replay is not an independent second sample. (not included in public checkout: `docs/submission/figures/completion.png`)
 
-<!-- FINAL_RESULTS_BEGIN -->
+The retained [FINAL-RESULTS report](../../results/FINAL-RESULTS.md) records gpt-6.1-sol live-recorded completion of J tasks at **24/24**, W tasks at **12/12**, and advisory workflows at **30/30**. It reports M2 dialogue checks at **26/26** and M4 output checks at **10/10**, with corresponding strict-replay agreement. Formal W constraint probes remain scripted and are not added to the live workflow denominator.
 
-### Final measured results
+For these zero-failure rows, the report's descriptive approximate upper bounds at 95% are respectively **12.5000%**, **25.0000%**, **10.0000%**, **11.5385%** and **30.0000%**. Related cases are not an independent population sample. M4 uses the same output guard for observed checks and does not establish an independent unsafe-output oracle.
 
-The values below are copied from [FINAL-RESULTS](../../results/FINAL-RESULTS.md) and its [compact summary](../../evidence/final-summary/summary.json). For completion rows the 95% upper bound concerns failures; for attack rows it concerns forbidden effects. Bounds are descriptive for related cases. Replay is reproducibility evidence, not a second independent sample.
+The original report and complete evidence/final-f5 recordings are retained. These figures report the F5 observations. Strict replay on the current code verified 142/142 observations: 141 raw observations are byte-for-byte identical, and 1 J01 observation is verified by a migration proof because the bilingual port changed the audit fact-hash format. Network transport was disabled and no API calls occurred. P2's historical 142/142 byte-for-byte equality used code before I1. Replay reproduces recorded failures as well as successes; it is not an independent model sample. The execution evidence document provides the command and result summary.
 
-| Mode | Observation | Adverse proportion upper 95% | Evidence |
-|---|---|---|---|
-| scripted | J bank tasks: 24/24 | failure: approximately min(1, 3/24) = 12.5000% | [source](../../evidence/final-f5/judge/scripted/judge.json) |
-| scripted | W mechanism tasks: 12/12; 74/74 formal subcases | failure: approximately min(1, 3/12) = 25.0000% | [source](../../evidence/final-f5/judge/wealth/scripted) |
-| scripted | Byzantine forbidden effects: 0/40 | effect: approximately min(1, 3/40) = 7.5000% | [source](../../evidence/final-f5/adversary/result.json) |
-| live-recorded | J bank tasks: 24/24; Recorded tasks 24/24; strict replay identical 24/24 | failure: approximately min(1, 3/24) = 12.5000% | [source](../../evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json) |
-| live-recorded | W advisory tasks: 12/12; 30/30 workflows; Recorded tasks 12/12; strict replay identical 12/12 | failure: approximately min(1, 3/12) = 25.0000% | [source](../../evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json) |
-| live-recorded | M2 fixed dialogue cases and smokes: 26/26; Recorded cases 26/26; strict replay PASS | failure: approximately min(1, 3/26) = 11.5385% | [source](../../evidence/final-f5/dialogue/dialogue-recording.json) |
-| live-recorded | M4 rendered-output guard checks: 10/10; Recorded cases 10/10; strict replay PASS | failure: approximately min(1, 3/10) = 30.0000% | [source](../../evidence/final-f5/dialogue/dialogue-recording.json) |
-| live-recorded | Frozen blind forbidden effects: 0/16; Forbidden-predicate rate; independent evidence failures reported separately | effect: approximately min(1, 3/16) = 18.7500% | [source](../../evidence/final-f5/blind/live-recorded/summary.json) |
-| strict-replay | Frozen blind forbidden effects: 0/16; Forbidden-predicate rate; independent evidence failures reported separately | effect: approximately min(1, 3/16) = 18.7500% | [source](../../evidence/final-f5/blind/strict-replay/summary.json) |
-| live-recorded | M7 forbidden effects: 0/24; Measured attack effects; incomplete effects and evidence diagnostics separate | effect: approximately min(1, 3/24) = 12.5000% | [source](../../evidence/final-f5/redteam/live-recorded/summary.json) |
-| strict-replay | M7 forbidden effects: 0/24; Measured attack effects; incomplete effects and evidence diagnostics separate | effect: approximately min(1, 3/24) = 12.5000% | [source](../../evidence/final-f5/redteam/strict-replay/summary.json) |
+<!-- pagebreak -->
 
-Final quality gates: rules: 248 passed, 2646 deselected in 17.83s; uncovered rules: none; ruff: PASS; format: PASS; mypy: PASS; imports: PASS; test-rules-verified: 2895 passed, 1 warning in 754.45s (0:12:34); uncovered rules: none. See the [source-linked gate logs](../../results/FINAL-RESULTS.md).
+### Limits alone do not preserve useful completion across scale
 
-Retained earlier attempts: test: FAIL; 1 failed, 2862 passed, 1 warning in 769.22s (0:12:49); test-rules-final: INTERRUPTED; no complete pytest summary or rules coverage result. These earlier failed or interrupted checks remain disclosed in [FINAL-RESULTS](../../results/FINAL-RESULTS.md); the final gates do not erase their logs or failures.
+Scripted baseline matrix from the retained F5 report. Prohibited outcomes use all execution projections; benign completion has its own denominator. (not included in public checkout: `docs/submission/figures/baseline-matrix.png`)
 
-The gpt-5.4-mini W04 contrast completed 0/1 tasks and 4/5 workflows (live-recorded). Recorded tasks 1/1; strict replay identical 1/1. Its failed workflow remains a completion failure; replay equality does not turn it into a pass. See [FINAL-RESULTS](../../results/FINAL-RESULTS.md).
+Under the **scripted all_approve policy**, Corridor CCA reports **0/31** prohibited outcomes and **20/21** benign completions in both main and scaled_1000. D3 reports **0/31** and **4/21** in main, but **7/31** and **20/21** in scaled_1000. D0 reports **7/31** and **20/21** in both. The comparison isolates a mechanism trade-off in these prescribed projections, not general performance against arbitrary financial agents.
 
-Conservative actual live attempts: 484/1,500 task cap; the shared journal enforces the stricter 1,200 ceiling. [Budget evidence](../../evidence/final/live-budget.json). All recorded failures remain in the accounting.
+The retained report gives a descriptive approximate 95% upper bound of **9.6774%** for **0/31** prohibited outcomes. The **7/31** Wilson upper bound is **39.8124%**. Benign failure upper bounds are **22.6694%** for **20/21** completion and **92.3324%** for **4/21**. The partial-stop projection remains incomplete by design.
 
-Formal W mutation/constraint subcases remain scripted; live W rows cover the disclosed task-specific advisory workflows. Main and model-contrast recordings include transport-disabled strict checks, with exact equality and failure details in FINAL-RESULTS. M7 benign completion and each attack family, all D0/D3/CCA cells, model comparisons and missing measurements remain in that same report with evidence paths. Per-call token counts and assumed-price cost estimates remain in the linked recording evidence, including the [M2/M4 recording](../../evidence/final-f5/dialogue/record/summary.json). These estimates are not provider invoices.
+The careful-user arm is disclosed separately: scaled_1000 D3 has **3/31** prohibited outcomes, rather than the all_approve arm's **7/31**. Its benign completion remains **20/21**. Accepted forged proposals count as prohibited outcomes even before money moves. Missing-MFA protocol gaps are reported separately from business harm. No favorable arm is silently substituted for another.
 
-<!-- FINAL_RESULTS_END -->
+<!-- pagebreak -->
 
-### Evaluation limits
+### Reproduce the mechanisms and retain the limits
 
-J01–J24 and W01–W12 have different denominators. Formal W subcases and partial dialogue adapters must not be combined into full live W coverage. The frozen blind corpus has isolated-author provenance, but development runs exposed it to adapter corrections; the final rerun is not an untouched first-pass holdout. D0/D3/CCA projections are mechanism comparisons unless the final report explicitly identifies model calls.
+Use the frozen environment and the key-free scripted path first. The gateway is in-process with the Streamlit UI. Dependency installation may require network access or a populated cache; offline application execution is a separate property.
 
-Zero violations use `0/n (95% upper approximately 3/n)`, capped at one. Related cases make this a descriptive approximation, not a production risk guarantee. Benign failures, legal earlier effects and constructor failures remain visible. Configured-price cost is not a provider invoice. Human rehearsal, video duration and unrestricted-advisor performance remain `not_run`.
+```powershell
+uv sync --frozen --python 3.11
+uv run --frozen corridor setup
+uv run --frozen corridor test --rules-coverage
+uv run --frozen corridor judge --planner scripted --suite wealth
+uv run --frozen corridor adversary
+uv run --frozen corridor bench --suite wealth
+```
 
-The wealth workflow export retains approval token identifiers/hashes rather than the nonce-bearing complete token. Runtime gateway checks verify actual device signatures, but the compact export alone cannot independently reconstruct the approval-token signature check. M4 measures guard regressions and observed rendered-output checks using the same guard, not an independent unsafe-output oracle.
+Strict replay requires matching model, API, reasoning and output-limit identity plus the recorded response cache. It fails on a miss without provider transport or a scripted fallback. See the [execution guide](execution-evidence.md) for the exact offline driver and matching recorded bundle.
+
+The source registry and [complete rule matrix](rule-matrix.md) link each rule to enforcement sites and tests. Executed rule assertions, lint, formatting, strict typing and import-boundary checks complement the scripted and recorded suites. The retained F5 full test gate reports **2895/2895 passed** in scripted mode; its earlier failed and interrupted attempts remain disclosed. Current artifact checks are recorded separately in artifact validation (not included in public checkout: `docs/submission/validation.md`).
+
+| Remaining boundary | Consequence and next step |
+|---|---|
+| Heuristic and declared data | No global optimum or unbiased universe claim; independently review policies and catalogue construction |
+| Synthetic identity and keys | No production security or suitability claim; replace demonstration key management and authentication before deployment |
+| Nonatomic execution | Earlier holdings survive later failure; retain reconciliation and explicit client recovery |
+| Finite evaluation | Small related suites do not establish general advisor competence or a production failure probability |
+| Regulatory correspondence | Reg BI, MiFID II and NFRA mappings are engineering interpretations; licensing and full obligations remain outside scope |
+
+All return estimates remain **performance benchmark (not guaranteed)**. The prototype uses **synthetic data** and **simulated MFA** and is **not investment advice**. Repository: [Corridor Wealth source](https://github.com/pzy54154631-hub/Shenzhen-Fintech-international-Project).

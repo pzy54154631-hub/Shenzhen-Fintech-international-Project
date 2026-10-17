@@ -133,7 +133,12 @@ def run(
         except (ValueError, RuntimeError, OSError) as exc:
             status = str(exc)
             failed = True
-            results.append({"task_id": task, "passed": False, "status": status})
+            results.append({
+                "task_id": task,
+                "passed": False,
+                "error_type": type(exc).__name__,
+                "status": status,
+            })
         typer.echo(f"{task}: {status}; planner={planner}")
         rows.append(f"| {task} | {planner} | {status.replace(chr(10), ' ')} |")
     p0 = [item for item in results if item["task_id"] <= "J22"]

@@ -19,6 +19,15 @@ def test_every_wealth_task_has_checked_dialogue_workflows(task_id):
     assert client.calls
     assert all(row["assertions"] for row in result["workflows"])
     assert all(row["source"] == "scripted" for row in result["workflows"])
+    labels = [item["assertion"] for row in result["workflows"] for item in row["assertions"]]
+    assert "no_allocation_constructed" not in labels
+    assert "remaining_work_stopped" not in labels
+    if task_id in {"W04", "W05", "W06", "W08"}:
+        assert "honest_constructor_language" in labels
+    for row in result["workflows"]:
+        for assertion in row["assertions"]:
+            if assertion["assertion"] == "partial_state_disclosed":
+                assert assertion["expected"] is True and assertion["observed"] is True
 
 
 def test_malformed_model_response_cannot_count_as_workflow_success(monkeypatch):

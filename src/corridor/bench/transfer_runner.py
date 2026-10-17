@@ -1,5 +1,6 @@
 """Synthetic user controller and B5 J01 runner; truth is given only to the oracle."""
 
+from collections.abc import Callable
 from fractions import Fraction
 from hashlib import sha256
 from pathlib import Path
@@ -23,6 +24,7 @@ from corridor.schemas.bank import (
     GroundTruth,
 )
 from corridor.schemas.base import loads_exact
+from corridor.schemas.narrative import NarrativeResult
 from corridor.sim.device import Device
 from corridor.sim.fixtures import make_state
 from corridor.sim.keys import SEED, signing_key, stable_id
@@ -139,13 +141,20 @@ class _PrivacyMeasurement:
             self.vault.ensure_safe(value, rule="PII-OUT")
 
 
-def run_j01(client: LLMClient, evidence_dir: Path | None = None) -> dict[str, Any]:
+def run_j01(
+    client: LLMClient,
+    evidence_dir: Path | None = None,
+    *,
+    narrative_observer: Callable[[NarrativeResult], None] | None = None,
+) -> dict[str, Any]:
     call_start = len(client.calls)
     chat, device = make_conversation(task_id="J01", client=client, evidence_dir=evidence_dir)
     measurement = _PrivacyMeasurement(chat.gateway.vault)
     client.observers.append(measurement.observe)
     try:
-        return _run_j01(chat, device, client, evidence_dir, measurement, call_start)
+        return _run_j01(
+            chat, device, client, evidence_dir, measurement, call_start, narrative_observer
+        )
     finally:
         client.observers.remove(measurement.observe)
 
@@ -157,6 +166,7 @@ def _run_j01(
     evidence_dir: Path | None,
     measurement: _PrivacyMeasurement,
     call_start: int,
+    narrative_observer: Callable[[NarrativeResult], None] | None = None,
 ) -> dict[str, Any]:
     initial = chat.state
     policy = EvaluationPolicy()
@@ -195,6 +205,10 @@ def _run_j01(
     if execution.receipt is None:
         raise ValueError(f"J01 did not obtain a bank receipt: {execution.rule_ids}")
     rendered = chat.narrative(execution.receipt.id)
+    if narrative_observer is not None:
+        # Observe the authenticated gateway output; never grant a callback mutation access.
+        chat.gateway.vault.ensure_safe(rendered, rule="PII-OUT")
+        narrative_observer(rendered.model_copy(deep=True))
     final = chat.gateway.bank.final_state()
     receipts = [item for item in chat.state.receipts.values() if isinstance(item, BankReceipt)]
     evidence = []
@@ -279,7 +293,13 @@ def _run_j01(
         and transfer_count == 1
         and available(chat.state, "A_CURRENT") == 9800
         and rendered.status == "rendered"
-        and "Transfer settled" in rendered.text
+        and not rendered.rule_ids
+        and any(
+            fact.receipt_ref == execution.receipt.id
+            and fact.field == "status"
+            and fact.exact_value == "settled"
+            for fact in rendered.facts
+        )
         and report.task_complete is True
         and not report.indeterminate_reasons
         and chat.gateway.audit.verify()

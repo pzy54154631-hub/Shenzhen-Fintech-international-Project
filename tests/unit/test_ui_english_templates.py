@@ -69,10 +69,12 @@ def test_component_card_explains_red_approval_and_keeps_canonical_value(monkeypa
     monkeypatch.setattr(components, "st", display)
     components.render_card({"kind": "purchase_product", "amount": "200/1", "tier": "red"})
     text = " ".join(str(call) for call in display.mock_calls)
-    assert "Gateway approval card" in text
-    assert "canonical value 200/1" in text
+    assert "Purchase confirmation" in text
+    assert "CNY 200.00" in text
+    assert display.json.call_args.args[0]["amount"] == "200/1"
+    assert "Technical evidence" in text
     assert "Red · independent simulated MFA required" in text
-    assert "Complete independent simulated MFA, then approve on the device" in text
+    assert "Investment purchases require separate device MFA." in text
 
 
 def test_english_labels_keep_benchmark_qualification():

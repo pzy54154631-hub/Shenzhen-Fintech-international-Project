@@ -1,0 +1,13 @@
+{
+  "Product disclosure": {"en": "Synthetic data · Simulated authentication · Not investment advice", "zh-CN": "合成数据 · 模拟身份验证 · 不构成投资建议"},
+  "A clear plan. Every decision yours.": {"en": "A clear plan. Every decision yours.", "zh-CN": "清晰的配置方案，每一步由你决定。"},
+  "Product welcome": {"en": "Tell us your goals, explore a checked proposal, and approve each purchase yourself.", "zh-CN": "告诉我们你的目标，查看经核验的配置建议，再逐笔确认购买。"},
+  "Goals": {"en": "Goals", "zh-CN": "投资目标"},
+  "Risk profile": {"en": "Risk profile", "zh-CN": "风险画像"},
+  "Proposal & certificate": {"en": "Proposal & certificate", "zh-CN": "方案与证书"},
+  "Approvals": {"en": "Approvals", "zh-CN": "逐笔审批"},
+  "Receipts": {"en": "Receipts", "zh-CN": "交易回执"},
+  "Technical evidence": {"en": "Technical evidence", "zh-CN": "技术证据"},
+  "Supporting-bank evidence and evaluation": {"en": "Supporting-bank evidence and evaluation", "zh-CN": "辅助银行证据与评测"},
+  "Scripted demo · verified receipts · no real money": {"en": "Scripted demo · verified receipts · no real money", "zh-CN": "脚本演示 · 已核验回执 · 不涉及真实资金"}
+}

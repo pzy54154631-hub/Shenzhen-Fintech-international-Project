@@ -1,13 +1,15 @@
-"""Topic B entry point with auxiliary banking workflows and explicit device gestures."""
+"""Topic B entry point with bilingual display and explicit device gestures."""
 
 import os
 from collections.abc import Callable
+from html import escape
 from typing import Any
 
 import streamlit as st
 
 from corridor.bench.adversary import development_cases
 from corridor.crypto.jcs import H
+from corridor.i18n import get_locale, set_locale
 from corridor.sim.keys import stable_id
 from corridor.ui import wealth_views
 from corridor.ui.components import (
@@ -16,13 +18,17 @@ from corridor.ui.components import (
     fact_rows,
     render_bic,
     render_card,
+    render_fact_projection,
     render_plans,
     render_result,
 )
 from corridor.ui.controller import DemoController
 from corridor.ui.evaluation import run_hijacked_case, run_judge_task
+from corridor.ui.live_controls import render_live_controls
+from corridor.ui.messages import tr
 from corridor.ui.structured_transfer import render_structured_transfer
 from corridor.ui.wealth_controller import WealthController
+from corridor.ui.wealth_statement import EXCLUSIONS
 
 PAGES = (
     "Advisor",
@@ -57,7 +63,7 @@ def perform(call: Callable[[], dict[str, Any]], key: str = "last_result") -> dic
         result = call()
     except (ValueError, RuntimeError, KeyError):
         st.error(
-            "The operation could not complete. Review the current facts and inputs, then retry."
+            tr("The operation could not complete. Review the current facts and inputs, then retry.")
         )
         return None
     st.session_state[key] = result
@@ -119,18 +125,18 @@ def stop_all(controller: DemoController) -> None:
 
 
 def conversation(controller: DemoController) -> None:
-    st.markdown("## Describe a transfer, then confirm it on your device")
+    st.markdown(tr("## Describe a transfer, then confirm it on your device"))
     st.caption(
-        "For example: transfer CNY 200 to Chen. Review the facts before authorizing payment."
+        tr("For example: transfer CNY 200 to Chen. Review the facts before authorizing payment.")
     )
     with st.form("transfer_form"):
         text = st.text_input(
-            "What would you like to do?",
-            placeholder="Transfer CNY 200 to Chen",
+            tr("What would you like to do?"),
+            placeholder=tr("Transfer CNY 200 to Chen"),
             key="transfer_text",
         )
         submitted = st.form_submit_button(
-            "Prepare transfer draft", key="preview_transfer", type="primary"
+            tr("Prepare transfer draft"), key="preview_transfer", type="primary"
         )
     if submitted and text.strip():
         perform(
@@ -143,10 +149,14 @@ def conversation(controller: DemoController) -> None:
     if draft:
         contacts = draft.get("contacts", [])
         selection = None
-        if draft.get("status") == "clarify" or len(contacts) > 1:
+        if draft.get("status") == "clarify" and not contacts:
+            st.warning(tr("transfer_no_match"))
+        elif draft.get("status") == "clarify" or len(contacts) > 1:
             st.warning(
-                "More than one contact matches. "
-                "Select the recipient on your device before authorization."
+                tr(
+                    "More than one contact matches. Select the recipient on your devic"
+                    "e before authorization."
+                )
             )
             options = {
                 str(item.get("id", item.get("contact_ref"))): str(item.get("label", item.get("id")))
@@ -156,13 +166,15 @@ def conversation(controller: DemoController) -> None:
             if not options:
                 options = {str(item): str(item) for item in contacts}
             selection = st.selectbox(
-                "Select the recipient",
+                tr("Select the recipient"),
                 [None, *options],
-                format_func=lambda value: "Choose a contact" if value is None else options[value],
+                format_func=lambda value: (
+                    tr("Choose a contact") if value is None else options[value]
+                ),
                 key="contact_selection",
             )
             if st.button(
-                "Show the selected recipient's canonical card",
+                tr("Show the selected recipient's canonical card"),
                 key="show_selected_contact",
                 disabled=selection is None,
             ):
@@ -184,7 +196,7 @@ def conversation(controller: DemoController) -> None:
                 len(contacts) <= 1 or selection == st.session_state.get("displayed_contact")
             )
             if st.button(
-                "Confirm on device and execute",
+                tr("Confirm on device and execute"),
                 key="confirm_transfer",
                 type="primary",
                 disabled=not can_confirm,
@@ -204,10 +216,12 @@ def conversation(controller: DemoController) -> None:
                 if result and result.get("status") != "redisplay":
                     st.session_state.pop("transfer_changed", None)
         if st.session_state.get("transfer_changed"):
-            st.warning("The canonical facts changed. Review the new card before confirming again.")
+            st.warning(
+                tr("The canonical facts changed. Review the new card before confirming again.")
+            )
         render_result(st.session_state.get("transfer_result"))
         if st.session_state.get("transfer_result") and st.button(
-            "Start another transfer", key="new_transfer"
+            tr("Start another transfer"), key="new_transfer"
         ):
             for key in list(st.session_state):
                 if key.startswith("request:transfer:") or key in {
@@ -216,43 +230,52 @@ def conversation(controller: DemoController) -> None:
                 }:
                     del st.session_state[key]
             st.rerun()
-    with st.expander("Assistant note (unverified)", expanded=False):
+    with st.expander(tr("Assistant note (unverified)"), expanded=False):
         st.write(
-            "The assistant helps prepare your request. "
-            "Recipient, amount, approval tier and outcome "
-            "come from canonical device facts and verified bank receipts."
+            tr(
+                "The assistant helps prepare your request. Recipient, amount, appr"
+                "oval tier and outcome come from canonical device facts and verifi"
+                "ed bank receipts."
+            )
         )
 
 
 def billing(controller: DemoController) -> None:
-    st.markdown("## Bills and verifiable balances")
+    st.markdown(tr("## Bills and verifiable balances"))
     st.caption(
-        "Balances, categories, totals and alerts come from trusted records. "
-        "Green-tier queries need no payment approval."
+        tr(
+            "Balances, categories, totals and alerts come from trusted records"
+            ". Green-tier queries need no payment approval."
+        )
     )
     left, right = st.columns(2)
     with left:
-        if st.button("Check balance", key="query_balance", use_container_width=True):
+        if st.button(tr("Check balance"), key="query_balance", use_container_width=True):
             perform(controller.query_balance, "balance_result")
     with right:
-        if st.button("Create sample September bill", key="bill_report", use_container_width=True):
+        if st.button(
+            tr("Create sample September bill"), key="bill_report", use_container_width=True
+        ):
             perform(controller.bill_report, "bill_result")
     for key in ("balance_result", "bill_result"):
         result = st.session_state.get(key)
         if result:
             render_result(result)
             if result.get("facts"):
-                fact_rows(result["facts"])
+                render_fact_projection(result["facts"], controller)
 
 
 def subscriptions(controller: DemoController) -> None:
-    st.markdown("## Subscriptions")
+    st.markdown(tr("## Subscriptions"))
     st.info(
-        "Subscription queries and renewal reminders require yellow-tier approval. "
-        "Confirm before viewing subscriptions. Cancellation does not refund settled charges."
+        tr(
+            "Subscription queries and renewal reminders require yellow-tier ap"
+            "proval. Confirm before viewing subscriptions. Cancellation does n"
+            "ot refund settled charges."
+        )
     )
     if st.button(
-        "Prepare subscription query approval", key="preview_subscriptions", type="primary"
+        tr("Prepare subscription query approval"), key="preview_subscriptions", type="primary"
     ):
         perform(
             lambda: controller.preview_subscriptions(request_id=request_id("subscriptions")),
@@ -262,7 +285,7 @@ def subscriptions(controller: DemoController) -> None:
     if pending and pending.get("card"):
         render_card(pending["card"])
         st.button(
-            "Confirm subscription query on device",
+            tr("Confirm subscription query on device"),
             key="approve_subscriptions",
             on_click=approve_saved,
             args=(controller, "subscription_pending", "subscription_result"),
@@ -275,8 +298,10 @@ def subscriptions(controller: DemoController) -> None:
             st.dataframe(rows, use_container_width=True, hide_index=True)
         refs = result.get("cancellable", [])
         if refs:
-            chosen = st.selectbox("Choose an authorized subscription", refs, key="subscription_ref")
-            if st.button("Prepare cancellation approval", key="cancel_subscription"):
+            chosen = st.selectbox(
+                tr("Choose an authorized subscription"), refs, key="subscription_ref"
+            )
+            if st.button(tr("Prepare cancellation approval"), key="cancel_subscription"):
                 perform(
                     lambda: controller.cancel_subscription(
                         chosen, request_id=request_id("cancel-subscription", chosen)
@@ -287,7 +312,7 @@ def subscriptions(controller: DemoController) -> None:
     if cancel and cancel.get("card"):
         render_card(cancel["card"])
         st.button(
-            "Confirm cancellation on device",
+            tr("Confirm cancellation on device"),
             key="approve_cancel_subscription",
             on_click=approve_saved,
             args=(controller, "subscription_cancel", "subscription_cancel_result"),
@@ -296,23 +321,25 @@ def subscriptions(controller: DemoController) -> None:
 
 
 def investments(controller: DemoController) -> None:
-    st.markdown("## Product comparison and best-interest certificate")
+    st.markdown(tr("## Product comparison and best-interest certificate"))
     st.caption(
-        "Synthetic product catalogue · performance benchmark (not guaranteed), "
-        "for comparison only; not realized income."
+        tr(
+            "Synthetic product catalogue · performance benchmark (not guarante"
+            "ed), for comparison only; not realized income."
+        )
     )
     objective = st.selectbox(
-        "Choose your comparison objective",
+        tr("Choose your comparison objective"),
         ["net_return", "total_fee", "liquidity"],
         format_func=lambda item: {
-            "net_return": "Net performance benchmark (not guaranteed)",
-            "total_fee": "Total fees",
-            "liquidity": "Liquidity",
+            "net_return": tr("Net performance benchmark (not guaranteed)"),
+            "total_fee": tr("Total fees"),
+            "liquidity": tr("Liquidity"),
         }[item],
         key="investment_objective",
     )
     if st.button(
-        "Confirm objective and compare the full catalogue",
+        tr("Confirm objective and compare the full catalogue"),
         key="compare_investments",
         type="primary",
     ):
@@ -325,57 +352,78 @@ def investments(controller: DemoController) -> None:
             render_bic(bic)
         excluded = comparison.get("excluded", comparison.get("exclusions"))
         if excluded:
-            st.write("Excluded products and reasons")
-            st.json(excluded)
+            st.write(tr("Excluded products and reasons"))
+            for item in excluded:
+                if isinstance(item, dict):
+                    reasons = item.get("reason_codes", item.get("reasons", []))
+                    st.write(
+                        str(item.get("product_id", ""))
+                        + " · "
+                        + " · ".join(tr(EXCLUSIONS.get(reason, reason)) for reason in reasons)
+                    )
+                elif isinstance(excluded, dict):
+                    reasons = excluded[item]
+                    reasons = reasons if isinstance(reasons, list) else [reasons]
+                    st.write(
+                        str(item)
+                        + " · "
+                        + " · ".join(tr(EXCLUSIONS.get(reason, reason)) for reason in reasons)
+                    )
+            with st.expander(tr("Binding identifiers and complete canonical JSON")):
+                st.json(excluded)
         products = comparison.get("candidate_ids", bic.get("candidate_ids", []))
         selection = st.selectbox(
-            "Choose another product explicitly (optional)",
+            tr("Choose another product explicitly (optional)"),
             [None, *products],
             format_func=lambda item: (
-                "Use the highest-ranked eligible product" if item is None else str(item)
+                tr("Use the highest-ranked eligible product") if item is None else str(item)
             ),
             key="explicit_product",
         )
-        if st.button("Confirm preference and prepare purchase card", key="preview_investment"):
+        if st.button(tr("Confirm preference and prepare purchase card"), key="preview_investment"):
             perform(
                 lambda: controller.preview_investment(
                     selection, request_id=request_id("investment", [objective, selection])
                 ),
                 "investment_pending",
             )
-        with st.expander("Marketing metadata twin (isolated)"):
+        with st.expander(tr("Marketing metadata twin (isolated)")):
             st.caption(
-                "Change a sponsor flag and check that the complete catalogue and recommendation "
-                "remain sponsor-independent within the declared catalogue and policy. "
-                "This test uses an isolated account."
+                tr(
+                    "Change a sponsor flag and check that the complete catalogue and r"
+                    "ecommendation remain sponsor-independent within the declared cata"
+                    "logue and policy. This test uses an isolated account."
+                )
             )
             sponsored = st.toggle(
-                "Toggle synthetic sponsor flag", key="sponsored_twin", value=False
+                tr("Toggle synthetic sponsor flag"), key="sponsored_twin", value=False
             )
-            if st.button("Verify unchanged recommendation", key="run_marketing_twin"):
+            if st.button(tr("Verify unchanged recommendation"), key="run_marketing_twin"):
                 perform(lambda: controller.marketing_twin(sponsored), "marketing_twin")
             twin = st.session_state.get("marketing_twin")
             if twin:
                 (st.success if twin.get("unchanged") else st.error)(
-                    "Marketing twin: recommendation and complete catalogue are unchanged"
+                    tr("Marketing twin: recommendation and complete catalogue are unchanged")
                     if twin.get("unchanged")
-                    else "Marketing twin verification failed"
+                    else tr("Marketing twin verification failed")
                 )
                 render_bic(twin.get("bic", {}))
     pending = st.session_state.get("investment_pending")
     if pending and pending.get("card"):
         render_card(pending["card"])
         st.info(
-            "The purchase has not executed. "
-            "Open Device to complete simulated MFA and final approval."
+            tr(
+                "The purchase has not executed. Open Device to complete simulated "
+                "MFA and final approval."
+            )
         )
     positions = [item["id"] for item in controller.snapshot().get("positions", [])]
     if positions:
         position = st.selectbox(
-            "Choose one of your synthetic positions", positions, key="redemption_position"
+            tr("Choose one of your synthetic positions"), positions, key="redemption_position"
         )
         if st.button(
-            "Prepare redemption of an existing synthetic position", key="preview_redemption"
+            tr("Prepare redemption of an existing synthetic position"), key="preview_redemption"
         ):
             perform(
                 lambda: controller.redeem(position, request_id=request_id("redemption", position)),
@@ -385,7 +433,7 @@ def investments(controller: DemoController) -> None:
     if redemption and redemption.get("card"):
         render_card(redemption["card"])
         st.button(
-            "Confirm redemption on device",
+            tr("Confirm redemption on device"),
             key="approve_redemption",
             on_click=approve_saved,
             args=(controller, "redemption_pending", "redemption_result"),
@@ -394,14 +442,17 @@ def investments(controller: DemoController) -> None:
 
 
 def cards(controller: DemoController) -> None:
-    st.markdown("## Cards")
+    st.markdown(tr("## Cards"))
     st.caption(
-        "Synthetic virtual cards display demo tokens. "
-        "Card operations use no real card numbers or payment services."
+        tr(
+            "Synthetic virtual cards display demo tokens. Card operations use "
+            "no real card numbers or payment services."
+        )
     )
     rows = controller.snapshot().get("cards", [])
     if st.button(
-        "Apply for a simulated virtual card · show yellow-tier approval", key="preview_apply_card"
+        tr("Apply for a simulated virtual card · show yellow-tier approval"),
+        key="preview_apply_card",
     ):
         perform(
             lambda: controller.preview_card_operation(
@@ -414,7 +465,7 @@ def cards(controller: DemoController) -> None:
     if rows:
         by_ref = {row["id"]: row for row in rows}
         ref = st.selectbox(
-            "Choose one of your simulated cards",
+            tr("Choose one of your simulated cards"),
             list(by_ref),
             format_func=lambda value: by_ref[value]["card_token"],
             key="card_ref",
@@ -439,27 +490,29 @@ def cards(controller: DemoController) -> None:
             ]
         else:
             st.info(
-                "A lost card must first be restored to frozen status, "
-                "then separately verified to unfreeze. "
-                "Existing limits and restrictions remain in force."
+                tr(
+                    "A lost card must first be restored to frozen status, then separat"
+                    "ely verified to unfreeze. Existing limits and restrictions remain"
+                    " in force."
+                )
             )
         kind = st.selectbox(
-            "Choose a card operation", kinds, format_func=KINDS.get, key="card_operation"
+            tr("Choose a card operation"), kinds, format_func=KINDS.get, key="card_operation"
         )
         change = None
         if kind in {"lower_card_limit", "raise_card_limit"}:
-            limit = st.text_input("New limit (CNY, to the nearest cent)", key="card_limit")
+            limit = st.text_input(tr("New limit (CNY, to the nearest cent)"), key="card_limit")
             change = {"limit": limit}
         elif kind in {"restrict_card", "relax_card_restriction"}:
             categories = {
-                "online": "Online transactions",
-                "overseas": "Overseas transactions",
-                "cash": "Cash transactions",
-                "entertainment": "Entertainment spending",
+                "online": tr("Online transactions"),
+                "overseas": tr("Overseas transactions"),
+                "cash": tr("Cash transactions"),
+                "entertainment": tr("Entertainment spending"),
             }
             options = sorted(set(categories) | set(card["restrictions"]))
             restricted = st.multiselect(
-                "All transaction categories to restrict after this change",
+                tr("All transaction categories to restrict after this change"),
                 options,
                 default=card["restrictions"],
                 format_func=lambda value: categories.get(value, value),
@@ -467,10 +520,14 @@ def cards(controller: DemoController) -> None:
             )
             change = {"restrictions": sorted(restricted)}
             st.caption(
-                "Restricting adds categories; "
-                "relaxing removes categories and requires independent MFA."
+                tr(
+                    "Restricting adds categories; relaxing removes categories and requ"
+                    "ires independent MFA."
+                )
             )
-        if st.button("Show card operation approval", key="preview_card_control", type="primary"):
+        if st.button(
+            tr("Show card operation approval"), key="preview_card_control", type="primary"
+        ):
             perform(
                 lambda: controller.preview_card_operation(
                     kind,
@@ -491,8 +548,10 @@ def cards(controller: DemoController) -> None:
             st.session_state.pop("card_result", None)
     else:
         st.info(
-            "No simulated virtual cards yet. "
-            "Check the default limit and transaction restrictions before applying."
+            tr(
+                "No simulated virtual cards yet. Check the default limit and trans"
+                "action restrictions before applying."
+            )
         )
     pending = st.session_state.get("card_pending")
     result = st.session_state.get("card_result")
@@ -512,14 +571,16 @@ def cards(controller: DemoController) -> None:
             red = pending["card"].get("tier") == "red"
             if red and live["mode"] == "prepared":
                 st.info(
-                    "Your device confirmed the intent; the operation has not executed. "
-                    "Open Device for MFA and final approval."
+                    tr(
+                        "Your device confirmed the intent; the operation has not executed."
+                        " Open Device for MFA and final approval."
+                    )
                 )
             else:
                 st.button(
-                    "Confirm intent on device, then verify MFA"
+                    tr("Confirm intent on device, then verify MFA")
                     if red
-                    else "Confirm on device and execute card operation",
+                    else tr("Confirm on device and execute card operation"),
                     key="approve_card",
                     type="primary",
                     on_click=approve_saved,
@@ -529,32 +590,38 @@ def cards(controller: DemoController) -> None:
 
 
 def device(controller: DemoController) -> None:
-    st.markdown("## Device approvals")
+    st.markdown(tr("## Device approvals"))
     st.info(
-        "Simulated independent device. Complete MFA here; "
-        "verification codes stay out of chat, logs and model input."
+        tr(
+            "Simulated independent device. Complete MFA here; verification cod"
+            "es stay out of chat, logs and model input."
+        )
     )
     if st.session_state.get("device_redisplay"):
-        st.warning("The facts changed. Review the current canonical card before confirming again.")
+        st.warning(
+            tr("The facts changed. Review the current canonical card before confirming again.")
+        )
     rows = pending_rows(controller)
     if not rows:
         st.caption(
-            "No operations awaiting approval. Prepare a task to see its canonical card here."
+            tr("No operations awaiting approval. Prepare a task to see its canonical card here.")
         )
     for index, pending in enumerate(rows):
         identifier = pending.get("pending_id", pending.get("id"))
         if identifier is None:
             continue
-        st.markdown(f"### Pending operation {index + 1}")
+        st.markdown(f"{tr('### Pending operation ')}{index + 1}")
         render_card(pending.get("card", {}))
         red = pending.get("needs_mfa") or pending.get("card", {}).get("tier") == "red"
         if red and pending.get("mode") == "draft":
             st.info(
-                "Review and confirm the intent below, then request independent simulated MFA. "
-                "It is not yet signed or executed."
+                tr(
+                    "Review and confirm the intent below, then request independent sim"
+                    "ulated MFA. It is not yet signed or executed."
+                )
             )
         if red and pending.get("mode") != "draft":
-            if st.button("Request independent simulated MFA", key=f"mfa_request:{identifier}"):
+            if st.button(tr("Request independent simulated MFA"), key=f"mfa_request:{identifier}"):
                 perform(
                     lambda identifier=identifier: controller.request_mfa(identifier),
                     f"mfa:{identifier}",
@@ -562,19 +629,23 @@ def device(controller: DemoController) -> None:
             challenge = st.session_state.get(f"mfa:{identifier}")
             if challenge:
                 st.caption(
-                    "A simulated challenge was sent to the independent device channel. "
-                    "Verification keeps codes out of chat."
+                    tr(
+                        "A simulated challenge was sent to the independent device channel."
+                        " Verification keeps codes out of chat."
+                    )
                 )
-                if st.button("Verify on simulated device", key=f"mfa_complete:{identifier}"):
+                if st.button(tr("Verify on simulated device"), key=f"mfa_complete:{identifier}"):
                     perform(
                         lambda identifier=identifier: controller.complete_mfa(identifier),
                         f"mfa_result:{identifier}",
                     )
                 verified = st.session_state.get(f"mfa_result:{identifier}")
                 if verified:
-                    st.write("Simulated verification status:", verified.get("status", "waiting"))
+                    st.write(
+                        tr("Simulated verification status:"), verified.get("status", "waiting")
+                    )
         st.button(
-            "Review the facts above and approve",
+            tr("Review the facts above and approve"),
             key=f"approve:{identifier}",
             type="primary",
             on_click=approve_device,
@@ -587,12 +658,14 @@ def device(controller: DemoController) -> None:
 
 
 def plans(controller: DemoController) -> None:
-    st.markdown("## Task plans")
+    st.markdown(tr("## Task plans"))
     st.caption(
-        "Authorize each item separately. Unselected items have no execution permission; "
-        "scheduled tasks are checked again when due."
+        tr(
+            "Authorize each item separately. Unselected items have no executio"
+            "n permission; scheduled tasks are checked again when due."
+        )
     )
-    if st.button("Prepare birthday task plan", key="preview_birthday", type="primary"):
+    if st.button(tr("Prepare birthday task plan"), key="preview_birthday", type="primary"):
         perform(
             lambda: controller.preview_birthday(request_id=request_id("birthday")),
             "birthday_draft",
@@ -601,13 +674,16 @@ def plans(controller: DemoController) -> None:
     draft = st.session_state.get("birthday_draft")
     if draft:
         st.info(
-            "The draft plan is not authorized. "
-            "Check each amount, date, recipient and irreversible effect."
+            tr(
+                "The draft plan is not authorized. Check each amount, date, recipi"
+                "ent and irreversible effect."
+            )
         )
         selected = []
         for index, node in enumerate(draft.get("nodes", [])):
             identifier = str(node.get("node_id", node.get("id", index)))
-            st.markdown(f"### {index + 1}. {node.get('label', node.get('kind', 'Plan item'))}")
+            label = tr(str(node.get("label", node.get("kind", "Plan item"))))
+            st.markdown(f"### {index + 1}. {label}")
             if node.get("card"):
                 render_card(
                     node["card"],
@@ -616,28 +692,28 @@ def plans(controller: DemoController) -> None:
             else:
                 fact_rows(node)
             if st.checkbox(
-                "I have reviewed and authorize this item",
+                tr("I have reviewed and authorize this item"),
                 key=f"plan_select:{draft['plan_id']}:{identifier}",
                 value=False,
             ):
                 selected.append(identifier)
         st.button(
-            "Confirm all selected items",
+            tr("Confirm all selected items"),
             key="confirm_plan",
             type="primary",
             disabled=not selected,
             on_click=confirm_birthday,
             args=(controller,),
         )
-        render_result(st.session_state.get("plan_result"))
+    render_result(st.session_state.get("plan_result"))
     snapshot = controller.snapshot()
     running = snapshot.get("plans", [])
     if running:
-        st.write("Current item status and dependencies")
+        st.write(tr("Current item status and dependencies"))
         render_plans(running)
     schedules = snapshot.get("schedules", [])
     if schedules:
-        st.write("Scheduled task status by occurrence")
+        st.write(tr("Scheduled task status by occurrence"))
         for schedule in schedules:
             fact_rows({
                 key: value
@@ -656,9 +732,11 @@ def plans(controller: DemoController) -> None:
                 }
             })
     st.warning(
-        "If daily cumulative spending raises a yellow-tier scheduled task to red, it waits for MFA "
-        "for that occurrence. It expires after 24 hours without verification; "
-        "amounts are not changed to retry."
+        tr(
+            "If daily cumulative spending raises a yellow-tier scheduled task "
+            "to red, it waits for MFA for that occurrence. It expires after 24"
+            " hours without verification; amounts are not changed to retry."
+        )
     )
     render_result(st.session_state.get("clock_result"))
 
@@ -674,27 +752,33 @@ def confirm_birthday(controller: DemoController) -> None:
     result = perform(lambda: controller.confirm_plan(plan_id, selected), "plan_result")
     if result and result.get("replacement"):
         st.session_state["birthday_draft"] = result["replacement"]
+    elif result and result.get("status") == "settled":
+        st.session_state.pop("birthday_draft", None)
 
 
 def handoff(controller: DemoController) -> None:
-    st.markdown("## Human advisor handoff")
+    st.markdown(tr("## Human advisor handoff"))
     st.caption(
-        "Handoff pauses automatic execution. The advisor sees redacted evidence; "
-        "later financial actions still require authorization and gateway checks."
+        tr(
+            "Handoff pauses automatic execution. The advisor sees redacted evi"
+            "dence; later financial actions still require authorization and ga"
+            "teway checks."
+        )
     )
-    if st.button("Hand off to a simulated advisor", key="handoff", type="primary"):
+    if st.button(tr("Hand off to a simulated advisor"), key="handoff", type="primary"):
         perform(controller.handoff, "handoff_result")
     result = st.session_state.get("handoff_result")
     if result:
         render_result(result)
     snapshot = controller.snapshot()
-    st.write("Session and plan status")
+    st.write(tr("Session and plan status"))
     render_plans(snapshot.get("plans", []))
     plan_ids = [item["plan"]["plan_id"] for item in snapshot.get("plans", [])]
     if plan_ids:
-        selected = st.selectbox("Choose a plan for follow-up", plan_ids, key="recovery_plan")
+        selected = st.selectbox(tr("Choose a plan for follow-up"), plan_ids, key="recovery_plan")
         if st.button(
-            "Prepare reversible compensation and a new approval card", key="preview_compensation"
+            tr("Prepare reversible compensation and a new approval card"),
+            key="preview_compensation",
         ):
             perform(lambda: controller.compensate(selected), "compensation_pending")
         pending = st.session_state.get("compensation_pending")
@@ -702,7 +786,7 @@ def handoff(controller: DemoController) -> None:
             if pending.get("card"):
                 render_card(pending["card"])
                 st.button(
-                    "Confirm the new compensation action on device",
+                    tr("Confirm the new compensation action on device"),
                     key="approve_compensation",
                     on_click=approve_saved,
                     args=(controller, "compensation_pending", "compensation_result"),
@@ -710,67 +794,91 @@ def handoff(controller: DemoController) -> None:
             else:
                 render_result(pending)
         render_result(st.session_state.get("compensation_result"))
-        with st.expander("Reconfirm automatic execution scope"):
+        with st.expander(tr("Reconfirm automatic execution scope")):
             scope = controller.resume_scope(selected)
             fact_rows(scope)
-            if st.button("Confirm this scope on device and resume", key="resume_plan"):
+            if st.button(tr("Confirm this scope on device and resume"), key="resume_plan"):
                 perform(lambda: controller.resume(selected), "resume_result")
             render_result(st.session_state.get("resume_result"))
     st.info(
-        "Settled transfers cannot be directly reversed. "
-        "Reversible compensation needs a new approval; a refund request is not a received refund."
+        tr(
+            "Settled transfers cannot be directly reversed. Reversible compens"
+            "ation needs a new approval; a refund request is not a received re"
+            "fund."
+        )
     )
 
 
 def audit_judge(controller: DemoController) -> None:
     st.markdown('<div id="audit-entry"></div>', unsafe_allow_html=True)
-    st.markdown("## Evidence & Audit")
+    st.markdown(tr("## Evidence & Audit"))
     snapshot = controller.snapshot()
-    st.write("Current session audit and receipts")
+    st.write(tr("Current session audit and receipts"))
     (st.success if snapshot.get("audit_valid") else st.error)(
-        "Audit hash chain verified"
+        tr("Audit hash chain verified")
         if snapshot.get("audit_valid")
-        else "Audit hash chain verification failed"
+        else tr("Audit hash chain verification failed")
     )
     st.json({key: snapshot.get(key) for key in ("audit", "receipts", "dispatch_count")})
     st.divider()
     st.info(
-        "These evaluations use isolated synthetic state. Evidence mode: scripted. "
-        "Scripted results demonstrate system mechanisms. Live-recorded results: not_run."
+        tr(
+            "These evaluations use isolated synthetic state. Evidence mode: sc"
+            "ripted. Scripted results demonstrate system mechanisms. Live-reco"
+            "rded results: not_run."
+        )
     )
-    hijacked = st.toggle("Hijacked AI mode", key="hijacked", value=False)
+    hijacked = st.toggle(tr("Hijacked AI mode"), key="hijacked", value=False)
     if hijacked:
         specs = development_cases()
         labels = {item.case_id: f"{item.case_id} · {item.family} · {item.attack}" for item in specs}
         selected = st.selectbox(
-            "Choose an isolated adversarial case",
+            tr("Choose an isolated adversarial case"),
             list(labels),
             format_func=labels.get,
             key="attack_case",
         )
-        if st.button("Run attack and benign twin in isolation", key="run_attack", type="primary"):
-            with st.spinner("Checking gateway rejection and benign completion…"):
+        if st.button(
+            tr("Run attack and benign twin in isolation"), key="run_attack", type="primary"
+        ):
+            with st.spinner(tr("Checking gateway rejection and benign completion…")):
                 perform(lambda: run_hijacked_case(selected), "evaluation_result")
     else:
         selected = st.selectbox(
-            "Choose a banking judge task (P0 + P1)",
+            tr("Choose a banking judge task (P0 + P1)"),
             [f"J{number:02d}" for number in range(1, 25)],
             key="judge_task",
         )
-        if st.button("Run selected judge task", key="run_judge", type="primary"):
-            with st.spinner("Running all assertions in an isolated synthetic session…"):
+        if st.button(tr("Run selected judge task"), key="run_judge", type="primary"):
+            with st.spinner(tr("Running all assertions in an isolated synthetic session…")):
                 perform(lambda: run_judge_task(selected), "evaluation_result")
     result = st.session_state.get("evaluation_result")
     if result:
         passed = result.get("passed", result.get("attack", {}).get("passed", False))
         (st.success if passed else st.error)(
-            "Evaluation PASS" if passed else "Evaluation FAIL / incomplete"
+            tr("Evaluation PASS") if passed else tr("Evaluation FAIL / incomplete")
         )
         st.json(result)
     st.caption(
-        "J01–J22: P0 banking tasks. J23–J24: P1 card operations. "
-        "External blind tests: not_run (16 planned)."
+        tr(
+            "J01–J22: P0 banking tasks. J23–J24: P1 card operations. External "
+            "blind tests: not_run (16 planned)."
+        )
     )
+
+
+def operator_panel(controller: DemoController) -> None:
+    """Show simulation controls only when an operator explicitly enables them."""
+    if os.environ.get("CORRIDOR_OPERATOR_MODE") != "1":
+        return
+    with st.sidebar.expander(tr("Operator panel"), expanded=False):
+        st.caption(tr("Supporting-bank clock · separate from the wealth simulation"))
+        if st.button(tr("Advance simulated clock by 10 minutes 1 second"), key="advance_window"):
+            perform(lambda: controller.advance_clock(601), "global_clock_result")
+            st.rerun()
+        if st.button(tr("Advance simulated clock to October 18"), key="advance_clock"):
+            perform(lambda: controller.advance_clock("2026-10-18T02:00:00Z"), "clock_result")
+            st.rerun()
 
 
 def select_primary_page() -> None:
@@ -778,57 +886,131 @@ def select_primary_page() -> None:
     st.session_state["supporting_page"] = "None"
 
 
-def operator_panel(controller: DemoController) -> None:
-    """Show simulation controls only when an operator explicitly enables them."""
-    if os.environ.get("CORRIDOR_OPERATOR_MODE") != "1":
-        return
-    with st.sidebar.expander("Operator panel", expanded=False):
-        st.caption("Supporting-bank clock · separate from the wealth simulation")
-        if st.button("Advance simulated clock by 10 minutes 1 second", key="advance_window"):
-            perform(lambda: controller.advance_clock(601), "global_clock_result")
-            st.rerun()
-        if st.button("Advance simulated clock to October 18", key="advance_clock"):
-            perform(lambda: controller.advance_clock("2026-10-18T02:00:00Z"), "clock_result")
-            st.rerun()
+def remember_page() -> None:
+    """Retain route selection independently of translated widget identities."""
+    st.session_state["active_page"] = st.session_state["page"]
+    select_primary_page()
+
+
+def wealth_progress(controller: WealthController) -> int:
+    """Point to the next customer action using the current gateway-backed state."""
+    execution = controller.execution_snapshot()
+    if execution is not None:
+        return 4 if execution["status"] == "completed" else 3
+    if controller.comparison is not None:
+        return 2
+    if controller.candidate is not None and controller.risk_profile() is None:
+        return 1
+    return 0
+
+
+def render_progress(controller: WealthController) -> None:
+    current = wealth_progress(controller)
+    execution = controller.execution_snapshot()
+    settled = execution is not None and execution["status"] == "completed"
+    complete = (
+        controller.signed_goals is not None,
+        controller.risk_profile() is not None,
+        execution is not None,
+        settled,
+        settled,
+    )
+    steps = (
+        ("goals", "Goals"),
+        ("risk", "Risk profile"),
+        ("proposal", "Proposal & certificate"),
+        ("approvals", "Approvals"),
+        ("receipts", "Receipts"),
+    )
+    items = []
+    for index, (identifier, label) in enumerate(steps):
+        state = "current" if index == current else "complete" if complete[index] else "pending"
+        mark = "&#10003;" if complete[index] else str(index + 1)
+        items.append(
+            f'<li data-step="{identifier}" data-state="{state}"'
+            + (' aria-current="step"' if index == current else "")
+            + f'><span class="cw-step-number">{mark}</span>'
+            + f"<span>{escape(tr(label))}</span></li>"
+        )
+    st.markdown('<ol class="cw-progress">' + "".join(items) + "</ol>", unsafe_allow_html=True)
+
+
+SHELL_STYLES = """<style>
+[data-testid="stAppDeployButton"], .stDeployButton, #MainMenu {display:none !important}
+header[data-testid="stHeader"] {height:2.25rem!important;min-height:0!important;
+background:transparent!important}
+.cw-progress {list-style:none;display:flex;gap:8px;margin:4px 0 12px;padding:0}
+.cw-progress li {flex:1;display:flex;align-items:center;gap:9px;padding:12px 10px;
+border-bottom:3px solid #dfe6e8;color:#68777e;font-size:14px;font-weight:600;min-width:0}
+.cw-progress li[data-state="current"] {color:#126c60;border-color:#168570;background:#edf7f3;
+border-radius:9px 9px 0 0}
+.cw-progress li[data-state="complete"] {color:#126c60;border-color:#8cc2ad}
+.cw-step-number {display:inline-flex;align-items:center;justify-content:center;
+width:25px;height:25px;flex:none;border:1px solid currentColor;border-radius:50%;font-size:12px}
+.cw-brand {font-size:27px;font-weight:750;letter-spacing:-.8px;line-height:1.25;color:#163d3b}
+.cw-brand span {color:#b48d52;font-size:24px;padding-right:10px}
+.cw-disclosure {font-size:13px;color:#667674;margin-top:5px}
+.cw-home {padding:42px;border-radius:20px;background:#173f3c;color:white;margin:16px 0}
+.cw-home h2 {color:white!important;font-size:34px!important;max-width:700px;margin-bottom:14px}
+.cw-home p {font-size:18px;color:#d8ebe5;max-width:740px}
+@media(max-width:700px){.cw-progress{gap:3px}.cw-progress li{font-size:11px;padding:8px 3px;
+flex-direction:column;text-align:center}.cw-brand{font-size:23px}.cw-disclosure{font-size:11px}}
+</style>"""
 
 
 def main() -> None:
+    if "locale" not in st.session_state:
+        st.session_state["locale"] = get_locale()
+    set_locale(st.session_state["locale"])
     st.set_page_config(
-        page_title="Corridor Wealth Advisory / Topic B",
+        page_title="Corridor Wealth",
         page_icon="▧",
-        layout="centered",
+        layout="wide",
         initial_sidebar_state="collapsed",
     )
-    st.markdown(STYLES, unsafe_allow_html=True)
-    st.markdown(
-        '<div class="bank-header"><div class="bank-mark">⇄</div><div>'
-        '<div class="bank-brand">CORRIDOR / CERTIFIED ACTIONS</div>'
-        '<div class="bank-name">Demo Bank (simulated environment)</div></div></div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div class="notice">synthetic data · simulated authentication · no real money<br>'
-        "Evidence mode: scripted · Live-recorded: not_run · Strict-replay: not_run</div>",
-        unsafe_allow_html=True,
-    )
+    st.markdown(STYLES + SHELL_STYLES, unsafe_allow_html=True)
+    brand, language = st.columns([5, 1])
+    with brand:
+        st.markdown(
+            '<div class="cw-brand"><span>⇄</span>Corridor Wealth</div>'
+            f'<div class="cw-disclosure">{tr("Product disclosure")}</div>',
+            unsafe_allow_html=True,
+        )
+    with language:
+        language_labels = {"en": "English", "zh-CN": tr("language_zh")}
+        st.selectbox(
+            tr("language_label"),
+            ("en", "zh-CN"),
+            format_func=language_labels.__getitem__,
+            key="locale",
+            label_visibility="collapsed",
+            on_change=lambda: set_locale(st.session_state["locale"]),
+        )
     if "controller" not in st.session_state:
         st.session_state["controller"] = DemoController()
     if "wealth_controller" not in st.session_state:
         st.session_state["wealth_controller"] = WealthController()
     controller = st.session_state["controller"]
     wealth = st.session_state["wealth_controller"]
-    left, right = st.columns([3, 1])
+    render_live_controls(wealth)
+    render_progress(wealth)
+    if "active_page" not in st.session_state:
+        st.session_state["active_page"] = st.session_state.get("page", PAGES[0])
+    page_labels = {page: tr(page) for page in PAGES}
+    left, right = st.columns([6, 1])
     with left:
         st.selectbox(
-            "Primary navigation",
+            tr("Primary navigation"),
             PAGES,
+            format_func=page_labels.__getitem__,
+            index=PAGES.index(st.session_state["active_page"]),
             key="page",
             label_visibility="collapsed",
-            on_change=select_primary_page,
+            on_change=remember_page,
         )
     with right:
         st.button(
-            "Stop",
+            tr("Stop"),
             key="stop_all",
             use_container_width=True,
             on_click=stop_all,
@@ -840,34 +1022,34 @@ def main() -> None:
     logged_in = bool(snapshot.get("logged_in", getattr(controller, "logged_in", False)))
     if not logged_in:
         st.markdown(
-            '<div class="hero"><div class="eyebrow">Signed goals · Auditable actions</div>'
-            "<h2>Wealth advice with verifiable evidence.</h2>"
-            "<p>Compare synthetic products, confirm facts on an independent device, "
-            "and inspect the kernel decision and simulated bank receipts. "
-            "Explore wealth advice first, with supporting banking capabilities in More."
-            "</p></div>",
+            '<div class="cw-home"><div class="eyebrow">CORRIDOR WEALTH</div>'
+            f"<h2>{tr('A clear plan. Every decision yours.')}</h2>"
+            f"<p>{tr('Product welcome')}</p></div>",
             unsafe_allow_html=True,
         )
-        if st.button("Enter synthetic demo", key="enter", type="primary"):
+        if st.button(tr("Enter synthetic demo"), key="enter", type="primary"):
             result = perform(controller.start_session)
             if result and result.get("status") in {"accepted", "logged_in", "complete", "ready"}:
                 perform(wealth.start_session, "wealth_login")
                 st.rerun()
         st.caption(
-            "Fictional customers, institutions and products. Starting does not authorize payment."
+            tr(
+                "Fictional customers, institutions and products. "
+                "Starting does not authorize payment."
+            )
         )
         return
-    st.caption(
-        f"Wealth simulated clock: {wealth.state.now} · "
-        f"Wealth bank dispatches: {wealth.snapshot()['dispatch_count']}"
-    )
     operator_panel(controller)
     render_result(st.session_state.get("global_clock_result"))
     if snapshot.get("status") in {"handoff", "handed_off", "paused"}:
-        st.warning("Automatic execution is paused")
-    with st.sidebar.expander("More · supporting capabilities", expanded=False):
+        st.warning(tr("Automatic execution is paused"))
+    with st.sidebar.expander(tr("More · supporting capabilities"), expanded=False):
+        supporting_labels = {page: tr(page) for page in SUPPORTING_PAGES}
         supporting_page = st.selectbox(
-            "Supporting capability", SUPPORTING_PAGES, key="supporting_page"
+            tr("Supporting capability"),
+            SUPPORTING_PAGES,
+            format_func=supporting_labels.__getitem__,
+            key="supporting_page",
         )
     handlers = {
         "Advisor": conversation,
@@ -889,36 +1071,52 @@ def main() -> None:
         elif selected_page == "Proposal & Certificate":
             wealth_views.proposal(wealth)
         elif selected_page == "Device":
-            wealth_views.allocation_device(wealth)
+            if wealth.parent_id is None and wealth.execution_snapshot() is None:
+                profile, goals = st.columns([1, 1], gap="large")
+                with profile:
+                    wealth_views.risk_questionnaire(wealth)
+                with goals:
+                    wealth_views.goal_sheet(wealth)
+            else:
+                wealth_views.allocation_device(wealth)
+                with st.expander(tr("Risk questionnaire and signed goals"), expanded=False):
+                    wealth_views.risk_questionnaire(wealth)
+                    wealth_views.goal_sheet(wealth)
             with st.expander(
-                "Risk questionnaire and signed goals", expanded=wealth.parent_id is None
-            ):
-                wealth_views.risk_questionnaire(wealth)
-                wealth_views.goal_sheet(wealth)
-            with st.expander(
-                "Supporting-bank device approvals", expanded=bool(pending_rows(controller))
+                tr("Supporting-bank device approvals"), expanded=bool(pending_rows(controller))
             ):
                 device(controller)
         elif selected_page == "Evidence & Audit":
             wealth_views.evidence(wealth)
-            audit_judge(controller)
+            with st.expander(tr("Supporting-bank evidence and evaluation"), expanded=False):
+                audit_judge(controller)
         elif selected_page == "Transfers":
-            st.caption("Separate synthetic supporting-bank account")
+            st.caption(tr("Separate synthetic supporting-bank account"))
             render_structured_transfer(controller)
-            with st.expander("Legacy conversation demonstration"):
+            with st.expander(tr("Legacy conversation demonstration")):
                 conversation(controller)
         else:
-            st.caption("Separate synthetic supporting-bank account")
+            st.caption(tr("Separate synthetic supporting-bank account"))
             handlers[selected_page](controller)
     except (ValueError, RuntimeError, TimeoutError, KeyError, OSError):
         st.error(
-            "The operation was not completed. Review current facts and retry from a fresh proposal."
+            tr(
+                "The operation was not completed. "
+                "Review current facts and retry from a fresh proposal."
+            )
         )
     st.divider()
     st.caption(
-        "Financial effects come from verified receipts · "
-        "synthetic data · simulated authentication · no real money · append-only audit"
+        tr("Scripted demo · verified receipts · no real money")
+        if wealth.client.mode == "scripted"
+        else tr("Planner source") + ": " + wealth.planner_source + " · " + tr("Product disclosure")
     )
+    with st.expander(tr("Technical evidence"), expanded=False):
+        st.caption(
+            f"{tr('Wealth simulated clock: ')}{wealth.state.now}"
+            f"{tr(' · Wealth bank dispatches: ')}{wealth.snapshot()['dispatch_count']}"
+        )
+        st.caption(tr("Planner source") + ": " + wealth.planner_source)
 
 
 if __name__ == "__main__":

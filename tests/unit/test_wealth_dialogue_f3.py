@@ -173,12 +173,13 @@ def test_loss_signal_persists_gateway_cap_without_changing_signed_risk_or_goals(
     assert turn.suitability_signal["signal"] == "cannot_accept_loss"
     assert turn.suitability_signal["effective_level_cap"] == 1
     assert turn.device_action == "risk_questionnaire"
-    assert "only decrease" in turn.message
+    assert turn.suitability_signal["status"] == "clarification_required"
     after = chat.state
     assert after.risk_assessments == before.risk_assessments
     assert after.user_inputs == before.user_inputs
     assert after.authorizations == before.authorizations
     assert after.ledger[-1].object_delta["suitability_signal"] == "cannot_accept_loss"
+    assert after.ledger[-1].object_delta["effective_level_cap"] == 1
     assert chat.gateway.bank.execute_count == 0
     assert chat.turn(text, request_id="loss") == turn
     assert chat.state == after

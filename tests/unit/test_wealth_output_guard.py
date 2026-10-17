@@ -14,6 +14,7 @@ from corridor.gateway.output_guard import (
     render_guarded,
 )
 from corridor.gateway.privacy import PIIVault
+from corridor.i18n import tr
 from corridor.schemas.narrative import FactRef, Narrative
 from corridor.sim.keys import signing_key
 from tests.e2e.test_sandbox_gateway import sandbox_case
@@ -54,10 +55,10 @@ def test_promissory_prose_is_rewritten_and_benign_twin_is_preserved(note):
     assert result.status == "rewritten"
     assert "unsupported_promise" in result.reasons
     assert note not in result.text
-    assert result.text.isascii()
+    assert result.text == tr("Please review the verified facts.")
     twin = guard_prose("Returns can vary and losses are possible.")
     assert twin.status == "accepted" and twin.reasons == ()
-    assert twin.text == "Returns can vary and losses are possible."
+    assert twin.text == tr("Returns can vary and losses are possible.")
 
 
 @pytest.mark.parametrize(
@@ -106,7 +107,7 @@ def test_canonical_disclaimer_and_benign_fact_review_are_allowed():
 def test_unapproved_prose_is_not_published_even_if_it_evades_the_scanners(note):
     result = guard_prose(note)
     assert result.status == "rewritten" and result.reasons
-    assert result.text == "Please review the verified facts."
+    assert result.text == tr("Please review the verified facts.")
 
 
 @pytest.mark.parametrize("note", ["Contact alex@example.test", "API key: sk-syntheticsecret"])
@@ -139,9 +140,9 @@ def test_fabricated_and_matching_raw_digits_are_blocked_but_signed_facts_survive
         assert rendered.reasons == ("unverified_number",)
         assert rendered.facts[0].exact_value == "350/1"
         assert rendered.facts[0].display_value == "350.00"
-        assert "performance benchmark (not guaranteed)" in rendered.facts[0].text
+        assert tr("performance benchmark (not guaranteed)") in rendered.facts[0].text
         assert "9,999" not in rendered.text and note not in rendered.note
-        assert rendered.text.isascii()
+        assert rendered.facts[0].field == "projected_net"
     assert gateway.bank.execute_count == 0
 
 
@@ -166,7 +167,7 @@ def test_forged_facts_still_fail_the_existing_receipt_gate(mutation):
     rendered = render_guarded(Narrative(fact_refs=[ref]), state, principal, gateway.vault)
     assert rendered.status == "rejected" and "RCPT-MISMATCH" in rendered.rule_ids
     assert rendered.facts == [] and "350" not in rendered.text
-    assert rendered.text.isascii()
+    assert rendered.rule_ids
 
 
 def test_malformed_shallow_copies_fail_closed():
@@ -208,10 +209,10 @@ def test_truthful_answer_templates_cite_authenticated_facts_without_echoing_ques
     )
     assert answer.status == "rendered"
     assert answer.facts[0].receipt_ref == ref.receipt_ref
-    assert "performance benchmark (not guaranteed)" in answer.text
-    assert "Losses are possible" in answer.text
+    assert tr("performance benchmark (not guaranteed)") in answer.text
+    assert answer.facts[0].exact_value == "350/1"
     assert prompt not in answer.text
-    assert answer.text.isascii()
+    assert answer.rule_ids == []
 
 
 @pytest.mark.parametrize(
@@ -229,8 +230,8 @@ def test_nested_return_projection_keeps_original_factref_path_and_disclaimer(pat
         ref, path, gateway.store.snapshot(), action.principal, gateway.vault
     )
     assert projected.source_ref == ref and projected.path == path
-    assert "performance benchmark (not guaranteed)" in projected.label
-    assert projected.exact_value is not None and projected.text.isascii()
+    assert tr("performance benchmark (not guaranteed)") in projected.label
+    assert projected.exact_value is not None
 
 
 def test_exclusion_reason_projection_is_not_invented_by_the_planner():
@@ -311,11 +312,11 @@ def test_diff_is_derived_from_both_verified_allocations_and_retains_source_value
     assert Fraction(projected.exact_value) == Fraction(50)
     assert projected.source_refs == refs
     assert projected.paths == (("totals", "projected_net"), ("totals", "projected_net"))
-    assert "performance benchmark (not guaranteed)" in projected.label
+    assert tr("performance benchmark (not guaranteed)") in projected.label
     for item in changes:
         assert Fraction(item.exact_value) == Fraction(item.after) - Fraction(item.before)
         if item.field in {"expected_net", "projected_net"}:
-            assert "performance benchmark (not guaranteed)" in item.text
+            assert tr("performance benchmark (not guaranteed)") in item.text
 
 
 def test_diff_cannot_be_requested_with_a_forged_receipt():

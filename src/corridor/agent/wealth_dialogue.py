@@ -484,6 +484,7 @@ class WealthDialogue(WealthConversation):
         allowed_types: list[str] | None = None,
         evaluation: bool | None = None,
         max_model_attempts: int = 3,
+        require_live: bool = False,
     ) -> None:
         super().__init__(
             gateway, client, principal=principal, session_id=session_id, task_id=task_id
@@ -494,6 +495,7 @@ class WealthDialogue(WealthConversation):
         if type(max_model_attempts) is not int or not 1 <= max_model_attempts <= 3:
             raise ValueError("Model attempt limit must be between one and three")
         self.max_model_attempts = max_model_attempts
+        self.require_live = require_live
         self.intent_revision = 0
         self._comparison_revision = 0
         self.intent_id = stable_id(f"{task_id}:{session_id}", 0, "wealth-intent")
@@ -868,6 +870,8 @@ class WealthDialogue(WealthConversation):
                     },
                 )
                 self.gateway.vault.ensure_safe(result.output)
+                if self.require_live and result.source != "live":
+                    raise LLMOutputError("Live AI did not return a live result")
                 output = result.output
                 if set(output) != {"tool", "arguments"} or output["tool"] != expected:
                     continue
@@ -884,9 +888,15 @@ class WealthDialogue(WealthConversation):
                     raise
                 break
             except (BudgetExceeded, LLMOutputError, TimeoutError, ConnectionError, RuntimeError):
+                if self.require_live:
+                    raise LLMOutputError(
+                        "Live AI request failed; no scripted fallback ran"
+                    ) from None
                 break
             except (ValueError, TypeError, KeyError):
                 continue
+        if self.require_live:
+            raise LLMOutputError("Live AI output was not accepted; no scripted fallback ran")
         self.mode = "guided"
         self._source = "scripted"
         return WealthToolArguments(refs=refs, note="")

@@ -1,8 +1,10 @@
 """The only model entry point: offline by default, explicitly budgeted when live."""
 
+import logging
 import os
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Generator, Mapping
+from contextlib import contextmanager
 from copy import deepcopy
 from dataclasses import dataclass
 from fractions import Fraction
@@ -10,6 +12,7 @@ from hashlib import sha256
 from pathlib import Path
 from threading import RLock
 from typing import Any
+from urllib.parse import urlsplit
 
 from corridor.crypto.jcs import H, jcs_bytes
 from corridor.gateway.privacy import PIIVault
@@ -21,6 +24,7 @@ _SDK_LOCK = RLock()
 _MODES = {"scripted", "strict", "fallback", "live", "record"}
 _ENV_FIELDS = {
     "LLM_API_KEY",
+    "LLM_API_BASE",
     "LLM_API",
     "LLM_MODEL",
     "LLM_MODEL_CHEAP",
@@ -202,6 +206,48 @@ class ReplayCorrupt(ValueError):
 
 class LLMOutputError(ValueError):
     pass
+
+
+def _api_base(value: str) -> str:
+    """Permit the fixed OpenAI service or an explicitly configured local adapter."""
+    try:
+        parsed = urlsplit(value)
+        allowed = value.rstrip("/") == "https://api.openai.com/v1" or (
+            parsed.scheme == "http"
+            and parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+            and parsed.path.rstrip("/") == "/v1"
+            and parsed.port is not None
+        )
+        if not allowed or parsed.username or parsed.password or parsed.query or parsed.fragment:
+            raise ValueError
+    except (ValueError, TypeError):
+        raise LLMConfigurationError(
+            "API base must be OpenAI or an explicit loopback endpoint"
+        ) from None
+    return value.rstrip("/")
+
+
+@contextmanager
+def _quiet_provider_logging() -> Generator[None, None, None]:
+    """SDK debug messages can contain headers; suppress them during credential use."""
+    prefixes = ("openai", "httpx", "httpcore", "litellm", "LiteLLM")
+    names = set(prefixes) | {
+        name
+        for name in logging.Logger.manager.loggerDict
+        if any(name == prefix or name.startswith(prefix + ".") for prefix in prefixes)
+    }
+    previous = []
+    for name in names:
+        logger = logging.getLogger(name)
+        previous.append((logger, logger.disabled, logger.level))
+        logger.disabled = True
+        logger.setLevel(logging.CRITICAL + 1)
+    try:
+        yield
+    finally:
+        for logger, disabled, level in previous:
+            logger.disabled = disabled
+            logger.setLevel(level)
 
 
 @dataclass(frozen=True)
@@ -560,6 +606,9 @@ class LLMClient:
         model_tier: str = "main",
         assumed_price_in: Fraction | str | None = None,
         assumed_price_out: Fraction | str | None = None,
+        environment: Mapping[str, str] | None = None,
+        api_base: str | None = None,
+        request_guard: Callable[[Fraction], Callable[[Fraction], None]] | None = None,
     ) -> None:
         if mode not in _MODES:
             raise LLMConfigurationError("Unknown planner mode")
@@ -572,12 +621,19 @@ class LLMClient:
         self.api_calls = 0
         self._api_key = ""
         self._budget_exhausted = False
+        self.request_guard = request_guard
+        self._request_settle: Callable[[Fraction], None] | None = None
         self.max_calls = 0
         self.max_usd = Fraction(0)
         self.max_output_tokens = max_output_tokens
         if model_tier not in {"main", "cheap", "weak"}:
             raise LLMConfigurationError("Unknown model tier")
-        env = _environment(env_file) if mode in {"live", "record"} else {}
+        env = (
+            (dict(environment) if environment is not None else _environment(env_file))
+            if mode in {"live", "record"}
+            else {}
+        )
+        self.api_base = _api_base(api_base or env.get("LLM_API_BASE", "https://api.openai.com/v1"))
         if mode in {"live", "record"}:
             self._api_key = api_key if api_key is not None else env.get("LLM_API_KEY", "")
             if not self._api_key:
@@ -705,6 +761,8 @@ class LLMClient:
                     "user_policy": self.user_policy,
                 },
             ):
+                if self._api_key and self._api_key in jcs_bytes(value).decode("utf-8"):
+                    raise ValueError("PII-CTX")
                 self.context_guard(value)
         except Exception:
             for name in ("task_id", "step", "model", "config", "user_policy"):
@@ -751,8 +809,19 @@ class LLMClient:
         else:
             trace["source"] = "live-attempt"
             try:
-                output = self._live(prompt, tool_state, trace)
+                with _SDK_LOCK:
+                    try:
+                        output = self._live(prompt, tool_state, trace)
+                    finally:
+                        if self._request_settle is not None:
+                            settle, self._request_settle = self._request_settle, None
+                            settle(Fraction(trace["cost_usd"]))
             except TimeoutError:
+                if self.mode == "live":
+                    trace["source"] = "live-error"
+                    raise LLMOutputError(
+                        "Model request timed out; live mode remains selected"
+                    ) from None
                 output, source = self._output(scripted(), named_tools), "scripted-timeout"
             else:
                 source = "live-recorded" if self.mode == "record" else "live"
@@ -919,7 +988,7 @@ class LLMClient:
                     body = loads_exact(request.content)
                     if (
                         request.method != "POST"
-                        or str(request.url) != "https://api.openai.com/v1/chat/completions"
+                        or str(request.url) != endpoint
                         or not isinstance(body, dict)
                         or body.get("model") != raw_model
                         or jcs_bytes(body.get("messages")) != frozen_messages
@@ -950,6 +1019,9 @@ class LLMClient:
                 def close(self) -> None:
                     self.inner.close()
 
+            endpoint = self.api_base + "/chat/completions"
+            if self.request_guard is not None:
+                self._request_settle = self.request_guard(reserve)
             self.api_calls += 1
             self.spent_usd += reserve
             trace["cost_usd"] = reserve
@@ -968,14 +1040,17 @@ class LLMClient:
             litellm.model_alias_map = {}
             try:
                 transport = SingleRequestTransport()
-                with httpx.Client(
-                    transport=transport, follow_redirects=False, trust_env=False, timeout=20
-                ) as http_client:
+                with (
+                    _quiet_provider_logging(),
+                    httpx.Client(
+                        transport=transport, follow_redirects=False, trust_env=False, timeout=20
+                    ) as http_client,
+                ):
                     client = OpenAI(
                         api_key=self._api_key,
                         max_retries=0,
                         http_client=http_client,
-                        base_url="https://api.openai.com/v1",
+                        base_url=self.api_base,
                         timeout=20,
                     )
                     litellm.completion(
@@ -994,7 +1069,7 @@ class LLMClient:
                         context_window_fallback_dict={},
                         _skip_responses_api_bridge=True,
                         caching=False,
-                        api_base="https://api.openai.com/v1",
+                        api_base=self.api_base,
                     )
                     if not transport.responded:
                         raise LLMOutputError(
@@ -1153,7 +1228,7 @@ class LLMClient:
                         raise BudgetExceeded("Provider retry blocked before a second HTTP request")
                     if (
                         request.method != "POST"
-                        or str(request.url) != "https://api.openai.com/v1/responses"
+                        or str(request.url) != endpoint
                         or jcs_bytes(loads_exact(request.content)) != frozen_body
                     ):
                         raise LLMConfigurationError("Provider request changed fixed model or scope")
@@ -1178,19 +1253,25 @@ class LLMClient:
                 def close(self) -> None:
                     self.inner.close()
 
+            endpoint = self.api_base + "/responses"
+            if self.request_guard is not None:
+                self._request_settle = self.request_guard(reserve)
             self.api_calls += 1
             self.spent_usd += reserve
             trace.update(cost_usd=reserve, pricing_source="assumed")
             try:
                 transport = SingleResponseTransport()
-                with httpx.Client(
-                    transport=transport, follow_redirects=False, trust_env=False, timeout=20
-                ) as http_client:
+                with (
+                    _quiet_provider_logging(),
+                    httpx.Client(
+                        transport=transport, follow_redirects=False, trust_env=False, timeout=20
+                    ) as http_client,
+                ):
                     client = OpenAI(
                         api_key=self._api_key,
                         max_retries=0,
                         http_client=http_client,
-                        base_url="https://api.openai.com/v1",
+                        base_url=self.api_base,
                         timeout=20,
                     )
                     client.responses.create(**deepcopy(body))

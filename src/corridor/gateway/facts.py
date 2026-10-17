@@ -5,6 +5,7 @@ from fractions import Fraction
 from corridor.crypto.jcs import H
 from corridor.crypto.sign import RECEIPT, verify
 from corridor.gateway.privacy import PIIVault
+from corridor.i18n import tr, translated_literal
 from corridor.schemas.allocation import BestInterestAllocationCertificate
 from corridor.schemas.bank import AnalysisReceipt, BankOrder, BankReceipt, BusinessEvent
 from corridor.schemas.domain import Position
@@ -31,6 +32,100 @@ _SAFE_NOTES = frozenset({
 })
 _SAFE_NOTE = "Assistant note (unverified): Please rely on the verified bank facts."
 _EMPTY = "No verifiable transaction result is available."
+_ANALYSIS_LABELS = {
+    "gross_spend": "Gross spending",
+    "refunds": "Refunds",
+    "net_spend": "Net spending",
+    "anomaly_tx_ids": "Transactions requiring review",
+    "candidate_merchants": "Potential subscription merchants",
+    "cancellable_authorizations": "Cancellable authorizations",
+    "reminder_authorizations": "Upcoming renewal authorizations",
+    "merchant_ref": "Merchant reference",
+    "account_ref": "Account ID",
+    "amount": "Amount",
+    "cancellable": "Cancellation available",
+    "authorization_ref": "Authorization reference",
+    "score": "Questionnaire score",
+    "level": "Risk level",
+    "effective_level": "Effective risk level",
+    "issued_at": "Issued at",
+    "expires_at": "Valid until",
+    "risk_assessment_ref": "Risk assessment reference",
+    "candidate_ids": "Eligible product references",
+    "chosen_product_id": "Selected product reference",
+    "selection_mode": "Selection mode",
+    "best_choice": "Best choice within declared scope",
+    "exclusions": "Exclusion reasons",
+    "rank": "Comparison rank",
+    "access_days": "Access period in days",
+    "reference_amount": "Comparison reference principal",
+    "principal": "Principal",
+    "principal_amount": "Principal",
+    "fee_buy": "Purchase fee",
+    "fee_hold": "Holding fee",
+    "fee_sell": "Redemption fee",
+    "total_fee": "Total fees",
+    "expected_net": "performance benchmark (not guaranteed)",
+    "projected_net": "performance benchmark (not guaranteed)",
+    "projected_income": "performance benchmark (not guaranteed)",
+    "realized_income": "Realized income",
+    "gap": "Difference from preferred option",
+    "units": "Position units",
+    "reserved_units": "Reserved position units",
+    "allocation": "Verified allocation certificate",
+    "biac_hash": "Allocation certificate hash",
+    "projection_notice": "Projection notice",
+    "total_principal": "Total principal",
+    "total_buy_fees": "Total purchase fees",
+    "total_debit": "Total debit",
+    "liquid_principal": "Liquid net principal",
+    "suitability_reasons": "Suitability reasons",
+    "suitability_clarification": "Suitability clarification",
+    "status": "Verified status",
+    "total": "Requested collection total",
+    "request_ids": "Collection request references",
+}
+_CATEGORY_LABELS = {
+    "dining": "Dining",
+    "transport": "Transport",
+    "shopping": "Shopping",
+    "services": "Services",
+    "gifts": "Gifts",
+    "groceries": "Groceries",
+    "housing": "Housing",
+    "utilities": "Utilities",
+    "healthcare": "Healthcare",
+    "education": "Education",
+    "entertainment": "Entertainment",
+    "travel": "Travel",
+    "uncategorized": "Uncategorized",
+    "unmatched_refund": "Unmatched refund",
+}
+
+
+def _analysis_label(field: str) -> str:
+    """Localize known semantic labels while retaining every original receipt field."""
+    if field in _ANALYSIS_LABELS:
+        return tr(_ANALYSIS_LABELS[field])
+    parts = field.split(".")
+    if len(parts) == 2 and parts[0] == "category_totals":
+        category = tr(_CATEGORY_LABELS[parts[1]]) if parts[1] in _CATEGORY_LABELS else parts[1]
+        return tr("Spending category · {category}", category=category)
+    if len(parts) == 2 and parts[0] in {"anomalies", "next_due", "shares"}:
+        label = {
+            "anomalies": "Anomaly flags",
+            "next_due": "Next due date",
+            "shares": "Requested share",
+        }[parts[0]]
+        return tr("{label} · {reference}", label=tr(label), reference=parts[1])
+    if len(parts) == 3 and parts[0] in {"rows", "candidates"}:
+        template = (
+            "Product {reference} · {label}"
+            if parts[0] == "rows"
+            else "Candidate {reference} · {label}"
+        )
+        return tr(template, reference=parts[1], label=_analysis_label(parts[2]))
+    return field
 
 
 def _authorized(receipt: BankReceipt, state: BankState, principal: str) -> BusinessEvent:
@@ -206,7 +301,7 @@ def _fact(ref: FactRef, receipt: BankReceipt, values: dict[str, JsonValue]) -> R
     value = values[ref.field]
     if "expected" in ref.model_fields_set and ref.expected != value:
         raise ValueError("RCPT-MISMATCH")
-    display = str(value)
+    display = translated_literal(str(value))
     if ref.field in {"amount", "balance_before", "balance_after"}:
         display = display_amount(Fraction(str(value)))
     labels = {
@@ -222,7 +317,7 @@ def _fact(ref: FactRef, receipt: BankReceipt, values: dict[str, JsonValue]) -> R
             "Purchase principal" if receipt.kind == "purchase_product" else "Redemption principal"
         )
     if ref.field == "status":
-        display = (
+        display = tr(
             "Transfer settled"
             if receipt.kind == "transfer" and value == "settled"
             else "Purchase settled"
@@ -233,10 +328,12 @@ def _fact(ref: FactRef, receipt: BankReceipt, values: dict[str, JsonValue]) -> R
             if value == "settled"
             else "Bank confirmation incomplete"
         )
-        text = display + "."
+        text = tr("{display}.", display=display)
     else:
         unit = " CNY" if ref.field in {"amount", "balance_before", "balance_after"} else ""
-        text = f"{labels[ref.field]}: {display}{unit}."
+        text = tr(
+            "{label}: {display}{unit}.", label=tr(labels[ref.field]), display=display, unit=unit
+        )
     return RenderedFact(
         receipt_ref=ref.receipt_ref,
         field=ref.field,
@@ -343,27 +440,52 @@ def _analysis_fact(
         path = f"{receipt.id}/{field}"
         labels.append(f"{path} = {ref.field}")
         value = _positional_value(value, path, labels)
-    display = display_amount(Fraction(str(value))) if item.unit == "CNY" else str(value)
+    display = (
+        display_amount(Fraction(str(value)))
+        if item.unit == "CNY"
+        else translated_literal(str(value))
+    )
     qualifier = (
-        "performance benchmark (not guaranteed); "
+        tr("performance benchmark (not guaranteed)") + "; "
         if ref.field.endswith("expected_net") or ref.field == "projected_income"
         else ""
     )
-    text = f"Verified analysis {ref.field}: {display} ({item.unit}; {qualifier})."
+    text = tr(
+        "Verified analysis {field}: {display} ({unit}){qualifier}.",
+        field=_analysis_label(ref.field),
+        display=display,
+        unit=translated_literal(item.unit),
+        qualifier=tr(" · {qualifier}", qualifier=qualifier.rstrip("; ")) if qualifier else "",
+    )
     if allocation:
         qualifier = (
-            " Performance benchmark (not guaranteed)." if ref.field == "projected_net" else ""
+            tr(" Performance benchmark (not guaranteed).") if ref.field == "projected_net" else ""
         )
-        text = f"Verified allocation {ref.field}: {display} ({item.unit}).{qualifier}"
+        text = tr(
+            "Verified allocation {field}: {display} ({unit}).{qualifier}",
+            field=_analysis_label(ref.field),
+            display=display,
+            unit=translated_literal(item.unit),
+            qualifier=qualifier,
+        )
     if aa_request:
         if ref.field == "status":
-            display = "Request created; collection not yet confirmed"
-        text = f"Split-bill collection request {ref.field}: {display}."
+            display = tr("Request created; collection not yet confirmed")
+        text = tr(
+            "Split-bill collection request {field}: {display}.",
+            field=_analysis_label(ref.field),
+            display=display,
+        )
     if exploratory:
-        text = (
-            f"Exploratory analysis {field}: {display}; period {receipt.parameters.get('period')}, "
-            f"{receipt.parameters.get('row_count')} rows; program {receipt.program_hash}. "
-            "Question semantics are unverified; this cannot authorize a payment."
+        text = tr(
+            "Exploratory analysis {field}: {display}; period {period}, "
+            "{rows} rows; program {program}. "
+            "Question semantics are unverified; this cannot authorize a payment.",
+            field=field,
+            display=display,
+            period=receipt.parameters.get("period"),
+            rows=receipt.parameters.get("row_count"),
+            program=receipt.program_hash,
         )
     return RenderedFact(
         receipt_ref=receipt.id,
@@ -454,14 +576,14 @@ def render_narrative(
     facts: list[RenderedFact] = []
     exploratory_labels: list[str] = []
     note = ""
-    fallback = _EMPTY
+    fallback = tr(_EMPTY)
     try:
         state = BankState.model_validate(state.model_dump(mode="python"))
         pending = any(
             event.event in {"reserved", "unknown"} and event.principal == principal
             for event in latest_events(state).values()
         )
-        fallback = "Results awaiting reconciliation." if pending else _EMPTY
+        fallback = tr("Results awaiting reconciliation." if pending else _EMPTY)
         # exclude_unset preserves the distinction between omitted and explicit expected=null.
         narrative = Narrative.model_validate(
             narrative.model_dump(mode="python", exclude_unset=True, warnings=False)
@@ -490,14 +612,14 @@ def render_narrative(
             vault.ensure_safe(raw_note, rule="PII-OUT")
             if raw_note not in _SAFE_NOTES:
                 raise ValueError("RCPT-MISMATCH")
-            note = "Assistant note (unverified): " + raw_note
+            note = tr("Assistant note (unverified): {note}", note=tr(raw_note))
         except ValueError as exc:
             rules.append(str(exc))
-            note = _SAFE_NOTE
+            note = tr(_SAFE_NOTE)
     if exploratory_labels:
-        label_note = (
-            "Assistant note (unverified): Program label semantics are unverified; "
-            + "; ".join(dict.fromkeys(exploratory_labels))
+        label_note = tr(
+            "Assistant note (unverified): Program label semantics are unverified; {labels}",
+            labels="; ".join(dict.fromkeys(exploratory_labels)),
         )
         note = "\n".join(part for part in (note, label_note) if part)
     text = "\n".join([*(item.text for item in facts)] or [fallback])
@@ -507,7 +629,7 @@ def render_narrative(
         vault.ensure_safe({"facts": facts, "note": note, "text": text}, rule="PII-OUT")
     except ValueError:
         rules.append("PII-OUT")
-        facts, note, text = [], _SAFE_NOTE, fallback + "\n" + _SAFE_NOTE
+        facts, note, text = [], tr(_SAFE_NOTE), fallback + "\n" + tr(_SAFE_NOTE)
     return NarrativeResult(
         status="rejected" if rules else "rendered",
         rule_ids=list(dict.fromkeys(rules)),

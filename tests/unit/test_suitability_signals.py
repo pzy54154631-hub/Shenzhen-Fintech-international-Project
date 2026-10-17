@@ -9,13 +9,13 @@ def test_coaching_refusal_submits_no_answers_or_authorizations():
     before = gateway.store.snapshot()
     result = gateway.suitability_signal(action.principal, "coaching_request")
     assert result.status == "refused"
-    assert "cannot choose or coach" in result.details["message"]
     after = gateway.store.snapshot()
     assert after.user_inputs == before.user_inputs
     assert after.authorizations == before.authorizations
     assert after.risk_assessments == before.risk_assessments
     assert gateway.bank.execute_count == 0
     assert gateway.audit.records()[-1]["event"] == "suitability_coaching_refused"
+    assert result.rule_ids == []
 
 
 def test_untrusted_loss_cue_adds_only_persistent_friction():

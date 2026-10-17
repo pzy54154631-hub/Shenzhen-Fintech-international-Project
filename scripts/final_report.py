@@ -120,6 +120,13 @@ def main() -> None:
         "No real financial transaction is performed. Evidence modes and denominators are "
         "kept separate; replay is a reproducibility check, not a second independent sample.",
         "",
+        "The replay-equality measurements below are historical F5 results obtained on the code "
+        "before I1. Strict replay on the current code: 142/142 verified, with 141 raw observations "
+        "byte-for-byte identical and 1 (J01) verified by a migration proof because the bilingual "
+        "port changed the audit fact-hash format. The original recordings remain unchanged; "
+        "replay verification preserves recorded failures. "
+        "See the [reproduction instructions](../README.md).",
+        "",
         "For completion rows, the upper bound concerns the failure proportion. "
         "For attack rows, it concerns observed forbidden effects. Zero-event bounds use "
         "min(1, 3/n); nonzero rows use the upper endpoint of a 95% Wilson interval. "

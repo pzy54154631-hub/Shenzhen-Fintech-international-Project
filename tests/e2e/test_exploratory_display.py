@@ -66,4 +66,4 @@ def test_bank_receipt_keeps_verified_presentation(monkeypatch):
     receipt = {"id": "BANK_RECEIPT", "status": "settled", "kind": "transfer"}
     components.render_result({"status": "settled", "receipt": receipt})
     assert ("success", "Executed · bank receipt verified", ()) in display.events
-    assert ("json", receipt, ("Verified receipt",)) in display.events
+    assert ("json", receipt, ("Technical evidence",)) in display.events

@@ -35,10 +35,11 @@ def test_demo_initial_render_has_no_signing_and_keeps_synthetic_labels():
     page = app()
     assert not page.exception
     text = " ".join(item.value for item in page.markdown)
-    assert "Wealth advice with verifiable evidence." in text
-    assert "Demo Bank (simulated environment)" in text
-    assert "synthetic data · simulated authentication · no real money" in text
-    assert "Evidence mode: scripted" in text
+    assert "A clear plan. Every decision yours." in text
+    assert "Corridor Wealth" in text
+    assert "synthetic data" in text.lower()
+    assert "simulated authentication" in text.lower()
+    assert page.session_state["wealth_controller"].client.mode == "scripted"
     controller = page.session_state["controller"]
     assert not controller.state.user_inputs
     assert not controller.state.security.consumed_nonces
@@ -109,7 +110,8 @@ def test_navigation_renders_all_pages_without_signatures_or_dispatch():
         assert not page.exception, label
         assert controller.snapshot()["dispatch_count"] == 0
         text = " ".join(item.value for item in page.markdown)
-        assert "synthetic data · simulated authentication · no real money" in text
+        assert "synthetic data" in text.lower()
+        assert "simulated authentication" in text.lower()
     assert not controller.state.user_inputs
     navigate(page, "Evidence & Audit")
     assert page.toggle(key="hijacked")
@@ -157,7 +159,9 @@ def test_ambiguous_contact_requires_displayed_selected_card_before_confirm():
     page.button(key="show_selected_contact").click().run()
     assert not page.exception
     assert not page.button(key="confirm_transfer").disabled
-    assert "CONTACT_LIN_B" in " ".join(item.value for item in page.markdown)
+    assert page.session_state["displayed_contact"] == "CONTACT_LIN_B"
+    assert "CONTACT_LIN_B" in str(page.session_state["transfer_draft"]["card"])
+    assert "Contact Lin · B" in " ".join(item.value for item in page.markdown)
     page.button(key="confirm_transfer").click().run()
     controller = page.session_state["controller"]
     assert controller.gateway.bank.final_state()["destinations"]["DEST_CONTACT_LIN_B"] == "200/1"

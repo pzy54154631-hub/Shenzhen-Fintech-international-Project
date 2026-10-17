@@ -1,4 +1,4 @@
-"""Read-only English presentation of canonical gateway facts."""
+"""Read-only bilingual presentation of canonical gateway facts."""
 
 from decimal import ROUND_HALF_EVEN, Decimal
 from fractions import Fraction
@@ -8,57 +8,13 @@ from typing import Any
 import streamlit as st
 
 from corridor.crypto.jcs import H, jcs_bytes
+from corridor.gateway.facts import render_narrative
+from corridor.schemas.narrative import FactRef, Narrative
+from corridor.ui.messages import display_value, prose, tr
+from corridor.ui.product_style import PRODUCT_STYLES, badge, contact_label, currency, product_label
 
-STYLES = """
-<style>
-:root { --ink: #292437; --muted: #766f83; --line: #e9e3ee; --accent: #584174; }
-.stApp { background: #f7f5fa; color: var(--ink); }
-.block-container { max-width: 1060px; padding-top: 3.5rem; padding-bottom: 3rem; }
-header[data-testid="stHeader"] { background: #f7f5faee; }
-h1,h2,h3 { color: var(--ink); letter-spacing: -.025em; }
-h1 { font-size: 1.7rem !important; } h2 { font-size: 1.35rem !important; }
-.bank-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-.bank-mark { background:#392b49; color:#f3d39c; width:46px; height:46px; border-radius:15px;
-display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; }
-.bank-brand { font-size:11px; letter-spacing:2px; color:#766f83; }
-.bank-name { font-size:23px; font-weight:750; letter-spacing:-.04em; }
-.notice { padding:10px 14px; border:1px solid #ded4e8; border-radius:12px; background:#eee8f4;
-font-size:12px; color:#554065; margin-bottom:18px; }
-.hero { background:#392b49; color:#fff; padding:28px; border-radius:22px; margin:16px 0; }
-.hero h2 { color:#fff; font-size:26px !important; margin:0 0 8px; }
-.hero p { color:#ded2eb; max-width:650px; line-height:1.8; margin:0; }
-.eyebrow { color:#f4d296; font-size:12px; letter-spacing:2px; margin-bottom:10px; }
-.fact-panel { background:#fff; border:1px solid var(--line); border-radius:18px;
-padding:20px; margin:12px 0; box-shadow:0 3px 10px #34244404; }
-.fact-title { font-size:12px; color:var(--muted); letter-spacing:.06em; }
-.fact-amount { font-size:34px; font-weight:750; margin:7px 0; letter-spacing:-.05em; }
-.fact-row { display:grid; grid-template-columns:minmax(96px, .35fr) 1fr; gap:12px;
-padding:9px 0; border-bottom:1px solid #f1edf4; font-size:13px; }
-.fact-label { color:var(--muted); } .fact-value { overflow-wrap:anywhere; word-break:break-word; }
-.tier { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px;
-background:#f9ebcf; color:#735116; margin:5px 0; }
-.tier-red { background:#f9e2df; color:#923a33; } .tier-green { background:#dcefe8; color:#275d49; }
-.danger { border-left:3px solid #c58d46; background:#fff6e7; padding:12px 14px;
-font-size:13px; line-height:1.7; margin:12px 0; border-radius:0 10px 10px 0; }
-.node { border-left:2px solid #c4b5d3; margin-left:8px; padding:4px 0 14px 18px; }
-.node-title { font-size:15px; font-weight:650; }
-.node-status { color:var(--muted); font-size:12px; }
-[data-testid="stMetric"] { background:white; border:1px solid var(--line); padding:14px;
-border-radius:15px; } [data-testid="stMetricValue"] { font-size:25px; }
-[data-testid="stVerticalBlockBorderWrapper"] { border-radius:16px; }
-.stButton > button { border-radius:10px; min-height:42px; }
-button[kind="primary"] { background:#584174; border-color:#584174; }
-.stMarkdown p, .stMarkdown li, code { overflow-wrap:anywhere; }
-[data-testid="stCode"] pre { white-space:pre-wrap; overflow-wrap:anywhere; }
-@media(max-width:640px) {
-.block-container { padding:3.5rem .85rem 2rem; } .bank-name { font-size:19px; }
-.hero { padding:22px 18px; } .hero h2 { font-size:23px !important; }
-.fact-panel { padding:16px; } .fact-amount { font-size:29px; }
-.fact-row { grid-template-columns:90px 1fr; } .notice { font-size:11px; }
-[data-testid="stHorizontalBlock"] { flex-wrap:wrap; gap:12px; }
-}
-</style>
-"""
+STYLES = PRODUCT_STYLES
+
 
 LABELS = {
     "kind": "Action",
@@ -153,8 +109,29 @@ LABELS = {
     "after": "After",
     "limit": "Card transaction limit",
     "restrictions": "Restricted transaction categories",
+    "preference_ref": "Signed preference reference",
+    "assessment_ref": "Risk assessment reference",
+    "raw_level": "Signed questionnaire risk level",
+    "effective_level": "Effective risk level",
+    "reason_codes": "Assessment reasons",
+    "clarification": "Suitability clarification",
+    "total_debit": "Total debit",
+    "total_principal": "Total principal",
+    "total_buy_fees": "Total purchase fees",
+    "liquid_principal": "Liquid net principal",
+    "projected_net": "Net performance benchmark (not guaranteed)",
 }
 KINDS = {
+    "balance_query": "Balance query",
+    "transactions_query": "Transaction history",
+    "bill_analyze": "Billing analysis",
+    "bill_report": "Bill report",
+    "anomaly_query": "Unusual transaction review",
+    "sandbox_analyze": "Exploratory sandbox analysis",
+    "risk_assess": "Risk assessment",
+    "product_compare": "Product comparison",
+    "allocation_compare": "Allocation comparison",
+    "investment_income_query": "Investment income query",
     "transfer": "Transfer",
     "purchase_product": "Product purchase",
     "redeem_product": "Product redemption",
@@ -164,7 +141,11 @@ KINDS = {
     "lock_funds": "Lock budget",
     "unlock_funds": "Unlock budget",
     "schedule_transfer": "Scheduled payment authorization",
+    "cancel_schedule": "Cancel scheduled authorization",
+    "aa_request": "Split-bill collection request",
     "merchant_order": "Simulated merchant payment",
+    "cancel_order": "Cancel merchant order",
+    "refund_request": "Request a refund",
     "apply_virtual_card": "Apply for a simulated virtual card",
     "freeze_card": "Freeze card",
     "unfreeze_card": "Unfreeze card",
@@ -174,134 +155,288 @@ KINDS = {
     "raise_card_limit": "Raise card limit",
     "restrict_card": "Add transaction restrictions",
     "relax_card_restriction": "Relax transaction restrictions",
+    "password_change_request": "Request a password change",
+    "register_contact_request": "Request contact registration",
+    "set_policy": "Attempted policy override (prohibited)",
+    "set_permission": "Attempted permission override (prohibited)",
+    "set_risk_level": "Attempted risk-level override (prohibited)",
+    "set_contact_verified": "Attempted contact-verification override (prohibited)",
+    "set_mfa": "Attempted MFA override (prohibited)",
+    "bypass_approval": "Attempted approval bypass (prohibited)",
+    "request_secret": "Attempted secret collection (prohibited)",
+}
+STATUSES = {
+    "pending": "Pending",
+    "ready": "Ready",
+    "running": "Running",
+    "settled": "Settled",
+    "completed": "Completed",
+    "succeeded": "Completed",
+    "controlled": "Scheduled authorization created",
+    "interrupted": "Interrupted",
+    "waiting_input": "Awaiting device input",
+    "waiting_approval": "Awaiting device approval",
+    "awaiting_approval": "Awaiting device approval",
+    "waiting_mfa": "Awaiting MFA for this run",
+    "waiting_settlement": "Awaiting settlement",
+    "blocked": "Blocked",
+    "failed": "Failed",
+    "skipped": "Skipped",
+    "unknown": "Awaiting reconciliation",
+    "scheduled": "Scheduled",
+    "handoff": "Operator has taken over",
+    "handed_off": "Operator has taken over",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "compensating": "Compensation in progress",
+    "compensated": "Compensated",
+    "non_reversible": "Cannot be reversed directly",
+    "active": "Active",
+    "frozen": "Frozen",
+    "lost": "Reported lost",
 }
 
 
 def money(value: Any) -> str:
-    try:
-        fraction = Fraction(value)
-        display = (Decimal(fraction.numerator) / Decimal(fraction.denominator)).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_EVEN
-        )
-        return f"¥ {display:,.2f}"
-    except (ValueError, TypeError, ZeroDivisionError):
-        return str(value)
+    return currency(value)
 
 
 def text_value(value: Any) -> str:
     if isinstance(value, bool):
-        return "Yes" if value else "No"
+        return tr("Yes") if value else tr("No")
     if value is None:
-        return "Not applicable"
+        return tr("Not applicable")
     if isinstance(value, (dict, list)):
         return jcs_bytes(value).decode("utf-8")
-    return str(value)
+    return tr(str(value))
+
+
+_MONEY_FIELDS = {
+    "amount",
+    "available",
+    "balance_before",
+    "balance_after",
+    "total_before",
+    "total_after",
+    "fees",
+    "fixed_amount",
+    "expected_net",
+    "projected_net",
+    "total_fee",
+    "fee_buy",
+    "fee_hold",
+    "fee_sell",
+    "amount_bound",
+    "limit",
+    "total_debit",
+    "total_principal",
+    "total_buy_fees",
+    "liquid_principal",
+    "liquid_net_principal",
+    "net_proceeds",
+    "principal",
+}
+_TECHNICAL_FIELDS = {
+    "principal_token",
+    "allocation",
+    "allocation_execution",
+    "best_interest",
+    "schema_version",
+    "selector_version",
+    "ownership_epoch",
+    "candidate_ids",
+    "depends_on",
+    "scope",
+    "control",
+}
+
+
+def _is_technical(key: str, value: Any) -> bool:
+    if key in _TECHNICAL_FIELDS or key.endswith(("_hash", "_token")):
+        return True
+    if key.endswith(("_id", "_ref", "_ids", "_refs")) and key not in {
+        "product_ref",
+        "product_id",
+        "chosen_product_id",
+        "source_ref",
+        "account_ref",
+        "return_account_ref",
+        "contact_ref",
+    }:
+        return True
+    return isinstance(value, (dict, list)) and key != "reason_codes"
+
+
+def _display_fact(key: str, value: Any) -> str:
+    if key in _MONEY_FIELDS and value is not None:
+        return money(value)
+    if key in {"product_ref", "product_id", "chosen_product_id"}:
+        return product_label(value)
+    if key == "contact_ref":
+        return contact_label(value)
+    if key in {"source_ref", "account_ref", "return_account_ref"}:
+        return tr(
+            {"A_CURRENT": "Current account", "A_SAVINGS": "Savings account"}.get(
+                str(value), "Verified account"
+            )
+        )
+    if key == "kind":
+        return display_value(KINDS.get(str(value), str(value)))
+    if key == "status":
+        return tr(STATUSES.get(str(value), str(value)))
+    if key == "reason_codes" and isinstance(value, list):
+        return " · ".join(tr("reason." + str(reason)) for reason in value)
+    if isinstance(value, str) and "/" in value:
+        try:
+            exact = Fraction(value)
+            decimal = (Decimal(exact.numerator) / Decimal(exact.denominator)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_EVEN
+            )
+            return f"{decimal:,.2f}"
+        except (ValueError, ZeroDivisionError):
+            pass
+    return text_value(value)
 
 
 def fact_rows(facts: dict[str, Any]) -> None:
     html = []
     for key, value in facts.items():
-        label = LABELS.get(key, key)
-        if (
-            key
-            in {
-                "amount",
-                "available",
-                "total_before",
-                "total_after",
-                "fees",
-                "fixed_amount",
-                "expected_net",
-                "total_fee",
-                "fee_buy",
-                "fee_hold",
-                "fee_sell",
-                "amount_bound",
-                "limit",
-            }
-            and value is not None
-        ):
-            shown = f"{money(value)} · canonical value {text_value(value)}"
-        else:
-            shown = KINDS.get(str(value), str(value)) if key == "kind" else text_value(value)
-            if key == "status":
-                shown = {"active": "Active", "frozen": "Frozen", "lost": "Reported lost"}.get(
-                    shown, shown
-                )
+        if value is None or _is_technical(key, value):
+            continue
+        shown = _display_fact(key, value)
+        if not shown:
+            continue
+        label = display_value(LABELS.get(key, key))
         html.append(
             f'<div class="fact-row"><div class="fact-label">{escape(label)}</div>'
             f'<div class="fact-value">{escape(shown)}</div></div>'
         )
-    st.markdown('<div class="fact-panel">' + "".join(html) + "</div>", unsafe_allow_html=True)
+    if html:
+        st.markdown('<div class="fact-panel">' + "".join(html) + "</div>", unsafe_allow_html=True)
 
 
-def render_card(card: dict[str, Any], *, canonical: bool = True) -> None:
+def localized_facts(facts: list[dict[str, Any]], controller: Any) -> list[dict[str, Any]]:
+    """Re-render original authenticated references without mutating state or audit."""
+    if not facts:
+        return []
+    result = render_narrative(
+        Narrative(
+            fact_refs=[
+                FactRef(
+                    receipt_ref=fact["receipt_ref"],
+                    field=fact["field"],
+                    expected=fact["exact_value"],
+                )
+                for fact in facts
+            ]
+        ),
+        controller.state,
+        controller.device.principal,
+        controller.gateway.vault,
+    )
+    return [fact.model_dump(mode="json") for fact in result.facts]
+
+
+def render_fact_projection(projection: dict[str, Any], controller: Any) -> None:
+    """Show trusted narrative facts as readable text, with raw evidence on demand."""
+    facts = localized_facts(projection.get("facts", []), controller)
+    fact_rows({fact["field"]: fact["exact_value"] for fact in facts})
+    if projection.get("facts") and not facts:
+        st.warning(tr("The requested facts could not be verified."))
+    with st.expander(tr("Technical evidence"), expanded=False):
+        st.json(projection)
+
+
+def render_card(
+    card: dict[str, Any], *, canonical: bool = True, planner_source: str = "scripted"
+) -> None:
+    """Present business facts from the unchanged gateway confirmation card."""
     if not card:
-        st.info("No business facts are ready for approval.")
+        st.info(tr("No business facts are ready for approval."))
         return
-    title = "Gateway approval card" if canonical else "Facts for device review · not yet authorized"
+    st.caption(tr("Planner source") + ": " + planner_source)
+    title = (
+        tr("Purchase confirmation")
+        if card.get("kind") == "purchase_product"
+        else (
+            tr("Gateway approval card")
+            if canonical
+            else tr("Facts for device review · not yet authorized")
+        )
+    )
     tier = str(card.get("tier", "yellow"))
     tier_text = {
-        "green": "Green · automatic query",
-        "yellow": "Yellow · device approval required",
-        "red": "Red · independent simulated MFA required",
-        "black": "Black · execution prohibited",
+        "green": tr("Green · automatic query"),
+        "yellow": tr("Yellow · device approval required"),
+        "red": tr("Red · independent simulated MFA required"),
+        "black": tr("Black · execution prohibited"),
     }.get(tier, tier)
+    objects = card.get("objects", {})
+    product = product_label(objects["product_ref"]) if objects.get("product_ref") else ""
+    if objects.get("contact_ref"):
+        product = contact_label(objects["contact_ref"])
     amount = (
         money(card["amount"])
         if card.get("amount") is not None
-        else KINDS.get(card.get("kind"), "Business approval")
+        else display_value(KINDS.get(card.get("kind"), tr("Business approval")))
     )
+    reason_keys = list(card.get("tier_reasons", []))
+    reason = (
+        tr("tier_reason." + str(reason_keys[0]))
+        if reason_keys
+        else tr("Review this purchase before approving.")
+    )
+    if card.get("kind") == "purchase_product":
+        reason = tr("Investment purchases require separate device MFA.")
+    execution = card.get("allocation_execution") or {}
+    progress = ""
+    if execution.get("remaining_item_refs"):
+        settled = len(execution.get("settled_item_refs", []))
+        total = settled + len(execution["remaining_item_refs"])
+        progress = tr("Purchase {current} of {total}", current=settled + 1, total=total)
+    costs = "".join(
+        '<div class="cw-confirm-cost"><span>'
+        + escape(tr(label))
+        + "</span><strong>"
+        + escape(money(card[key]))
+        + "</strong></div>"
+        for key, label in (("fees", "Fees"), ("total_debit", "Total debit"))
+        if card.get(key) is not None
+    )
+    if card.get("kind") in {"transfer", "merchant_order"} and objects.get("source_ref"):
+        costs += (
+            '<div class="cw-confirm-cost"><span>'
+            + escape(tr("Source account"))
+            + "</span><strong>"
+            + escape(_display_fact("source_ref", objects["source_ref"]))
+            + "</strong></div>"
+        )
     st.markdown(
-        f'<div class="fact-panel"><div class="fact-title">{escape(title)}</div>'
-        f'<div class="fact-amount">{escape(amount)}</div>'
-        f'<span class="tier tier-{escape(tier)}">{escape(tier_text)}</span></div>',
+        '<div class="fact-panel"><div class="fact-title">'
+        + escape(title)
+        + (" · " + escape(progress) if progress else "")
+        + '</div><div class="cw-confirm-grid"><div><div class="fact-product">'
+        + escape(product)
+        + '</div><div class="fact-amount">'
+        + escape(amount)
+        + "</div></div><div>"
+        + costs
+        + '</div></div><div class="cw-confirm-foot">'
+        + badge(tier_text, tier)
+        + '<p class="fact-note">'
+        + escape(reason)
+        + "</p></div></div>",
         unsafe_allow_html=True,
     )
     if card.get("irreversible"):
-        st.markdown(
-            '<div class="danger">Irreversible: a settled payment cannot be undone directly. '
-            "A refund request does not mean funds have been returned.</div>",
-            unsafe_allow_html=True,
-        )
-    if tier == "red":
-        st.warning(
-            "Red-tier action: Complete independent simulated MFA, then approve on the device. "
-            "Dispatch requires verification."
-        )
-    main = {
-        key: value
-        for key, value in card.items()
-        if key
-        not in {
-            "plan_hash",
-            "node_id",
-            "dependency_hash",
-            "device_session_id",
-            "irreversible",
-            "tier",
-            "best_interest",
-            "business_context_hash",
-            "action_hash",
-            "intent_id",
-        }
-    }
-    render_structured(main)
-    if card.get("kind") == "schedule_transfer":
-        st.warning(
-            "Authorization covers only the fixed scope, dates and runs shown above. "
-            "Balance, destination, permissions and cumulative tier are checked at execution. "
-            "A yellow-to-red change requires independent MFA for this run; without verification "
-            "within 24 hours, the run expires. Previous codes are never reused."
-        )
-    if isinstance(card.get("best_interest"), dict):
-        render_bic(card["best_interest"])
-    with st.expander("Binding identifiers and complete canonical JSON", expanded=False):
+        st.warning(tr("Settled purchases are not automatically reversed."))
+    with st.expander(tr("Technical evidence"), expanded=False):
+        st.caption(tr("permission_table"))
         st.json(card)
 
 
 def render_bic(bic: dict[str, Any]) -> None:
-    st.markdown("#### All eligible products and selection evidence")
+    st.markdown(tr("#### All eligible products and selection evidence"))
     facts = {
         key: bic[key]
         for key in ("candidate_ids", "chosen_product_id", "best_choice", "rank", "gap")
@@ -310,66 +445,50 @@ def render_bic(bic: dict[str, Any]) -> None:
     fact_rows(facts)
     if bic.get("best_choice") is False:
         st.warning(
-            "The selected product is not first in the standard ranking. Review its rank and gap. "
-            "Continuing requires your explicit, active choice."
+            tr(
+                "The selected product is not first in the standard ranking. Review"
+                " its rank and gap. Continuing requires your explicit, active choi"
+                "ce."
+            )
         )
     for row in bic.get("rows", []):
-        st.write(f"Rank {row.get('rank', '—')} · {row.get('product_id', '—')}")
+        st.write(f"{tr('Rank ')}{row.get('rank', '—')} · {row.get('product_id', '—')}")
         fact_rows({key: value for key, value in row.items() if key != "product_id"})
 
 
 def render_structured(facts: dict[str, Any]) -> None:
-    """Keep nested business facts readable without hiding them in raw JSON."""
+    """Render only readable business fields; callers retain canonical evidence separately."""
     flat = {key: value for key, value in facts.items() if not isinstance(value, dict)}
-    if flat:
-        fact_rows(flat)
+    fact_rows(flat)
     for key, value in facts.items():
-        if isinstance(value, dict):
-            st.write(LABELS.get(key, key))
+        if isinstance(value, dict) and key not in _TECHNICAL_FIELDS and not key.endswith("_hash"):
             render_structured(value)
 
 
 def render_plans(plans: list[dict[str, Any]]) -> None:
-    labels = {
-        "pending": "Pending",
-        "ready": "Ready",
-        "running": "Running",
-        "settled": "Settled",
-        "completed": "Completed",
-        "succeeded": "Completed",
-        "controlled": "Scheduled authorization created",
-        "interrupted": "Interrupted",
-        "waiting_mfa": "Awaiting MFA for this run",
-        "blocked": "Blocked",
-        "failed": "Failed",
-        "skipped": "Skipped",
-        "unknown": "Awaiting reconciliation",
-        "scheduled": "Scheduled",
-        "handed_off": "Operator has taken over",
-        "expired": "Expired",
-    }
     for index, snapshot in enumerate(plans):
         plan = snapshot.get("plan", {})
-        st.markdown(f"#### Plan {index + 1}")
+        st.markdown(f"{tr('#### Plan ')}{index + 1}")
         if snapshot.get("blocked"):
-            st.warning("Automatic execution has stopped for this plan.")
+            st.warning(tr("Automatic execution has stopped for this plan."))
         for ordinal, node in enumerate(plan.get("nodes", [])):
             identifier = node["node_id"]
             state = snapshot.get("nodes", {}).get(identifier, {})
             status = state.get("status", "pending")
+            node_label = display_value(KINDS.get(node.get("tool"), node.get("tool", tr("Node"))))
             st.markdown(
-                '<div class="node"><div class="node-title">'
-                f"{ordinal + 1}. {escape(KINDS.get(node.get('tool'), node.get('tool', 'Node')))}"
-                '</div><div class="node-status">'
-                f"{escape(labels.get(status, status))}</div></div>",
+                (
+                    '<div class="node"><div class="node-title">'
+                    f"{ordinal + 1}"
+                    ". "
+                    f"{escape(node_label)}"
+                    '</div><div class="node-status">'
+                    f"{escape(tr(STATUSES.get(status, status)))}"
+                    "</div></div>"
+                ),
                 unsafe_allow_html=True,
             )
-            fact_rows({
-                "node_id": identifier,
-                "depends_on": node.get("depends_on", []),
-                "receipt_ref": state.get("receipt_ref"),
-            })
-        with st.expander(f"Plan {index + 1}: canonical state and audit checkpoint"):
+        with st.expander(tr("Technical evidence"), expanded=False):
             st.json(snapshot)
 
 
@@ -381,18 +500,23 @@ def render_result(result: dict[str, Any] | None) -> None:
     exploratory = isinstance(receipt, dict) and receipt.get("trust") == "exploratory"
     if status == "advanced":
         st.info(
-            f"Simulated clock advanced to {result.get('clock', '—')} · "
-            f"{result.get('events', 0)} due events processed"
+            f"{tr('Simulated clock advanced to ')}"
+            f"{result.get('clock', '—')}"
+            " · "
+            f"{result.get('events', 0)}"
+            f"{tr(' due events processed')}"
         )
     if status in {"redisplay", "drift"}:
         st.warning(
-            "Business facts changed · the previous approval is invalid. "
-            "Review the new card below and approve again."
+            tr(
+                "Business facts changed · the previous approval is invalid. Review"
+                " the new card below and approve again."
+            )
         )
     if result.get("results"):
         rows = result["results"]
         rows = rows.values() if isinstance(rows, dict) else rows
-        st.write("Execution results by node")
+        st.write(tr("Execution results by node"))
         for row in rows:
             if isinstance(row, dict):
                 render_result(row)
@@ -400,52 +524,62 @@ def render_result(result: dict[str, Any] | None) -> None:
     if status in {"settled", "complete", "executed"} and receipt:
         if exploratory:
             st.info(
-                "Exploratory analysis ran · question semantics are unverified. "
-                "This cannot authorize a payment."
+                tr(
+                    "Exploratory analysis ran · question semantics are unverified. Thi"
+                    "s cannot authorize a payment."
+                )
             )
         elif result.get("analysis_receipt"):
-            st.success("Analysis complete · computation receipt verified")
+            st.success(tr("Analysis complete · computation receipt verified"))
         else:
-            st.success("Executed · bank receipt verified")
+            st.success(tr("Executed · bank receipt verified"))
     elif status in {"unknown", "pending"}:
         st.warning(
-            "Awaiting reconciliation · do not pay again. "
-            "Wait for the bank receipt or operator review."
+            tr(
+                "Awaiting reconciliation · do not pay again. Wait for the bank rec"
+                "eipt or operator review."
+            )
         )
     elif status in {"handoff", "handed_off"}:
-        st.warning("Operator handoff · automatic execution paused")
+        st.warning(tr("Operator handoff · automatic execution paused"))
     elif status == "interrupted":
-        st.warning("Interrupted · automatic execution paused")
+        st.warning(tr("Interrupted · automatic execution paused"))
     elif status == "resumed":
         st.info(
-            "Plan resumed within the device-approved scope. "
-            "Every subsequent action still requires gateway checks."
+            tr(
+                "Plan resumed within the device-approved scope. Every subsequent a"
+                "ction still requires gateway checks."
+            )
         )
     elif status == "no_active_plan":
-        st.info("No active plan. No plan was paused and no funds moved.")
+        st.info(tr("No active plan. No plan was paused and no funds moved."))
     elif status == "no_compensation":
         st.info(
-            "No reversible compensation can be generated automatically. "
-            "Settled payments cannot be undone directly."
+            tr(
+                "No reversible compensation can be generated automatically. Settle"
+                "d payments cannot be undone directly."
+            )
         )
     elif status == "controlled":
         st.info(
-            "Control request recorded · see node status and bank receipts "
-            "to confirm whether and when a payment occurred."
+            tr(
+                "Control request recorded · see node status and bank receipts to c"
+                "onfirm whether and when a payment occurred."
+            )
         )
     elif status in {"redisplay", "drift"}:
         if result.get("card"):
             render_card(result["card"])
     elif status in {"rejected", "refused", "failed", "blocked"}:
-        st.error("Action not executed · review the reasons before approving again")
+        st.error(tr("Action not executed · review the reasons before approving again"))
     elif result.get("needs_mfa") or status in {"waiting_mfa", "escalated", "Escalate"}:
-        st.warning("Awaiting MFA · complete simulated verification on the Device page")
+        st.warning(tr("Awaiting MFA · complete simulated verification on the Device page"))
     elif status != "advanced":
-        st.info("Awaiting approval · execution has not completed")
+        st.info(tr("Awaiting approval · execution has not completed"))
     if result.get("rule_ids"):
-        st.caption("Rules: " + " · ".join(result["rule_ids"]))
+        st.caption(tr("Rules: ") + " · ".join(result["rule_ids"]))
     if result.get("message") and not exploratory:
-        st.write(result["message"])
+        st.write(prose(result["message"]))
     if receipt:
         st.markdown('<div id="receipt"></div>', unsafe_allow_html=True)
         if exploratory:
@@ -455,27 +589,30 @@ def render_result(result: dict[str, Any] | None) -> None:
                     for fact in projection.get("facts", []):
                         st.write(fact["text"])
                 if projection.get("note") or result.get("message"):
-                    with st.expander("Assistant note (unverified)", expanded=True):
+                    with st.expander(tr("Assistant note (unverified)"), expanded=True):
                         if projection.get("note"):
                             st.write(projection["note"])
                         if result.get("message"):
                             st.write(result["message"])
-            with st.expander("Raw exploratory evidence (semantics unverified)", expanded=False):
+            with st.expander(tr("Raw exploratory evidence (semantics unverified)"), expanded=False):
                 st.caption(
-                    "Program labels and question semantics are unverified; "
-                    "the signature authenticates only the computation source."
+                    tr(
+                        "Program labels and question semantics are unverified; the signatu"
+                        "re authenticates only the computation source."
+                    )
                 )
                 st.json(receipt)
         else:
-            with st.expander("Verified receipt", expanded=False):
+            with st.expander(tr("Technical evidence"), expanded=False):
                 st.json(receipt)
-        st.markdown("[This receipt](#receipt) · audit chain on the Evidence & Audit page")
-        st.button("View audit chain", key=f"audit-link:{H(receipt)}", on_click=open_audit)
+        st.markdown(tr("[This receipt](#receipt) · audit chain on the Evidence & Audit page"))
+        st.button(tr("View audit chain"), key=f"audit-link:{H(receipt)}", on_click=open_audit)
     if result.get("audit_checkpoint"):
-        with st.expander("Related audit checkpoint"):
+        with st.expander(tr("Technical evidence"), expanded=False):
             st.json(result["audit_checkpoint"])
 
 
 def open_audit() -> None:
-    st.session_state["supporting_page"] = "None"
     st.session_state["page"] = "Evidence & Audit"
+    st.session_state["active_page"] = "Evidence & Audit"
+    st.session_state["supporting_page"] = "None"

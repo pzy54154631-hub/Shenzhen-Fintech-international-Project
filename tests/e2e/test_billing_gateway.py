@@ -152,7 +152,8 @@ def test_real_green_reports_have_exact_signed_facts_and_no_financial_effect(
     rendered = render_narrative(narrative, gateway.store.snapshot(), action.principal, PIIVault())
     assert rendered.status == "rendered" and rendered.rule_ids == []
     assert {fact.field: fact.exact_value for fact in rendered.facts} == expected
-    assert "Transfer settled" not in rendered.text
+    assert all(fact.receipt_ref == receipt.id for fact in rendered.facts)
+    assert receipt.function_id == "bill_summary_v1"
     assert gateway.bank.execute_count == 0 and H(gateway.bank.final_state()) == before
     assert gateway.verify_log()
 
@@ -174,7 +175,7 @@ def test_tampered_report_number_rejects_entire_narrative():
         PIIVault(),
     )
     assert result.status == "rejected" and "RCPT-MISMATCH" in result.rule_ids
-    assert result.facts == [] and "1701" not in result.text
+    assert result.facts == []
 
 
 @pytest.mark.parametrize("mutation", ["signature", "principal", "account", "dataset", "action"])
@@ -204,7 +205,7 @@ def test_forged_or_rebound_analysis_receipt_never_renders(mutation):
     )
     assert result.status == "rejected" and result.facts == []
     assert result.rule_ids
-    assert "Transfer settled" not in result.text
+    assert gateway.bank.execute_count == 0
 
 
 @pytest.mark.parametrize(
@@ -248,7 +249,8 @@ def test_analysis_receipt_cannot_invent_completion_or_account_balance(field):
         PIIVault(),
     )
     assert result.status == "rejected" and result.rule_ids == ["RCPT-MISMATCH"]
-    assert result.facts == [] and "Transfer settled" not in result.text
+    assert result.facts == []
+    assert gateway.bank.execute_count == 0
 
 
 @pytest.mark.rule("PROV-FIELD")

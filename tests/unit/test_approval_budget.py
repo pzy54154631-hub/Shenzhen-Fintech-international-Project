@@ -127,7 +127,7 @@ def test_preflight_rejects_insufficient_budget_before_any_bank_call():
     assert result.rule_ids == ["APR-BUDGET"]
     assert result.details["approval_budget"]["required"] == 2
     assert result.details["approval_budget"]["remaining"] == 1
-    assert "Needs 2 approvals" in result.details["message"]
+    assert result.details["approval_budget"]["can_start"] is False
     assert case.gateway.bank.execute_count == 0
     assert len(case.state.security.approval_requests["C_DEMO"]) == 4
 

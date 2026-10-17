@@ -1,4 +1,4 @@
-"""Explicit English transfer fields backed by the existing device approval workflow."""
+"Explicit English transfer fields backed by the existing device approval workflow."
 
 import streamlit as st
 
@@ -7,6 +7,7 @@ from corridor.gateway.handles import available_handles
 from corridor.schemas.bank import InputTerm, StateTerm
 from corridor.schemas.money import fraction_string, parse_fraction
 from corridor.ui.components import render_card, render_result
+from corridor.ui.messages import tr
 
 
 def _choices(controller):
@@ -19,16 +20,16 @@ def _choices(controller):
 
 
 def preview_structured_transfer(controller, source, contact, amount, request_id):
-    """Retain an unsigned canonical card; the later approval gesture signs its inputs."""
+    "Retain an unsigned canonical card; the later approval gesture signs its inputs."
     controller._require_login()
     accounts, contacts = _choices(controller)
     if source not in accounts or contact not in contacts:
-        raise ValueError("Choose an owned current account and a verified recipient.")
+        raise ValueError(tr("Choose an owned current account and a verified recipient."))
     if not isinstance(amount, str):
-        raise ValueError("Enter the amount as exact CNY text.")
+        raise ValueError(tr("Enter the amount as exact CNY text."))
     value = parse_fraction(amount.strip())
     if value <= 0 or (value * 100).denominator != 1:
-        raise ValueError("Enter a positive CNY amount in whole cents.")
+        raise ValueError(tr("Enter a positive CNY amount in whole cents."))
     exact = fraction_string(value)
     controller._claim_request(
         request_id, {"kind": "transfer", "source": source, "contact": contact, "amount": exact}
@@ -37,7 +38,7 @@ def preview_structured_transfer(controller, source, contact, amount, request_id)
     def build(builder):
         accounts, contacts = _choices(builder)
         if source not in accounts or contact not in contacts:
-            raise ValueError("The selected account or recipient is no longer available.")
+            raise ValueError(tr("The selected account or recipient is no longer available."))
         signed = builder.device.confirm_input(
             intent_id=builder.intent(),
             slot="amount",
@@ -79,28 +80,32 @@ def preview_structured_transfer(controller, source, contact, amount, request_id)
 
 
 def render_structured_transfer(controller):
-    st.subheader("Transfer with explicit device fields")
-    st.caption("Select a verified recipient and enter the exact amount. Previewing signs nothing.")
+    st.subheader(tr("Transfer with explicit device fields"))
+    st.caption(
+        tr("Select a verified recipient and enter the exact amount. Previewing signs nothing.")
+    )
     try:
         accounts, contacts = _choices(controller)
     except (ValueError, RuntimeError, KeyError):
-        st.warning("Your session or account changed. Sign in again before preparing a transfer.")
+        st.warning(
+            tr("Your session or account changed. Sign in again before preparing a transfer.")
+        )
         return
     with st.form("structured_transfer_form"):
         source = st.selectbox(
-            "Source account",
+            tr("Source account"),
             [None, *accounts],
-            format_func=lambda value: "Choose an account" if value is None else value,
+            format_func=lambda value: tr("Choose an account") if value is None else value,
             key="structured_source",
         )
         contact = st.selectbox(
-            "Verified recipient",
+            tr("Verified recipient"),
             [None, *contacts],
-            format_func=lambda value: "Choose a recipient" if value is None else value,
+            format_func=lambda value: tr("Choose a recipient") if value is None else value,
             key="structured_contact",
         )
-        amount = st.text_input("Transfer amount (CNY)", key="structured_amount")
-        submitted = st.form_submit_button("Preview transfer", key="structured_preview")
+        amount = st.text_input(tr("Transfer amount (CNY)"), key="structured_amount")
+        submitted = st.form_submit_button(tr("Preview transfer"), key="structured_preview")
     if submitted:
         fingerprint = H({"source": source, "contact": contact, "amount": amount})
         previous = st.session_state.get("structured_transfer_request")
@@ -113,8 +118,10 @@ def render_structured_transfer(controller):
             )
         except (ValueError, RuntimeError, KeyError):
             st.warning(
-                "No transfer was prepared. "
-                "Select an account, recipient and positive whole-cent amount."
+                tr(
+                    "No transfer was prepared. Select an account, recipient and positi"
+                    "ve whole-cent amount."
+                )
             )
             st.session_state.pop("structured_transfer_pending", None)
             st.session_state.pop("structured_transfer_result", None)
@@ -126,18 +133,20 @@ def render_structured_transfer(controller):
         return
     identifier = pending["pending_id"]
     if identifier not in controller._pending:
-        st.info("This transfer draft was withdrawn. Prepare a new draft to continue.")
+        st.info(tr("This transfer draft was withdrawn. Prepare a new draft to continue."))
         return
     result = controller._results.get(identifier, st.session_state.get("structured_transfer_result"))
     render_card(pending["card"], canonical=True)
     if identifier not in controller._results:
-        if st.button("Confirm transfer on device", key="structured_approve", type="primary"):
+        if st.button(tr("Confirm transfer on device"), key="structured_approve", type="primary"):
             try:
                 result = controller.approve_pending(identifier)
             except (ValueError, RuntimeError, KeyError):
                 st.warning(
-                    "The transfer result could not be confirmed. "
-                    "Check Evidence & Audit before retrying."
+                    tr(
+                        "The transfer result could not be confirmed. Check Evidence & Audi"
+                        "t before retrying."
+                    )
                 )
                 return
             st.session_state["structured_transfer_result"] = result
@@ -146,11 +155,14 @@ def render_structured_transfer(controller):
                 st.rerun()
         if pending["card"].get("tier") == "red":
             st.caption(
-                "Confirm this intent, then open Device for independent simulated MFA and approval."
+                tr(
+                    "Confirm this intent, then open Device for independent simulated M"
+                    "FA and approval."
+                )
             )
     render_result(result)
     if identifier in controller._results and st.button(
-        "Prepare another transfer", key="structured_new"
+        tr("Prepare another transfer"), key="structured_new"
     ):
         for key in (
             "structured_transfer_pending",

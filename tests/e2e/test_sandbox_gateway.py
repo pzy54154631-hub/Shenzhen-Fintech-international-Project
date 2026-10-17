@@ -37,7 +37,9 @@ def test_owned_sandbox_receipt_is_registered_and_labeled_exploratory():
         case.device.principal,
     )
     assert rendered.status == "rendered", rendered
-    assert "Exploratory analysis" in rendered.text
+    assert rendered.rule_ids == []
+    assert rendered.facts[0].receipt_ref == receipt.id
+    assert rendered.facts[0].exact_value == receipt.results["total"].value
 
 
 def test_dataset_registration_rejects_other_owner_before_reading_rows():

@@ -1,5 +1,6 @@
 .venv/
 .uv-cache/
+.mplconfig/
 .tmp/
 pytest-cache-files-*/
 __pycache__/
@@ -10,6 +11,7 @@ __pycache__/
 .mypy_cache/
 .import_linter_cache/
 .env
+.streamlit/secrets.toml
 results/*
 !results/table.md
 !results/judge.md

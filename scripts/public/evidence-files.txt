@@ -5443,3 +5443,8 @@ evidence/final-f5/redteam/live-recorded/bundle.json
 evidence/final-f5/redteam/live-recorded/bundle.sha256
 evidence/final-f5/redteam/live-recorded/summary.json
 evidence/final-f5/redteam/live-recorded/summary.md
+evidence/ui/i1/en-01-goals.png
+evidence/ui/i1/en-02-proposal.png
+evidence/ui/i1/en-04-receipts.png
+evidence/ui/i1/zh-CN-01-goals.png
+evidence/ui/i1/screenshots.json

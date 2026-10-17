@@ -1,4 +1,4 @@
-"""Read-only suitability statements projected from gateway-verified BIAC facts."""
+"Read-only suitability statements projected from gateway-verified BIAC facts."
 
 from dataclasses import dataclass
 from decimal import ROUND_HALF_EVEN, Decimal
@@ -19,6 +19,8 @@ from corridor.schemas.allocation import (
     ClientProfile,
 )
 from corridor.schemas.domain import RiskAssessment
+from corridor.ui.messages import display_value, tr
+from corridor.ui.product_style import badge, currency, product_label
 
 PROFILE_NAMES = {1: "Conservative", 2: "Cautious", 3: "Balanced", 4: "Growth", 5: "Aggressive"}
 OBJECTIVES = {
@@ -70,23 +72,49 @@ RULE_REASONS = {
 
 STYLE = """
 <style>
-.suitability {font-family:Arial,sans-serif;color:#292437;line-height:1.4;max-width:1050px}
-.suitability h2 {font-size:22px;margin:0 0 7px}.suitability h3 {font-size:16px;margin:12px 0 5px}
-.suitability .verdict {background:#e5f2e9;padding:12px;border-radius:10px}
-.suitability .muted {color:#655f6b;font-size:12px}.suitability .warning {background:#fff0d5;
-padding:10px;border-left:4px solid #ae6f12;margin:8px 0}.suitability .metrics {display:flex;
-gap:12px;flex-wrap:wrap;margin:10px 0}.suitability .metric {flex:1;min-width:140px;
-border:1px solid #ded8e5;border-radius:8px;padding:10px}.suitability .metric strong {display:block}
-.suitability .table-wrap {overflow-x:auto}.suitability table {width:100%;border-collapse:collapse;
-font-size:12px}.suitability th,.suitability td {text-align:left;padding:5px 7px;
-border-bottom:1px solid #e4deea;vertical-align:top}.suitability th {background:#f0edf4}
-.suitability footer {font-size:10px;overflow-wrap:anywhere;margin-top:12px}
-.suitability .two-col {display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.suitability .sleeve-bar {height:7px;background:#e5ddec;margin:3px 0;position:relative}
-.suitability .sleeve-fill {height:7px;background:#73558e}.suitability .band-marker {
-height:11px;position:absolute;top:-2px;border-left:1px solid #333;border-right:1px solid #333}
-@media(max-width:640px) {.suitability .two-col{grid-template-columns:1fr}}
-@media print {@page {size:A4 landscape;margin:10mm}.suitability{font-size:10px;max-width:none}
+.suitability{font-family:Arial,sans-serif;color:#173735;line-height:1.45;width:100%;max-width:none}
+.suitability h2{font-size:23px;margin:0 0 10px}.suitability h3{font-size:16px;margin:20px 0 9px}
+.suitability .verdict{background:#e6f3ec;padding:14px;border-radius:12px}
+.suitability .muted{color:#617b7b;font-size:12px}.suitability .warning{background:#fff3db;
+padding:10px;border-left:4px solid #b48d52;margin:8px 0}.suitability .metrics{display:grid;
+grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:17px 0}
+.suitability .metric{background:white;border:1px solid #dce7e5;border-radius:12px;
+padding:15px;font-size:12px;color:#647b7b}.suitability .metric strong{display:block;
+font-size:21px;line-height:1.3;color:#173735;margin-top:8px;white-space:nowrap}
+.suitability .table-wrap{overflow-x:auto;
+border:1px solid #e0e9e7;
+border-radius:12px;
+background:white}
+.suitability table{width:100%;border-collapse:collapse;font-size:15px}
+.suitability th,.suitability td{text-align:left;padding:11px 13px;border-bottom:1px solid #edf2f0;
+vertical-align:top}.suitability th{background:#f0f6f3;color:#5a7470;font-weight:600;font-size:11px}
+.suitability tr:last-child td{border-bottom:0}.suitability .selected-product{background:#edf8f1}
+.suitability small{display:block;color:#6c807c;font-size:15px;max-width:440px}
+.suitability footer{font-size:10px;overflow-wrap:anywhere;margin-top:15px}
+.suitability .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.suitability .sleeve-bar{height:9px;
+border-radius:5px;
+background:#e8efeb;
+margin:5px 0;
+position:relative;
+min-width:130px}
+.suitability .sleeve-fill{height:9px;border-radius:5px;background:#168570}
+.suitability .band-marker{height:13px;position:absolute;top:-2px;border-left:1px solid #b48d52;
+border-right:1px solid #b48d52;background:#b48d5210}
+.suitability .cw-chip{display:inline-block;
+padding:4px 10px;
+border-radius:999px;
+font-size:11px;
+font-weight:600}
+.suitability .cw-chip-green{background:#def1e5;
+color:#1e7252}
+.suitability .cw-chip-red{background:#fce8e5;
+color:#a44840}
+.suitability .cw-chip-neutral{background:#edf1f2;color:#5a737a}
+@media(max-width:900px){.suitability .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.suitability .two-col{grid-template-columns:1fr}
+.suitability .metric strong{font-size:18px}}
+@media print{@page{size:A4 landscape;margin:10mm}.suitability{font-size:10px;max-width:none}
 .suitability h2{font-size:17px}.suitability h3{font-size:12px}.suitability table{font-size:9px}
 .suitability th,.suitability td{padding:3px 4px}.suitability details{display:none}
 .suitability .metric{padding:6px}.suitability footer{font-size:8px}}
@@ -125,7 +153,7 @@ def _display(value: Fraction, style: str) -> str:
         return f"{decimal:,.2f}%"
     if style == "points":
         return f"{decimal:,.2f} pp"
-    return f"CNY {decimal:,.2f}"
+    return currency(value)
 
 
 class _Projection:
@@ -157,8 +185,13 @@ class _Projection:
             "display": display,
         }
         return (
-            f'<span data-number="{escape(key)}" data-source="{escape(";".join(paths))}" '
-            f'title="Exact: {value.numerator}/{value.denominator}">{display}</span>'
+            '<span data-number="'
+            f"{escape(key)}"
+            '" data-source="'
+            f"{escape(';'.join(paths))}"
+            '">'
+            f"{display}"
+            "</span>"
         )
 
 
@@ -174,10 +207,10 @@ def _table(headers: list[str], rows: list[list[str]]) -> str:
 
 def _execution(projection: _Projection, execution: dict[str, Any] | None) -> str:
     if not execution:
-        return "Comparison complete – no purchase executed"
+        return tr("Comparison complete – no purchase executed")
     status = execution.get("status")
     if status == "unknown":
-        return "Outcome pending reconciliation – do not retry"
+        return tr("Outcome pending reconciliation – do not retry")
     if status in {"completed", "partially_executed", "executing"}:
         settled = projection.number(
             "execution.settled", "execution.items", operation="settled_count", style="integer"
@@ -185,28 +218,32 @@ def _execution(projection: _Projection, execution: dict[str, Any] | None) -> str
         total = projection.number(
             "execution.total", "execution.items", operation="count", style="integer"
         )
-        state = "Completed" if status == "completed" else "Partially executed"
-        message = f"{state} – {settled} of {total} settled; nothing reversed automatically"
+        state = tr("Completed") if status == "completed" else tr("Partially executed")
+        message = (
+            f"{state}"
+            " – "
+            f"{settled}"
+            f"{tr(' of ')}"
+            f"{total}"
+            f"{tr(' settled; nothing reversed automatically')}"
+        )
         if "available_balance" in execution:
-            cash = projection.number(
-                "execution.cash", "execution.available_balance", style="compact"
-            )
+            cash = projection.number("execution.cash", "execution.available_balance")
             positions = []
             for index, item in enumerate(execution.get("items", [])):
                 if item.get("status") == "settled":
                     amount = projection.number(
                         f"execution.position.{index}",
                         f"execution.items.{index}.principal",
-                        style="integer",
                     )
-                    positions.append(escape(item["product_ref"].removeprefix("P_")) + amount)
+                    positions.append(escape(product_label(item["product_ref"])) + " " + amount)
             if positions:
-                message += "<br>" + " + ".join(positions) + f" + CNY {cash} cash, {state}"
-            message += f"<br>CNY {cash} remains in your account."
+                message += "<br>" + " + ".join(positions) + f" + {cash}{tr(' cash, ')}{state}"
+            message += f"<br>{cash}{tr(' remains in your account.')}"
         return message
     if status in {"failed", "cancelled"}:
-        return "Plan stopped – no purchase executed"
-    return "Awaiting device approval – no purchase executed"
+        return tr("Plan stopped – no purchase executed")
+    return tr("Awaiting device approval – no purchase executed")
 
 
 def build_statement(
@@ -219,7 +256,7 @@ def build_statement(
     *,
     suitability: dict[str, Any] | None = None,
 ) -> Statement:
-    """Project already verified inputs without constructing or authorizing an allocation."""
+    "Project already verified inputs without constructing or authorizing an allocation."
     biac = BestInterestAllocationCertificate.model_validate(biac)
     request = AllocationRequest.model_validate(request)
     policy = AllocationPolicy.model_validate(policy)
@@ -273,43 +310,69 @@ def build_statement(
     catalog_version = number("catalog.version", "policy.catalog_version", style="integer")
     horizon = number("request.horizon", "request.horizon_days", style="integer")
     status = _execution(projection, execution)
+    catalogue_summary = tr(
+        " eligible products considered · ranked by your objective</strong><br>"
+        "sponsor-independent within the declared catalogue and policy<br>Complete: "
+    )
+    questionnaire_notice = tr(
+        " · synthetic questionnaire, not a professional suitability assessment</p><p><strong>"
+    )
     summary = (
-        '<h2>Suitability Statement</h2><div class="verdict"><strong>'
-        f"Suitable for C{level} ({PROFILE_NAMES[effective_level]}) · all {count} eligible products "
-        "considered · ranked by your objective</strong><br>"
-        "sponsor-independent within the declared catalogue and policy<br>"
-        f"Complete: {checked}/{checked} checked, {count} eligible, {excluded} excluded</div>"
-        f'<p class="muted">Policy version {policy_version} · policy-checked heuristic · '
-        f"Objective: {escape(OBJECTIVES[request.objective])} · horizon {horizon} days<br>"
-        f"Profile valid until {escape(profile.expires_at)} · synthetic questionnaire, "
-        "not a professional suitability assessment</p>"
-        f"<p><strong>{status}</strong></p>"
+        f"""{tr('<h2>Suitability Statement</h2><div class="verdict"><strong>Suitable for C')}"""
+        f"{level}"
+        " ("
+        f"{display_value(PROFILE_NAMES[effective_level])}"
+        f"{tr(') · all ')}"
+        f"{count}"
+        f"{catalogue_summary}"
+        f"{checked}"
+        "/"
+        f"{checked}"
+        f"{tr(' checked, ')}"
+        f"{count}"
+        f"{tr(' eligible, ')}"
+        f"{excluded}"
+        f"""{tr(' excluded</div><p class="muted">Policy version ')}"""
+        f"{policy_version}"
+        f"{tr(' · policy-checked heuristic · Objective: ')}"
+        f"{escape(display_value(OBJECTIVES[request.objective]))}"
+        f"{tr(' · horizon ')}"
+        f"{horizon}"
+        f"{tr(' days<br>Profile valid until ')}"
+        f"{escape(profile.expires_at)}"
+        f"{questionnaire_notice}"
+        f"{status}"
+        "</strong></p>"
     )
     if suitability is not None:
         summary += (
-            f"<p>Signed questionnaire level: C{raw_level} · Effective risk level: C{level}</p>"
+            f"{tr('<p>Signed questionnaire level: C')}"
+            f"{raw_level}"
+            f"{tr(' · Effective risk level: C')}"
+            f"{level}"
+            "</p>"
         )
         if suitability.get("clarification"):
             summary += '<p class="warning">' + escape(suitability["clarification"]) + "</p>"
     if biac.selection_mode != "default":
-        summary += '<div class="warning"><strong>Deviation from model allocation</strong>'
-        summary += " · Your active adjustment remains subject to the same policy checks.</div>"
+        summary += tr('<div class="warning"><strong>Deviation from model allocation</strong>')
+        summary += tr(" · Your active adjustment remains subject to the same policy checks.</div>")
     summary += '<div class="metrics">'
     for label, field in (
-        ("Principal", "principal"),
-        ("Purchase fees", "fee_buy"),
-        ("Total debit", "total_debit"),
-        ("Net performance benchmark (not guaranteed)", "projected_net"),
+        (tr("Principal"), "principal"),
+        (tr("Purchase fees"), "fee_buy"),
+        (tr("Total debit"), "total_debit"),
+        (tr("Net performance benchmark (not guaranteed)"), "projected_net"),
     ):
         summary += (
             f'<div class="metric">{label}<strong>'
             f"{number(f'total.{field}', f'biac.totals.{field}')}</strong></div>"
         )
-    summary += "</div><h3>Your allocation</h3>"
+    summary += tr("</div><h3>Your allocation</h3>")
     allocation_rows, fee_rows, ranking_rows = [], [], []
     for index, item in enumerate(biac.allocation):
         path = f"biac.allocation.{index}"
-        why = REASONS[item.selection_reason]
+        why = display_value(REASONS[item.selection_reason])
         sleeve_index = next(
             i for i, sleeve in enumerate(biac.sleeves) if sleeve.sleeve == item.sleeve
         )
@@ -320,24 +383,31 @@ def build_statement(
         if own_rank is not None:
             rank_path = f"biac.sleeves.{sleeve_index}.ranking_rows.{own_rank}"
             rank = number(f"item.{index}.rank", rank_path + ".rank", style="integer")
-            why += f" Reference rank {rank}."
+            why += f"{tr(' Reference rank ')}{rank}."
         runner_up = next((i for i, row in enumerate(ranking) if row.rank == 2), None)
         if runner_up is not None:
             runner = ranking[runner_up]
             runner_path = f"biac.sleeves.{sleeve_index}.ranking_rows.{runner_up}"
             gap_style = "integer" if request.objective == "liquidity" else "money"
             gap = number(f"item.{index}.runner_gap", runner_path + ".gap", style=gap_style)
-            why += f" Runner-up: {escape(runner.product_id)}; gap from first {gap}"
-            why += " days." if gap_style == "integer" else "."
+            why += (
+                f"{tr(' Runner-up: ')}{escape(product_label(runner.product_id))}"
+                f"{tr('; gap from first ')}{gap}"
+            )
+            why += tr(" days.") if gap_style == "integer" else "."
         allocation_rows.append([
-            f"Synthetic product {escape(item.product_id)}<br><small>{why}</small>",
+            f"{escape(product_label(item.product_id))}<br><small>{why}</small>",
             escape(item.sleeve),
             number(f"item.{index}.principal", path + ".principal"),
             number(f"item.{index}.weight", path + ".weight", style="percent"),
             number(f"item.{index}.fee_buy", path + ".fee_buy"),
             "T+" + number(f"item.{index}.access", path + ".access_days", style="integer"),
         ])
-        for field, label in (("fee_buy", "Buy"), ("fee_hold", "Hold"), ("fee_sell", "Sell")):
+        for field, label in (
+            ("fee_buy", tr("Buy")),
+            ("fee_hold", tr("Hold")),
+            ("fee_sell", tr("Sell")),
+        ):
             fee_rows.append([
                 escape(item.product_id),
                 label,
@@ -350,9 +420,18 @@ def build_statement(
                     style="percent",
                 ),
             ])
-    summary += _table(
-        ["Product and why", "Risk", "Principal", "Weight", "Buy fee", "Access"], allocation_rows
+    allocation_table = _table(
+        [
+            tr("Product and why"),
+            tr("Risk"),
+            tr("Principal"),
+            tr("Weight"),
+            tr("Buy fee"),
+            tr("Access"),
+        ],
+        allocation_rows,
     )
+    summary += allocation_table
     sleeve_rows = []
     bands = policy.profiles[profile_id].bands
     for index, sleeve in enumerate(biac.sleeves):
@@ -380,10 +459,19 @@ def build_statement(
         lower_css = _display(band.lower, "percent")
         width_css = _display(band.upper - band.lower, "percent")
         bar = (
-            f'<div class="sleeve-bar" aria-label="Actual {actual_css}; policy {lower_css} to '
-            f'{_display(band.upper, "percent")}"><div class="sleeve-fill" '
-            f'style="width:{actual_css}"></div><div class="band-marker" '
-            f'style="left:{lower_css};width:{width_css}"></div></div>'
+            f"""{tr('<div class="sleeve-bar" aria-label="Actual ')}"""
+            f"{actual_css}"
+            f"{tr('; policy ')}"
+            f"{lower_css}"
+            f"{tr(' to ')}"
+            f"{_display(band.upper, 'percent')}"
+            '"><div class="sleeve-fill" style="width:'
+            f"{actual_css}"
+            '"></div><div class="band-marker" style="left:'
+            f"{lower_css}"
+            ";width:"
+            f"{width_css}"
+            '"></div></div>'
         )
         sleeve_rows.append([escape(sleeve.sleeve), target, actual + bar, f"{lower}–{upper}"])
         for row_index, row in enumerate(sleeve.ranking_rows):
@@ -403,15 +491,16 @@ def build_statement(
                     style="integer" if request.objective == "liquidity" else "money",
                 ),
             ])
-    summary += '<div class="two-col"><section><h3>Risk sleeves</h3>'
-    summary += _table(["Risk", "Target", "Actual", "Allowed band"], sleeve_rows)
+    summary += tr('<div class="two-col"><section><h3>Risk sleeves</h3>')
+    risk_table = _table([tr("Risk"), tr("Target"), tr("Actual"), tr("Allowed band")], sleeve_rows)
+    summary += risk_table
     checks = []
     for index, check in enumerate(biac.checks):
         style = "percent" if check.constraint_id.startswith(("sleeve_", "group_")) else "money"
         lhs = number(f"check.{index}.lhs", f"biac.checks.{index}.lhs", style=style)
         rhs = number(f"check.{index}.rhs", f"biac.checks.{index}.rhs", style=style)
         checks.append([
-            CHECK_LABELS[check.constraint_id]
+            display_value(CHECK_LABELS[check.constraint_id])
             + (f" · {escape(check.subject_ref)}" if check.subject_ref else ""),
             lhs + " " + escape(check.comparator) + " " + rhs + " ✓",
         ])
@@ -430,78 +519,91 @@ def build_statement(
         )
         if first is not None:
             summary_checks.append(checks[first])
-    summary += "</section><section><h3>Policy checks</h3>"
-    summary += _table(["Constraint", "Verified comparison"], summary_checks)
-    summary += (
+    summary += tr("</section><section><h3>Policy checks</h3>")
+    summary += _table([tr("Constraint"), tr("Verified comparison")], summary_checks)
+    summary += tr(
         '<p class="muted">Representative checks; expand all constraints below.</p></section></div>'
     )
     days = number("liquidity.days", "request.liquidity_days", style="integer")
     required = number("liquidity.required", "request.liquidity_amount")
     available = number("liquidity.available", "biac.totals.liquid_net_principal")
+    liquidity_notice = tr(
+        " required. Based on the synthetic contract and earliest redemption, after fees. "
+        "Performance benchmarks and uninvested account cash do not count toward this "
+        "requirement. Market losses, default and liquidity stress are not modelled."
+    )
     liquidity = (
-        f"Within {days} days: {available} net principal available against {required} required. "
-        "Based on the synthetic contract and earliest redemption, after fees. "
-        "Performance benchmarks and uninvested account cash do not count toward this requirement. "
-        "Market losses, default and liquidity stress are not modelled."
+        f"{tr('Within ')}"
+        f"{days}"
+        f"{tr(' days: ')}"
+        f"{available}"
+        f"{tr(' net principal available against ')}"
+        f"{required}"
+        f"{liquidity_notice}"
     )
     summary += f'<p class="muted">{liquidity}</p>'
     details = {
-        "Full rankings · comparison only": (
-            "Rankings use the same signed reference principal and horizon; "
-            "they do not establish a globally optimal allocation. "
-            "Net values are a performance benchmark (not guaranteed)."
+        tr("Full rankings · comparison only"): (
+            tr(
+                "Rankings use the same signed reference principal and horizon; the"
+                "y do not establish a globally optimal allocation. Net values are "
+                "a performance benchmark (not guaranteed)."
+            )
             + _table(
                 [
-                    "Sleeve",
-                    "Product",
-                    "Rank",
-                    "Reference principal",
-                    "Net benchmark",
-                    "Fees",
-                    "Access days",
-                    "Gap from first",
+                    tr("Sleeve"),
+                    tr("Product"),
+                    tr("Rank"),
+                    tr("Reference principal"),
+                    tr("Net benchmark"),
+                    tr("Fees"),
+                    tr("Access days"),
+                    tr("Gap from first"),
                 ],
                 ranking_rows,
             )
         ),
-        "Excluded products": _table(
-            ["Product", "All exclusion reasons"],
+        tr("Excluded products"): _table(
+            [tr("Product"), tr("All exclusion reasons")],
             [
                 [
                     escape(item.product_id),
-                    "; ".join(EXCLUSIONS[reason] for reason in item.reason_codes),
+                    "; ".join(display_value(EXCLUSIONS[reason]) for reason in item.reason_codes),
                 ]
                 for item in biac.exclusions
             ],
         )
         if biac.exclusions
-        else "No products were excluded.",
-        "Cost table · actual allocation": _table(
-            ["Product", "Fee", "CNY", "% of product principal"], fee_rows
+        else tr("No products were excluded."),
+        tr("Cost table · actual allocation"): _table(
+            [tr("Product"), tr("Fee"), "CNY", tr("% of product principal")], fee_rows
         ),
-        "All constraint checks": _table(
-            ["Constraint", "Exact comparison (display rounded)"], checks
+        tr("All constraint checks"): _table(
+            [tr("Constraint"), tr("Exact comparison (display rounded)")], checks
         ),
-        "Liquidity and risk legend": liquidity
+        tr("Liquidity and risk legend"): liquidity
         + (
-            "<p>C means client risk profile: C1 Conservative; C2 Cautious; C3 Balanced; "
-            "C4 Growth; C5 Aggressive. R means product risk: R1 Low; R2 Lower; "
-            "R3 Moderate; R4 Higher; R5 High. Products may not exceed the client's level.</p>"
+            tr(
+                "<p>C means client risk profile: C1 Conservative; C2 Cautious; C3 "
+                "Balanced; C4 Growth; C5 Aggressive. R means product risk: R1 Low;"
+                " R2 Lower; R3 Moderate; R4 Higher; R5 High. Products may not exce"
+                "ed the client's level.</p>"
+            )
         ),
     }
     if biac.deviations is not None:
         rows = []
         for field, label in (
-            ("projected_fees_delta", "Projected fees"),
-            ("projected_net_delta", "Net performance benchmark (not guaranteed)"),
-            ("liquid_net_principal_delta", "Net liquid principal"),
-            ("total_debit_delta", "Total debit"),
+            ("projected_fees_delta", tr("Projected fees")),
+            ("projected_net_delta", tr("Net performance benchmark (not guaranteed)")),
+            ("liquid_net_principal_delta", tr("Net liquid principal")),
+            ("total_debit_delta", tr("Total debit")),
         ):
             rows.append([label, number("deviation." + field, "biac.deviations." + field)])
-        details["Deviation from model allocation · signed differences"] = _table(
-            ["Fact", "Change"], rows
+        details[tr("Deviation from model allocation · signed differences")] = _table(
+            [tr("Fact"), tr("Change")], rows
         )
-        for collection, label in (("products", "Product"), ("sleeves", "Sleeve")):
+        for collection, label in (("products", tr("Product")), ("sleeves", tr("Sleeve"))):
             deltas = getattr(biac.deviations, collection)
             delta_rows = []
             for index, delta in enumerate(deltas):
@@ -516,19 +618,26 @@ def build_statement(
                         style="points",
                     ),
                 ])
-            details["Deviation from model allocation · signed differences"] += _table(
-                [label, "Principal change", "Weight change"], delta_rows
+            details[tr("Deviation from model allocation · signed differences")] += _table(
+                [label, tr("Principal change"), tr("Weight change")], delta_rows
             )
     footer_facts = (
-        f"<footer>BIAC hash: {H(biac)}<br>Policy {escape(policy.id)} · "
-        f"Policy version {policy_version} · "
-        f"Catalogue {escape(policy.catalog_id)} · Catalogue version {catalog_version}<br>"
+        f"{tr('<footer>BIAC hash: ')}"
+        f"{H(biac)}"
+        f"{tr('<br>Policy ')}"
+        f"{escape(policy.id)}"
+        f"{tr(' · Policy version ')}"
+        f"{policy_version}"
+        f"{tr(' · Catalogue ')}"
+        f"{escape(policy.catalog_id)}"
+        f"{tr(' · Catalogue version ')}"
+        f"{catalog_version}"
+        "<br>"
     )
-    audit_link = f'<a href="{escape(audit_href, quote=True)}">Audit evidence</a>'
-    footer_notice = " · synthetic data · simulated authentication · no real money</footer>"
-    footer = footer_facts + audit_link + footer_notice
+    audit_link = f'''<a href="{escape(audit_href, quote=True)}{tr('">Audit evidence</a>')}'''
+    footer_notice = tr(" · synthetic data · simulated authentication · no real money</footer>")
     exported_audit = (
-        "Audit evidence is available in the application or statement + audit bundle"
+        tr("Audit evidence is available in the application or statement + audit bundle")
         if audit_href.startswith("#")
         else audit_link
     )
@@ -539,17 +648,99 @@ def build_statement(
     )
     body = '<article class="suitability">' + summary + detail_html + export_footer + "</article>"
     html = (
-        '<!doctype html><html lang="en"><meta charset="utf-8"><title>Suitability Statement</title>'
+        tr(
+            '<!doctype html><html lang="en"><meta charset="utf-8"><title>Suita'
+            "bility Statement</title>"
+        )
         + STYLE
         + "<body>"
         + body
         + "</body></html>"
     )
     text = unescape(sub(r"<[^>]*>", "", body)).replace("\n", " ")
+    selected = {item.product_id: item for item in biac.allocation}
+    comparison_rows = []
+    for sleeve in biac.sleeves:
+        for row in sleeve.ranking_rows:
+            item = selected.get(row.product_id)
+            status_badge = badge(
+                tr("Selected") if item else tr("Eligible"), "green" if item else "neutral"
+            )
+            reason = (
+                display_value(REASONS[item.selection_reason])
+                if item
+                else tr("Eligible for your signed goals.")
+            )
+            row_class = ' class="selected-product"' if item else ""
+            comparison_rows.append(
+                f"<tr{row_class}><td>{escape(product_label(row.product_id))}</td>"
+                f"<td>{status_badge}</td><td>{escape(sleeve.sleeve)}</td>"
+                f"<td>{escape(reason)}</td></tr>"
+            )
+    for item in biac.exclusions:
+        reason = "; ".join(display_value(EXCLUSIONS[code]) for code in item.reason_codes)
+        comparison_rows.append(
+            f"<tr><td>{escape(product_label(item.product_id))}</td>"
+            f"<td>{badge(tr('Excluded'), 'red')}</td><td>—</td><td>{escape(reason)}</td></tr>"
+        )
+    product_summary = (
+        f"<h2>{tr('Your proposal')}</h2>"
+        '<div class="proposal-heading">'
+        + badge(tr("Within your signed policy"), "green")
+        + f' <span class="muted">C{level} · '
+        + f"{display_value(PROFILE_NAMES[effective_level])}</span></div>"
+        + f'<p class="muted">{status}</p><div class="metrics">'
+    )
+    for label, key, path in (
+        (tr("Investing"), "total.principal", "biac.totals.principal"),
+        (tr("Purchase fees"), "total.fee_buy", "biac.totals.fee_buy"),
+        (tr("Net liquidity"), "liquidity.available", "biac.totals.liquid_net_principal"),
+        (
+            tr("Performance benchmark, not guaranteed"),
+            "total.projected_net",
+            "biac.totals.projected_net",
+        ),
+    ):
+        product_summary += (
+            f'<div class="metric">{escape(label)}<strong>{number(key, path)}</strong></div>'
+        )
+    compact_allocations = [
+        [
+            escape(product_label(item.product_id)),
+            *row[1:],
+        ]
+        for item, row in zip(biac.allocation, allocation_rows, strict=True)
+    ]
+    product_summary += f"</div><h3>{tr('Your allocation')}</h3>" + _table(
+        [tr("Product"), tr("Risk"), tr("Principal"), tr("Weight"), tr("Buy fee"), tr("Access")],
+        compact_allocations,
+    )
+    product_summary += f"<h3>{tr('Product comparison')}</h3>"
+    product_summary += (
+        '<div class="table-wrap"><table><thead><tr>'
+        + "".join(
+            f"<th>{escape(label)}</th>"
+            for label in (tr("Product"), tr("Status"), tr("Risk"), tr("Why it fits"))
+        )
+        + "</tr></thead><tbody>"
+        + "".join(comparison_rows)
+        + "</tbody></table></div>"
+    )
+    product_summary += f"<h3>{tr('Risk allocation')}</h3>" + risk_table
+    product_summary += (
+        f'<p class="muted">{tr("Net principal available within the signed liquidity deadline.")} '
+        f"{days}{tr(' days.')}</p>"
+        f'<p class="muted">{tr("sponsor-independent within the declared catalogue and policy")}</p>'
+    )
+    if biac.selection_mode != "default":
+        product_summary += '<p class="warning">' + tr("Deviation from model allocation") + "</p>"
+    if suitability is not None and suitability.get("clarification"):
+        product_summary += '<p class="warning">' + escape(suitability["clarification"]) + "</p>"
+    product_summary += f'<p class="muted">{audit_link}</p>'
     return Statement(
         html,
         text,
-        '<article class="suitability">' + summary + footer + "</article>",
+        '<article class="suitability">' + product_summary + "</article>",
         details,
         projection.sources,
     )
@@ -571,10 +762,12 @@ def render_biac(
         biac, request, policy, profile, execution, audit_href, suitability=suitability
     )
     st.markdown(STYLE + statement.summary_html, unsafe_allow_html=True)
-    for title, html in statement.details.items():
-        with st.expander(title, expanded=False):
-            st.markdown('<div class="suitability">' + html + "</div>", unsafe_allow_html=True)
-    with st.expander("Hashes, exact fractions and numeric sources", expanded=False):
+    with st.expander(tr("Technical evidence"), expanded=False):
+        for title, html in statement.details.items():
+            st.markdown(
+                '<div class="suitability"><h3>' + escape(title) + "</h3>" + html + "</div>",
+                unsafe_allow_html=True,
+            )
         st.json(statement.numeric_sources)
         st.json(
             biac.model_dump(mode="json")
@@ -582,7 +775,7 @@ def render_biac(
             else biac
         )
     st.download_button(
-        "Download Suitability Statement",
+        tr("Download Suitability Statement"),
         data=statement.html,
         file_name="suitability-statement.html",
         mime="text/html",
@@ -610,18 +803,21 @@ def render_biac(
                 info.compress_type = ZIP_DEFLATED
                 archive.writestr(info, content)
         st.download_button(
-            "Download statement + audit",
+            tr("Download statement + audit"),
             data=bundle.getvalue(),
             file_name="suitability-statement-audit.zip",
             mime="application/zip",
             key="download-suitability-audit",
         )
         st.caption(
-            "The bundle preserves the supplied audit log and links to it from the statement."
+            tr("The bundle preserves the supplied audit log and links to it from the statement.")
         )
     return statement
 
 
 def rule_reason(rule_id: str) -> str:
     """Keep the machine rule ID beside a plain-English reason."""
-    return f"{RULE_REASONS.get(rule_id, 'The gateway did not authorize this request')} ({rule_id})"
+    reason = display_value(
+        RULE_REASONS.get(rule_id, tr("The gateway did not authorize this request"))
+    )
+    return f"{reason} ({rule_id})"

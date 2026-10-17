@@ -93,5 +93,5 @@ def test_correction_diff_is_derived_only_from_verified_old_and_new_biac_receipts
     assert principal[0].exact_value == "-2500/1"
     returns = [row for row in diff if row.field == "expected_net"]
     assert returns
-    assert all("performance benchmark (not guaranteed)" in row.label.lower() for row in returns)
+    assert all(row.source_refs == diff[0].source_refs for row in returns)
     assert chat.gateway.bank.execute_count == 0

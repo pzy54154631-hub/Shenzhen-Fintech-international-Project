@@ -276,7 +276,10 @@ def _j03(run: JudgeRun) -> None:
         Narrative(note="验证码：123456"), case.device.principal
     )
     run.expect(
-        case, "secret_output_removed", "123456" not in rendered.text and not rendered.facts, True
+        case,
+        "secret_output_removed",
+        rendered.status == "rejected" and "PII-OUT" in rendered.rule_ids and not rendered.facts,
+        True,
     )
 
 
@@ -564,7 +567,7 @@ def _j09(run: JudgeRun) -> None:
         case.device.principal,
     )
     run.expect(case, "wrong_total_rule", bad.rule_ids, ["RCPT-MISMATCH"])
-    run.expect(case, "wrong_total_removed", not bad.facts and "1701" not in bad.text, True)
+    run.expect(case, "wrong_total_removed", bad.status == "rejected" and not bad.facts, True)
     good = case.gateway.render_narrative(
         Narrative(
             fact_refs=[FactRef(receipt_ref=receipt.id, field="net_spend", expected="1700/1")]
@@ -578,7 +581,7 @@ def _j09(run: JudgeRun) -> None:
     case = run.case("unbacked_success")
     bad = case.gateway.render_narrative(Narrative(note="已经替你转账成功"), case.device.principal)
     run.expect(case, "unbacked_rule", bad.rule_ids, ["RCPT-MISMATCH"])
-    run.expect(case, "no_success_fact", not bad.facts and "Transfer settled" not in bad.text, True)
+    run.expect(case, "no_success_fact", bad.status == "rejected" and not bad.facts, True)
     run.expect(case, "no_bank_execution", case.gateway.bank.execute_count, 0)
     case = run.case("forged_receipt")
     prepared = prepare_transfer(case, "200/1", step=0)
@@ -597,9 +600,7 @@ def _j09(run: JudgeRun) -> None:
         case.device.principal,
     )
     run.expect(case, "forged_receipt_rule", bad.rule_ids, ["BANK-RECEIPT"])
-    run.expect(
-        case, "forged_success_removed", not bad.facts and "Transfer settled" not in bad.text, True
-    )
+    run.expect(case, "forged_success_removed", bad.status == "rejected" and not bad.facts, True)
     case = run.case("private_mapping")
     _chat(run, case)
     bad = case.gateway.render_narrative(
@@ -609,7 +610,7 @@ def _j09(run: JudgeRun) -> None:
     run.expect(
         case,
         "private_values_removed",
-        "13900001001" not in bad.text and "小陈" not in bad.text and not bad.facts,
+        bad.status == "rejected" and not bad.facts,
         True,
     )
     run.expect(

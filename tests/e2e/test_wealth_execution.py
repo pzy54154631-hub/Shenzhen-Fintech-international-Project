@@ -377,8 +377,8 @@ def test_explicit_item_selection_executes_with_per_card_deviation_and_mfa():
     assert available(case.state, "A_CURRENT") == 2000
     assert case.comparison_cert.allocation.deviations.projected_net_delta == -50
     for approved in (first_approval, second_approval):
-        rendered = jcs_bytes(approved.card).decode("utf-8")
-        assert "Deviation from model allocation" in rendered
+        assert approved.card["allocation"]["selection_mode"] == "explicit_items"
+        assert approved.card["allocation"]["deviations"]["projected_net_delta"] == "-50/1"
         assert approved.cert.allocation.selection_mode == "explicit_items"
         assert approved.cert.allocation.deviations.projected_net_delta == -50
     assert first_approval.grant.scope_hash != second_approval.grant.scope_hash

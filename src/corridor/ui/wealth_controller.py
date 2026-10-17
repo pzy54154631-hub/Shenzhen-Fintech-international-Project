@@ -2,7 +2,7 @@
 
 from dataclasses import asdict, replace
 
-from corridor.agent.llm import LLMClient, ReplayCorrupt, ReplayMiss
+from corridor.agent.llm import LLMClient, LLMOutputError, ReplayCorrupt, ReplayMiss
 from corridor.agent.wealth_dialogue import GOAL_FIELDS, GoalSlot, WealthCandidate, WealthDialogue
 from corridor.crypto.jcs import H
 from corridor.gateway.allocations import (
@@ -54,6 +54,41 @@ class WealthController(DemoController):
         self.dialogue_result = None
         self.suitability_details = None
         self._goal_results = {}
+        self.proposal_source = "scripted"
+
+    @property
+    def planner_source(self):
+        return f"live: {self.client.model}" if self.client.mode == "live" else "scripted"
+
+    def at_transaction_boundary(self):
+        snapshot = self.execution_snapshot()
+        signed_ref = self.wealth_chat.signed_request_ref if self.wealth_chat else None
+        if signed_ref:
+            if not snapshot:
+                return False
+            parent = self.state.allocation_plans[snapshot["allocation_ref"]]
+            if parent.request_ref != signed_ref:
+                return False
+        if snapshot:
+            return (
+                snapshot["status"] in {"completed", "cancelled", "failed", "partially_executed"}
+                and self.leg is None
+            )
+        return self.comparison is None and self.draft is None and self.leg is None
+
+    def set_client(self, client):
+        if client is self.client:
+            return
+        if not self.at_transaction_boundary():
+            raise ValueError("Planner cannot change during a transaction")
+        self.client = client
+        if self.wealth_chat is not None:
+            self.wealth_chat.client = client
+            self.wealth_chat.require_live = client.mode == "live"
+            self.wealth_chat.max_model_attempts = 1 if client.mode == "live" else 3
+            self.wealth_chat.mode = "assistant"
+            self.wealth_chat._source = "not_run" if client.mode == "live" else "scripted"
+        self.guided = False
 
     def start_session(self):
         previous_session = self.session
@@ -70,6 +105,8 @@ class WealthController(DemoController):
                 source_account_ref="A_CURRENT",
                 allowed_types=["wealth"],
                 evaluation=True,
+                require_live=self.client.mode == "live",
+                max_model_attempts=1 if self.client.mode == "live" else 3,
             )
             self.dialogue_result = None
             self.suitability_details = None
@@ -160,6 +197,15 @@ class WealthController(DemoController):
         self.candidate = WealthCandidate(
             self.wealth_chat.intent_id, turn.pending_slots, turn.question
         )
+        if (
+            self.wealth_chat.comparison is not None
+            and self.wealth_chat.comparison is not self.comparison
+        ):
+            self.proposal_source = (
+                f"live: {self.client.model}"
+                if turn.evidence_source == "live"
+                else turn.evidence_source
+            )
         self.comparison = self.wealth_chat.comparison
         if turn.proposal_withdrawn or self.comparison is None:
             self.draft = None
@@ -186,6 +232,9 @@ class WealthController(DemoController):
             status="collecting" if turn.phase in {"collecting", "adjusting"} else turn.phase,
             source=turn.evidence_source,
             guided=self.guided,
+            planner_source=(
+                f"live: {self.client.model}" if turn.evidence_source == "live" else "scripted"
+            ),
         )
         self.dialogue_result = result
         return result.copy()
@@ -318,19 +367,38 @@ class WealthController(DemoController):
             }
         return self._result(result)
 
-    def verify_leg(self, action_id):
+    def prepare_leg_mfa(self, action_id):
+        """Return the simulated device factor only to the explicit UI panel."""
+        self._require_login()
+        if self.leg is None or self.leg["action"].action_id != action_id:
+            return None
+        leg = self.leg
+        if leg["verified"]:
+            return None
+        if not leg.get("mfa_challenge"):
+            challenge = self.gateway.request_mfa(
+                leg["action"], leg["cert"], request_id=self._id("wealth-mfa")
+            )
+            if challenge is None:
+                return None
+            leg["mfa_challenge"] = challenge
+        return self.gateway.mfa.test_code(leg["mfa_challenge"])
+
+    def verify_leg(self, action_id, code=None):
         self._require_login()
         if self.leg is None or self.leg["action"].action_id != action_id:
             return {"status": "rejected", "rule_ids": ["APR-VOID"]}
         leg = self.leg
         if leg["verified"]:
             return {"status": "mfa_verified"}
-        challenge = self.gateway.request_mfa(
-            leg["action"], leg["cert"], request_id=self._id("wealth-mfa")
-        )
-        if challenge is None:
+        if self.prepare_leg_mfa(action_id) is None:
             return {"status": "rejected", "rule_ids": ["MFA-INVALID"]}
-        grant = self.device.complete_mfa(self.gateway.mfa, challenge, now=self.state.now)
+        challenge = leg["mfa_challenge"]
+        grant = (
+            self.device.complete_mfa(self.gateway.mfa, challenge, now=self.state.now)
+            if code is None
+            else self.gateway.mfa.verify(challenge, code, now=self.state.now)
+        )
         if grant is None or self.gateway.submit_mfa(grant).status != "accepted":
             return {"status": "rejected", "rule_ids": ["MFA-INVALID"]}
         leg["cert"] = leg["cert"].model_copy(update={"mfa_grant_refs": [grant.grant_id]})
@@ -430,6 +498,13 @@ class WealthController(DemoController):
             result = self.receive_goal("Propose allocation", request_id=self._id("wealth-proposal"))
         except (ReplayMiss, ReplayCorrupt):
             raise
+        except LLMOutputError:
+            return {
+                "status": "rejected",
+                "message": (
+                    "Live AI failed. No scripted fallback ran. Check access, budget and retry."
+                ),
+            }
         except (ValueError, RuntimeError, TimeoutError) as error:
             rule = str(error) if str(error) in RULES else "ALLOC-SELECT"
             return {
@@ -440,6 +515,7 @@ class WealthController(DemoController):
         if self.comparison is None:
             return {**result, "status": "rejected"}
         self._confirmed_hash = digest
+        self.proposal_source = self.planner_source
         self.last_result = {
             **result,
             "status": "comparison_only",

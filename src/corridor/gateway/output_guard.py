@@ -1,4 +1,4 @@
-"""Deterministic English prose guard and receipt-authenticated wealth displays.
+"""Deterministic prose guard and bilingual receipt-authenticated wealth displays.
 
 Display reasons are diagnostics, not kernel rule IDs. Model prose is never a
 source of numeric facts, even when a numeral happens to match a signed value.
@@ -12,6 +12,7 @@ from typing import Literal, TypeAlias
 
 from corridor.gateway.facts import render_narrative
 from corridor.gateway.privacy import PIIVault
+from corridor.i18n import tr, translated_literal
 from corridor.schemas.bank import AnalysisReceipt
 from corridor.schemas.models import JsonValue
 from corridor.schemas.money import display_amount, fraction_string
@@ -231,7 +232,9 @@ def _promissory(text: str) -> bool:
     return any(word in compact for word in _PROMISES)
 
 
-def guard_prose(note: str, vault: PIIVault | None = None) -> GuardedProse:
+def guard_prose(
+    note: str, vault: PIIVault | None = None, *, locale: str | None = None
+) -> GuardedProse:
     """Rewrite unsafe notes without ever attempting to match their numbers to facts."""
     normalized = _normalized(note)
     reasons: list[str] = []
@@ -256,7 +259,11 @@ def guard_prose(note: str, vault: PIIVault | None = None) -> GuardedProse:
     if not reasons and normalized not in _APPROVED_PROSE:
         reasons.append("unverified_prose")
     return GuardedProse(
-        text=_SAFE_NOTE if reasons else normalized,
+        text=tr(_SAFE_NOTE, locale=locale)
+        if reasons
+        else tr(normalized, locale=locale)
+        if normalized
+        else "",
         status="rewritten" if reasons else "accepted",
         reasons=tuple(reasons),
     )
@@ -265,8 +272,8 @@ def guard_prose(note: str, vault: PIIVault | None = None) -> GuardedProse:
 def _label(field: str) -> str:
     leaf = field.rsplit(".", 1)[-1]
     if leaf in _RETURN_FIELDS:
-        return BENCHMARK_LABEL
-    return _LABELS.get(leaf, "Verified fact")
+        return tr(BENCHMARK_LABEL)
+    return tr(_LABELS.get(leaf, "Verified fact"))
 
 
 def _display(value: JsonValue, field: str) -> str:
@@ -277,9 +284,14 @@ def _display(value: JsonValue, field: str) -> str:
         and any(isinstance(item, (list, dict)) for item in value)
     ):
         # Nested values are exposed only through authenticated leaf projections.
-        return "Verified structured facts; returns are a " + BENCHMARK_LABEL
+        return tr(
+            "Verified structured facts; returns are a {benchmark}", benchmark=tr(BENCHMARK_LABEL)
+        )
     if leaf == "projection_notice":
-        return "Synthetic new-money allocation; returns are a " + BENCHMARK_LABEL
+        return tr(
+            "Synthetic new-money allocation; returns are a {benchmark}",
+            benchmark=tr(BENCHMARK_LABEL),
+        )
     if leaf in _MONEY_FIELDS and isinstance(value, (str, int)) and not isinstance(value, bool):
         return display_amount(Fraction(value))
     if isinstance(value, list):
@@ -290,28 +302,34 @@ def _display(value: JsonValue, field: str) -> str:
         display = "Yes" if value else "No"
     else:
         display = str(value)
-    # A signed string is data, not authorization to publish a promise or another language.
+    # Authenticate canonical data before translating known display literals. A signed
+    # string still does not authorize arbitrary prose or promissory language.
     if not display.isascii() or _promissory(_normalized(display)):
         raise ValueError("RCPT-MISMATCH")
-    return display
+    return translated_literal(display)
 
 
-def _english_fact(fact: RenderedFact) -> RenderedFact:
+def _localized_fact(fact: RenderedFact) -> RenderedFact:
     label = _label(fact.field)
     display = _display(fact.exact_value, fact.field)
-    return fact.model_copy(update={"display_value": display, "text": f"{label}: {display}."})
+    return fact.model_copy(
+        update={
+            "display_value": display,
+            "text": tr("{label}: {display}.", label=label, display=display),
+        }
+    )
 
 
 def render_guarded(
     narrative: Narrative, state: BankState, principal: str, vault: PIIVault
 ) -> GuardedOutput:
-    """Verify original FactRefs, then replace only presentation with fixed English labels."""
+    """Verify original FactRefs, then localize only the authenticated presentation."""
     try:
         validated = Narrative.model_validate(
             narrative.model_dump(mode="python", exclude_unset=True, warnings=False)
         )
     except (ValueError, TypeError, AttributeError):
-        return GuardedOutput("rejected", [], "", _EMPTY, ["RCPT-MISMATCH"])
+        return GuardedOutput("rejected", [], "", tr(_EMPTY), ["RCPT-MISMATCH"])
     prose = guard_prose(validated.note, vault)
     verified = render_narrative(validated.model_copy(update={"note": ""}), state, principal, vault)
     if verified.status == "rendered" and any(
@@ -321,24 +339,24 @@ def render_guarded(
     ):
         # Exploratory numerical results have unverified semantics. Their legacy
         # renderer retains that warning; this wealth-only path never upgrades them.
-        return GuardedOutput("rejected", [], "", _EMPTY, ["RCPT-MISMATCH"])
+        return GuardedOutput("rejected", [], "", tr(_EMPTY), ["RCPT-MISMATCH"])
     rules = list(verified.rule_ids)
     if "private_content" in prose.reasons:
         rules.append("PII-OUT")
     try:
-        facts = [_english_fact(fact) for fact in verified.facts]
+        facts = [_localized_fact(fact) for fact in verified.facts]
     except (ValueError, TypeError, ArithmeticError):
         rules.append("RCPT-MISMATCH")
         facts = []
-    note = f"Assistant (unverified): {prose.text}" if prose.text else ""
-    text = "\n".join([*(fact.text for fact in facts)] or [_EMPTY])
+    note = tr("Assistant (unverified): {note}", note=prose.text) if prose.text else ""
+    text = "\n".join([*(fact.text for fact in facts)] or [tr(_EMPTY)])
     if note:
         text += "\n" + note
     try:
         vault.ensure_safe({"facts": facts, "note": note, "text": text}, rule="PII-OUT")
     except ValueError:
         rules.append("PII-OUT")
-        facts, note, text = [], "", _EMPTY
+        facts, note, text = [], "", tr(_EMPTY)
     return GuardedOutput(
         status="rejected" if rules else "rendered",
         facts=facts,
@@ -358,7 +376,7 @@ def answer_guarantee(
         character for character in _normalized(question).casefold() if character.isalnum()
     )
     protection = any(word in compact for word in ("capital", "principal", "保本", "本金"))
-    note = _PROTECTION_ANSWER if protection else _RETURN_ANSWER
+    note = tr(_PROTECTION_ANSWER if protection else _RETURN_ANSWER)
     return GuardedOutput(
         status=result.status,
         facts=result.facts,
@@ -412,7 +430,7 @@ def project_allocation_fact(
         raise ValueError("RCPT-MISMATCH")
     field = next((part for part in reversed(path) if isinstance(part, str)), "")
     label, display = _label(field), _display(value, field)
-    text = f"{label}: {display}."
+    text = tr("{label}: {display}.", label=label, display=display)
     vault.ensure_safe({"value": value, "text": text}, rule="PII-OUT")
     return ProjectedFact(ref.model_copy(deep=True), path, value, label, display, text)
 
@@ -446,9 +464,19 @@ def _derived(
         fraction_string(Fraction(str(values[1]))),
     )
     delta = fraction_string(Fraction(after) - Fraction(before))
-    label, display = "Change in " + _label(field), display_amount(Fraction(delta))
+    label = tr("Change in {label}", label=_label(field))
+    display = display_amount(Fraction(delta))
     return DerivedFact(
-        field, product_id, refs, paths, before, after, delta, label, display, f"{label}: {display}."
+        field,
+        product_id,
+        refs,
+        paths,
+        before,
+        after,
+        delta,
+        label,
+        display,
+        tr("{label}: {display}.", label=label, display=display),
     )
 
 

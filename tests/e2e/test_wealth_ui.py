@@ -1,6 +1,16 @@
 """Topic B's visible device profile, signed goals, certificate and purchases."""
 
+import pytest
+
+from corridor.ui.messages import tr
 from tests.e2e.test_demo_ui import app, navigate
+from tests.unit.test_product_ui import assert_primary_clean, assert_progress
+
+
+@pytest.fixture(autouse=True, params=["en", "zh-CN"])
+def presentation_locale(monkeypatch, request):
+    monkeypatch.setenv("CORRIDOR_LOCALE", request.param)
+    return request.param
 
 
 def prepare_wealth(page):
@@ -32,25 +42,26 @@ def test_wealth_device_profile_goals_and_comparison_are_real():
     assert not controller.state.positions
     assert controller.comparison.cert.allocation.totals.principal == 10000
     assert controller.gateway.verify_log()
-    text = " ".join(item.value for item in page.success)
-    assert "Comparison complete" in text
-    assert "no purchase executed" in text
+    assert controller.comparison.result.status == "settled"
+    assert controller.gateway.bank.execute_count == 0
+    assert_primary_clean(page)
     navigate(page, "Advisor")
-    assert not page.exception
-    assert not any("Pending signed goals" in item.value for item in page.caption)
-    assert any("Goals signed on device" in item.value for item in page.success)
-    assert not any("complete your questionnaire" in item.value for item in page.info)
+    assert_primary_clean(page)
+    assert controller.wealth_chat.signed_request_ref in controller.state.user_inputs
+    assert controller.risk_profile() is not None
     page.text_input(key="wealth_message").set_value("Actually, use a different amount")
     page.button(key="wealth_discuss").click().run()
     assert controller.comparison is None
-    assert any("Pending signed goals" in item.value for item in page.caption)
-    assert not any("Goals signed on device" in item.value for item in page.success)
+    assert controller.wealth_chat.signed_request_ref is None
+    assert controller.dialogue_result["proposal_withdrawn"]
     assert controller.gateway.bank.execute_count == 0
 
 
 def test_full_topic_b_route_two_separate_mfa_receipts_and_audit():
     page = app()
     controller = prepare_wealth(page)
+    assert_progress(page, "proposal")
+    assert_primary_clean(page)
     boxes = [box for box in page.checkbox if box.key.startswith("wealth_select:")]
     assert len(boxes) == 2 and all(not box.value for box in boxes)
     assert page.button(key="wealth_start").disabled
@@ -64,6 +75,8 @@ def test_full_topic_b_route_two_separate_mfa_receipts_and_audit():
     page.button(key="wealth_start").click().run()
     assert not page.exception
     navigate(page, "Device")
+    assert_progress(page, "approvals")
+    assert_primary_clean(page)
     for number in range(2):
         key = controller.leg["action"].action_id
         assert page.button(key=f"wealth_approve:{key}").disabled
@@ -73,17 +86,66 @@ def test_full_topic_b_route_two_separate_mfa_receipts_and_audit():
         page.button(key=f"wealth_approve:{key}").click().run()
         assert not page.exception
         assert len(controller.state.positions) == number + 1
+        assert controller.gateway.bank.execute_count == number + 1
+        assert_primary_clean(page)
     page.run()
     assert controller.gateway.bank.execute_count == 2
     assert controller.execution_snapshot()["available_balance"] == "2000/1"
     assert len(controller.state.security.consumed_grant_ids) == 2
     assert not controller.state.security.locked_at
     navigate(page, "Proposal & Certificate")
-    text = " ".join(item.value for item in page.markdown)
-    assert "Completed" in text
-    assert "no purchase executed" not in text
+    execution = controller.execution_snapshot()
+    assert execution["status"] == "completed"
+    assert all(item["status"] == "settled" and item["receipt_ref"] for item in execution["items"])
+    assert_progress(page, "receipts")
+    assert_primary_clean(page)
     navigate(page, "Evidence & Audit")
-    assert any("Wealth audit chain verified" in item.value for item in page.success)
+    assert any(tr("✓ chain verified") in item.value for item in page.success)
+    assert_primary_clean(page)
+    assert controller.gateway.verify_log()
+
+
+def test_typed_mfa_rejects_wrong_codes_and_reject_stops_remaining_purchases():
+    page = app()
+    controller = prepare_wealth(page)
+    for box in page.checkbox:
+        if box.key.startswith("wealth_select:"):
+            box.check()
+    page.run()
+    page.button(key="wealth_start").click().run()
+    navigate(page, "Device")
+    key = controller.leg["action"].action_id
+    factor = page.text_input(key=f"wealth_mfa_code:{key}").value
+    assert factor and page.button(key=f"wealth_approve:{key}").disabled
+    for wrong_code in ("", "not-a-code"):
+        page.text_input(key=f"wealth_mfa_code:{key}").set_value(wrong_code)
+        page.button(key=f"wealth_verify:{key}").click().run()
+        assert not page.exception
+        assert page.session_state["wealth_leg_result"]["status"] == "rejected"
+        assert page.session_state["wealth_leg_result"]["rule_ids"] == ["MFA-INVALID"]
+        assert not controller.leg["verified"]
+        assert page.button(key=f"wealth_approve:{key}").disabled
+        assert controller.gateway.bank.execute_count == 0
+        assert not controller.state.security.consumed_grant_ids
+    page.text_input(key=f"wealth_mfa_code:{key}").set_value(factor)
+    page.button(key=f"wealth_verify:{key}").click().run()
+    assert controller.leg["verified"]
+    page.button(key=f"wealth_approve:{key}").click().run()
+    assert controller.gateway.bank.execute_count == 1
+    second = controller.leg["action"].action_id
+    assert second != key
+    page.button(key=f"wealth_reject:{second}").click().run()
+    assert not page.exception
+    execution = controller.execution_snapshot()
+    assert execution["status"] == "partially_executed"
+    assert [item["status"] for item in execution["items"]] == ["settled", "cancelled"]
+    assert controller.leg is None
+    assert controller.gateway.bank.execute_count == 1
+    assert len(controller.state.security.consumed_grant_ids) == 1
+    assert not any((button.key or "").startswith("wealth_approve:") for button in page.button)
+    assert_primary_clean(page)
+    page.run()
+    assert controller.gateway.bank.execute_count == 1
     assert controller.gateway.verify_log()
 
 
@@ -140,14 +202,15 @@ def test_advisor_shows_continuous_slots_and_device_prefills_without_signing():
     page.text_input(key="wealth_message").set_value("I have 10000 to invest")
     page.button(key="wealth_discuss").click().run()
     controller = page.session_state["wealth_controller"]
-    assert any("heard, not signed" in item.value for item in page.caption)
-    assert any(controller.dialogue_result["question"] in item.value for item in page.info)
+    assert controller.wealth_chat.signed_request_ref is None
+    assert controller.dialogue_result["pending_slots"]
+    assert controller.dialogue_result["phase"] == "collecting"
+    assert_primary_clean(page)
     page.text_input(key="wealth_message").set_value("I need 2000 within 3 days")
     page.button(key="wealth_discuss").click().run()
     navigate(page, "Device")
     assert page.text_input(key="wealth_amount").value == "10000.00"
     assert page.text_input(key="wealth_liquid").value == "2000.00"
-    assert not any("default value" in item.value for item in page.warning)
     assert not controller.state.user_inputs
     assert not page.exception
 
@@ -159,13 +222,14 @@ def test_loss_signal_displays_gateway_cap_and_coaching_clarification():
     page.text_input(key="wealth_message").set_value("一分都不能亏")
     page.button(key="wealth_discuss").click().run()
     assert not page.exception
-    assert any("Effective risk level: C1" in item.value for item in page.warning)
+    assert controller.suitability_details["effective_level"] == 1
     assert controller.risk_profile()["level"] == 2
     page.text_input(key="wealth_message").set_value("教我怎么答")
     page.button(key="wealth_discuss").click().run()
-    assert any("cannot" in item.value.lower() for item in page.info)
+    assert controller.dialogue_result["suitability_signal"]["signal"] == "coaching_request"
+    assert controller.dialogue_result["suitability_signal"]["status"] == "refused"
     navigate(page, "Device")
-    assert any("Effective risk level: C1" in item.value for item in page.warning)
+    assert controller.suitability_details["effective_level"] == 1
     assert controller.gateway.bank.execute_count == 0
 
 
@@ -183,8 +247,8 @@ def test_strict_replay_failure_is_never_labeled_as_guided(monkeypatch):
     monkeypatch.setattr(controller.client, "complete", missing)
     page.text_input(key="wealth_message").set_value("I have 10000 to invest")
     page.button(key="wealth_discuss").click().run()
-    assert any("Strict replay failed" in item.value for item in page.error)
-    assert not any("Guided mode" in item.value for item in page.warning)
+    assert page.error
+    assert controller.dialogue_result is None
     assert not controller.guided
     assert not controller.state.user_inputs
 
@@ -195,10 +259,44 @@ def test_questionnaire_order_matches_policy_and_loss_answer_caps_effective_level
     controller = page.session_state["wealth_controller"]
     navigate(page, "Device")
     for index, question in enumerate(controller.state.policy.risk_questions):
-        assert page.selectbox(key=f"wealth_risk_{index}").label == question
+        assert page.selectbox(key=f"wealth_risk_{index}").label == tr(question)
         page.selectbox(key=f"wealth_risk_{index}").select(0 if index == 1 else 4)
     page.button(key="wealth_sign_risk").click().run()
     assert not page.exception
     assert controller.risk_profile()["level"] == 4
     assert controller.risk_profile()["answers"][1] == 0
-    assert any("Effective risk level: C1" in item.value for item in page.warning)
+    assert controller.suitability_details["effective_level"] == 1
+
+
+def test_signed_goal_correction_displays_authenticated_read_only_difference(presentation_locale):
+    from corridor.crypto.jcs import H
+
+    page = app()
+    controller = prepare_wealth(page)
+    navigate(page, "Device")
+    page.text_input(key="wealth_amount").set_value("9000")
+    page.button(key="wealth_confirm_goals").click().run()
+    assert not page.exception
+    assert controller.comparison.cert.allocation.totals.principal == 9000
+    expected = controller.wealth_chat.change_explanation()
+    before = H(controller.state)
+    navigate(page, "Proposal & Certificate")
+    assert not page.exception
+    assert any(
+        tr("What changed after your signed correction") in item.value for item in page.subheader
+    )
+    table = next(item.value for item in page.dataframe if tr("Before (CNY)") in item.value.columns)
+    principal_fact = next(
+        fact for fact in expected if fact.product_id is None and fact.field == "principal"
+    )
+    principal = table[
+        (table[tr("Product")] == tr("Allocation total"))
+        & (table[tr("Fact")] == tr(principal_fact.label))
+    ]
+    prefix = "CNY " if presentation_locale == "en" else "¥"
+    assert principal.iloc[0][tr("Before (CNY)")] == prefix + "10,000.00"
+    assert principal.iloc[0][tr("After (CNY)")] == prefix + "9,000.00"
+    assert principal.iloc[0][tr("Change (CNY)")] == prefix + "-1,000.00"
+    assert any(fact.product_id == "P_A" and fact.exact_value == "-500/1" for fact in expected)
+    assert H(controller.state) == before
+    assert controller.gateway.bank.execute_count == 0

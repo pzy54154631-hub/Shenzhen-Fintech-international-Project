@@ -138,7 +138,7 @@ def test_statement_renders_summary_before_json_and_has_download(monkeypatch):
     statement = wealth_statement.render_biac(*statement_inputs())
     calls = display.mock_calls
     assert calls[0][0] == "markdown"
-    assert "Suitable for" in calls[0].args[0]
+    assert "Your proposal" in calls[0].args[0]
     assert "allocation" not in str(calls[0].kwargs)
     assert any(call[0] == "expander" for call in calls)
     assert any(call[0] == "download_button" for call in calls)
@@ -155,7 +155,7 @@ def test_partial_execution_uses_supplied_account_cash_and_keeps_settled_leg():
         ],
     }
     statement = wealth_statement.build_statement(*statement_inputs(), execution=execution)
-    assert "A5000 + CNY 7,000 cash, Partially executed" in statement.text
+    assert "Product A CNY 5,000.00 + CNY 7,000.00 cash, Partially executed" in statement.text
     assert "1 of 2 settled" in statement.text
     assert "nothing reversed automatically" in statement.text
     assert statement.numeric_sources["execution.cash"]["sources"] == ["execution.available_balance"]
@@ -215,7 +215,7 @@ def test_w11_real_second_leg_failure_has_receipt_backed_partial_statement():
         case.state.risk_assessments[case.state.customers["C_DEMO"].risk_profile_ref],
         execution=execution,
     )
-    assert "A5000 + CNY 7,000 cash, Partially executed" in statement.text
+    assert "Product A CNY 5,000.00 + CNY 7,000.00 cash, Partially executed" in statement.text
     assert case.gateway.bank.execute_count == 2
 
 

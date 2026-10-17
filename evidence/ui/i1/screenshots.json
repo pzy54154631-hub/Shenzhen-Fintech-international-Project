@@ -1,0 +1,104 @@
+{
+  "schema": "corridor-public-ui-screenshots-v1",
+  "capture_mode": "scripted",
+  "synthetic_data": true,
+  "simulated_authentication": true,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "capture_method": "Playwright with system Microsoft Edge; current I1 product UI after screenshots",
+  "copy_method": "Unmodified PNG bytes copied from the retained review archive; source and exported hashes must match",
+  "source_archive_note": "Review-archive references are provenance identifiers, not required public files. Exported PNG bytes and their SHA-256 values are included here.",
+  "evaluation_scope": "UI illustrations only; not new live-model measurements or evidence of unrestricted Chinese language competence.",
+  "screenshots": [
+    {
+      "file": "en-01-goals.png",
+      "locale": "en",
+      "caption": "Goal clarification and current context",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5c3e3048f4a7d98b6b7c2ed94daa2eb0e9746cbfd833c9837460838aea3a440d",
+      "source_capture_relative_to_review_archive": "i1/after/en/01-goals.png",
+      "source_sha256": "5c3e3048f4a7d98b6b7c2ed94daa2eb0e9746cbfd833c9837460838aea3a440d",
+      "source_dom_text_sha256": "85040082a83c3cf3fac057103b4fdc78057ed13b0c42ade726e262c7b1f4364f",
+      "source_checks_sha256": "3e1e3d8b7b9171c96e9d8bab59ea8b3396cdd3f7d903038a5d364c0351530b7d",
+      "capture_checks": {
+        "screen": "01-goals",
+        "canonical_fractions": [],
+        "uuids": [],
+        "hashes": [],
+        "raw_json_keys": [],
+        "replacement_character": false,
+        "horizontal_overflow": false
+      },
+      "visual_review": "PASS: individually viewed at original size; no overlap, horizontal overflow, replacement glyphs or exposed technical identifiers in the primary view."
+    },
+    {
+      "file": "en-02-proposal.png",
+      "locale": "en",
+      "caption": "Signed proposal, product allocation and comparison",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f27fa250583bb9e573337c46c0ce89ce523abdd75c303a6de4c902a77fa59db1",
+      "source_capture_relative_to_review_archive": "i1/after/en/02-proposal.png",
+      "source_sha256": "f27fa250583bb9e573337c46c0ce89ce523abdd75c303a6de4c902a77fa59db1",
+      "source_dom_text_sha256": "492ba2451194594f755ac7e23976f19504e69175b11e2bacb830353b6c0ed489",
+      "source_checks_sha256": "3e1e3d8b7b9171c96e9d8bab59ea8b3396cdd3f7d903038a5d364c0351530b7d",
+      "capture_checks": {
+        "screen": "02-proposal",
+        "canonical_fractions": [],
+        "uuids": [],
+        "hashes": [],
+        "raw_json_keys": [],
+        "replacement_character": false,
+        "horizontal_overflow": false
+      },
+      "visual_review": "PASS: individually viewed at original size; no overlap, horizontal overflow, replacement glyphs or exposed technical identifiers in the primary view."
+    },
+    {
+      "file": "en-04-receipts.png",
+      "locale": "en",
+      "caption": "Two completed simulated purchases and available cash",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2aec5e38f1c42d39fc063b82200b3f94ce926b002f0deadb58e166fce0df33ac",
+      "source_capture_relative_to_review_archive": "i1/after/en/04-receipts.png",
+      "source_sha256": "2aec5e38f1c42d39fc063b82200b3f94ce926b002f0deadb58e166fce0df33ac",
+      "source_dom_text_sha256": "fcd2d75b0be5cc5396a9b93eae94402e8ef44dcf9d527340dcc6e3a4d6198419",
+      "source_checks_sha256": "3e1e3d8b7b9171c96e9d8bab59ea8b3396cdd3f7d903038a5d364c0351530b7d",
+      "capture_checks": {
+        "screen": "04-receipts",
+        "canonical_fractions": [],
+        "uuids": [],
+        "hashes": [],
+        "raw_json_keys": [],
+        "replacement_character": false,
+        "horizontal_overflow": false
+      },
+      "visual_review": "PASS: individually viewed at original size; no overlap, horizontal overflow, replacement glyphs or exposed technical identifiers in the primary view."
+    },
+    {
+      "file": "zh-CN-01-goals.png",
+      "locale": "zh-CN",
+      "caption": "Simplified Chinese interface with the same unsigned goal",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cbbe4ae3795385645099f8d76621cc5b36cffa7355b082bb4b0fe1aa4b0a00a2",
+      "source_capture_relative_to_review_archive": "i1/after/zh-CN/01-goals.png",
+      "source_sha256": "cbbe4ae3795385645099f8d76621cc5b36cffa7355b082bb4b0fe1aa4b0a00a2",
+      "source_dom_text_sha256": "a3055ddceaadc741a683349dbefde3a829e8bd4bd2e1eb6a7ec6cca847f39463",
+      "source_checks_sha256": "3e1e3d8b7b9171c96e9d8bab59ea8b3396cdd3f7d903038a5d364c0351530b7d",
+      "capture_checks": {
+        "screen": "01-goals",
+        "canonical_fractions": [],
+        "uuids": [],
+        "hashes": [],
+        "raw_json_keys": [],
+        "replacement_character": false,
+        "horizontal_overflow": false
+      },
+      "visual_review": "PASS: individually viewed at original size; no overlap, horizontal overflow, replacement glyphs or exposed technical identifiers in the primary view."
+    }
+  ]
+}

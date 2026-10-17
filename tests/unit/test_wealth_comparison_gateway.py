@@ -69,8 +69,8 @@ def test_allocation_narrative_renders_only_signed_scalar_facts():
     )
     assert rendered.status == "rendered", rendered.rule_ids
     assert [fact.exact_value for fact in rendered.facts] == ["10000/1", "350/1"]
-    assert "10,000.00" in rendered.text or "10000.00" in rendered.text
-    assert "Performance benchmark (not guaranteed)" in rendered.text
+    assert rendered.facts[0].display_value == "10000.00"
+    assert rendered.facts[1].field == "projected_net"
     assert gateway.bank.execute_count == 0
 
 

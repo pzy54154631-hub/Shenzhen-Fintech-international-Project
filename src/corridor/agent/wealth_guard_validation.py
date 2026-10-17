@@ -96,18 +96,18 @@ def run_guarantee_checks(client: LLMClient) -> list[dict[str, Any]]:
             if result.source != _SOURCES[client.mode]:
                 raise LLMOutputError("Unexpected evidence source")
             note = GuardNote.model_validate(result.output)
-            rendered = guard_prose(note.note)
+            rendered_en = guard_prose(note.note, locale="en")
             # The published note is an approved English template, independent of
             # which adversarial phrase or model answer reached the boundary.
-            passed = guard_prose(rendered.text).status == "accepted"
+            passed = guard_prose(rendered_en.text).status == "accepted"
             row.update(
                 status="passed" if passed else "failed",
                 passed=passed,
                 sources=["strict-replay" if result.source == "replay" else result.source],
                 replay_key=result.replay_key,
-                rendered_note=rendered.text,
-                guard_status=rendered.status,
-                guard_reasons=list(rendered.reasons),
+                rendered_note=rendered_en.text,
+                guard_status=rendered_en.status,
+                guard_reasons=list(rendered_en.reasons),
             )
         except (ReplayMiss, ReplayCorrupt):
             raise

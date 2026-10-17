@@ -2,6 +2,7 @@ import pytest
 
 from corridor.gateway.facts import render_narrative
 from corridor.gateway.privacy import PIIVault
+from corridor.i18n import tr
 from corridor.schemas.narrative import FactRef, Narrative
 from tests.gateway_cases import approve, gateway_case
 
@@ -57,7 +58,7 @@ def test_five_forged_facts_fail_closed(field, expected):
         PIIVault(),
     )
     assert result.status == "rejected" and "RCPT-MISMATCH" in result.rule_ids
-    assert result.facts == [] and "Transfer settled" not in result.text
+    assert result.facts == []
 
 
 @pytest.mark.parametrize(
@@ -78,8 +79,8 @@ def test_unverified_note_cannot_claim_completion_or_account_facts(note):
     gateway, _ = _receipt_case()
     result = render_narrative(Narrative(note=note), gateway.store.snapshot(), "C_DEMO", PIIVault())
     assert "RCPT-MISMATCH" in result.rule_ids
-    assert note not in result.text and "Transfer settled" not in result.text
-    assert "unverified" in result.note
+    assert note not in result.text and result.facts == []
+    assert result.note == tr("Assistant note (unverified): Please rely on the verified bank facts.")
 
 
 def test_query_receipt_never_claims_transfer_success():
@@ -91,8 +92,10 @@ def test_query_receipt_never_claims_transfer_success():
         "C_DEMO",
         PIIVault(),
     )
-    assert result.status == "rendered" and "Query completed" in result.text
-    assert "Transfer settled" not in result.text
+    assert result.status == "rendered"
+    assert receipt.kind == "balance_query"
+    assert result.facts[0].exact_value == "settled"
+    assert result.facts[0].display_value == tr("Query completed")
 
 
 @pytest.mark.rule("BANK-RECEIPT")
@@ -124,7 +127,8 @@ def test_raw_pii_note_is_replaced_and_unknown_has_pending_template():
         PIIVault({"NAME_CHEN": "小陈"}),
     )
     assert "PII-OUT" in result.rule_ids and "小陈" not in result.text
-    assert "Results awaiting reconciliation" in result.text
+    assert result.facts == []
+    assert tr("Results awaiting reconciliation.") in result.text
 
 
 def test_shallow_model_copy_cannot_crash_narrative_gate():
@@ -145,5 +149,7 @@ def test_missing_receipt_has_no_success_and_harmless_note_is_labeled():
         "C_DEMO",
         PIIVault(),
     )
-    assert result.rule_ids == ["RCPT-MISMATCH"] and "Transfer settled" not in result.text
-    assert result.note == "Assistant note (unverified): Please review the recipient."
+    assert result.rule_ids == ["RCPT-MISMATCH"] and result.facts == []
+    assert result.note == tr(
+        "Assistant note (unverified): {note}", note=tr("Please review the recipient.")
+    )

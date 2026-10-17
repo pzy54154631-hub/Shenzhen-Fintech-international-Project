@@ -35,6 +35,7 @@ from corridor.gateway.plans import node_due_at, project_runtime, resolve_node_te
 from corridor.gateway.preview import PreviewRequest, preview_card, preview_sequence
 from corridor.gateway.privacy import PIIVault
 from corridor.gateway.sandbox import SandboxRegistry, exploratory_receipt
+from corridor.i18n import tr
 from corridor.kernel import check
 from corridor.kernel.binding import binding, intent_key, mfa_scope, resolve_amount
 from corridor.kernel.rules import RULES
@@ -406,9 +407,11 @@ class Gateway:
                     return GatewayResult(
                         "refused",
                         details={
-                            "message": "I cannot choose or coach questionnaire answers "
-                            "to obtain a risk level. "
-                            "Please answer on your device using your own circumstances."
+                            "message": tr(
+                                "I cannot choose or coach questionnaire answers "
+                                "to obtain a risk level. "
+                                "Please answer on your device using your own circumstances."
+                            )
                         },
                     )
                 if signal != "cannot_accept_loss":
@@ -418,10 +421,12 @@ class Gateway:
                     "clarification_required",
                     details={
                         "effective_level_cap": 1,
-                        "message": "A dialogue hint indicates that you may not accept loss. "
-                        "Please clarify your loss "
-                        "tolerance on the device. The effective risk level can only decrease "
-                        "during this session; performance benchmarks are not guaranteed.",
+                        "message": tr(
+                            "A dialogue hint indicates that you may not accept loss. "
+                            "Please clarify your loss "
+                            "tolerance on the device. The effective risk level can only decrease "
+                            "during this session; performance benchmarks are not guaranteed."
+                        ),
                     },
                 )
             except OSError:
@@ -832,11 +837,13 @@ class Gateway:
                 "preflight_required": not started,
                 "can_start": can_start,
                 "rule_ids": list(inspection.errors),
-                "message": f"Needs {required} approvals, {budget['remaining']} left; "
-                + (
-                    f"window clears at {budget['window_clears_at']}."
+                "message": tr(
+                    "Needs {required} approvals, {remaining} left; {expiry}",
+                    required=required,
+                    remaining=budget["remaining"],
+                    expiry=tr("window clears at {time}.", time=budget["window_clears_at"])
                     if budget["window_clears_at"]
-                    else "no earlier approvals are expiring."
+                    else tr("no earlier approvals are expiring."),
                 ),
             }
 
@@ -936,7 +943,13 @@ class Gateway:
             self._audit(
                 "narrative_rendered",
                 principal,
-                {"rule_ids": result.rule_ids, "fact_hash": H(result.facts)},
+                {
+                    "rule_ids": result.rule_ids,
+                    "fact_hash": H([
+                        fact.model_dump(include={"receipt_ref", "field", "exact_value"})
+                        for fact in result.facts
+                    ]),
+                },
             )
             return result
 
@@ -1901,7 +1914,12 @@ class Gateway:
                 self._audit(
                     "allocation_preflight_refused",
                     self.store.snapshot().allocation_plans[parent_id].principal,
-                    {"allocation_ref": parent_id, "approval_budget": budget},
+                    {
+                        "allocation_ref": parent_id,
+                        "approval_budget": {
+                            key: value for key, value in budget.items() if key != "message"
+                        },
+                    },
                 )
                 return GatewayResult(
                     "rejected",

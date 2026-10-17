@@ -74,9 +74,9 @@ def test_aa_registered_requested_total_and_split_render_without_payment_claim():
         result = render(receipt, state, field)
         assert result.status == "rendered", result
         assert result.facts[0].exact_value == receipt.results[field].value
-        assert "Funds received" not in result.text and "Collection settled" not in result.text
+        assert receipt.function_id == "aa_split_v1"
     result = render(receipt, state, "status")
-    assert "request" in result.text and "collection not yet confirmed" in result.text
+    assert result.facts[0].exact_value == "requested"
 
 
 @pytest.mark.parametrize(

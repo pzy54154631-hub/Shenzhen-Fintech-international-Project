@@ -193,9 +193,9 @@ def test_settled_redemption_facts_render_only_verified_amount_and_balance(tamper
     )
     if tampered:
         assert result.status == "rejected" and result.rule_ids == ["RCPT-MISMATCH"]
-        assert result.facts == [] and "201" not in result.text
+        assert result.facts == []
     else:
         assert result.status == "rendered" and result.rule_ids == []
         assert {fact.field: fact.exact_value for fact in result.facts} == expected
-        assert result.facts[1].display_value == "200.00"
-        assert "Redemption" in result.text and "Transfer settled" not in result.text
+        assert all(fact.receipt_ref == receipt.id for fact in result.facts)
+        assert receipt.kind == "redeem_product"

@@ -1,8 +1,14 @@
+**English** | [简体中文](README.zh-CN.md)
+
 # Corridor Wealth
 
 **Topic B: Wealth Advisory Agent** — an auditable advisory workflow connecting signed client goals, declared-catalogue comparisons, policy-checked allocations and separately approved simulated purchases.
 
 This is a Fintechathon 2026 International Track research prototype. All financial data and transactions are synthetic. The model proposes; a model-independent kernel checks every permitted action. [FINAL-RESULTS](results/FINAL-RESULTS.md) is the authoritative measurement record.
+
+## Live demo
+
+[Open the online demo]({{LIVE_URL}}) — deployment URL pending. **Demo mode** uses the scripted planner without API calls. **Real AI** requires a configured server key and the access code, or your own OpenAI key (BYOK), held only in the current session's memory. Judges: the access code is in the submission materials. Both modes retain identical kernel and gateway checks, separate simulated MFA for each purchase, and synthetic transactions. The page shows planner source and remaining server budget; live failures are explicit. See [deployment instructions](docs/DEPLOY.md).
 
 ## 2. Topic B requirements
 
@@ -18,15 +24,17 @@ The word “compliant” refers to the declared synthetic policy and checks. The
 
 ## 3. Screenshots
 
-The following captures show the scripted synthetic workflow; screenshots are not live-model evaluation evidence.
+The following retained I1 1440×900 captures show the scripted synthetic workflow in English and Simplified Chinese, captured before the live-mode update; screenshots are not live-model evaluation evidence.
 
-![English advisory dialogue](evidence/ui/wealth/f3/01-dialogue.jpg)
+![English goal clarification and current context](evidence/ui/i1/en-01-goals.png)
 
-![Allocation receipt and certificate](evidence/ui/wealth/f3/03-allocation-receipt.jpg)
+![Signed proposal and product comparison](evidence/ui/i1/en-02-proposal.png)
 
-![Completed simulated purchases](evidence/ui/wealth/f3/06-completed.jpg)
+![Completed simulated purchases and available cash](evidence/ui/i1/en-04-receipts.png)
 
-Capture provenance is recorded in the [screenshot manifest](evidence/ui/wealth/f3/screenshots.json).
+![Simplified Chinese interface](evidence/ui/i1/zh-CN-01-goals.png)
+
+Capture provenance and unchanged source-image hashes are recorded in the [screenshot manifest](evidence/ui/i1/screenshots.json).
 
 ## 4. Quickstart: Windows, macOS and Linux
 
@@ -54,7 +62,9 @@ uv run --frozen corridor demo
 
 Open the loopback address printed by `demo`. The Streamlit app binds to `127.0.0.1`; the gateway runs in the same process and telemetry is disabled. Use `corridor demo --port 8502` if the default port is occupied. The default UI is scripted and key-free.
 
-Follow Advisor → Proposal & Certificate → Device → Evidence & Audit. The simulated device signs the goals and questionnaire, then approves each purchase with simulated MFA. Use only the supplied synthetic identities and credentials. `corridor test --full` selects the larger property-testing profile.
+The interface defaults to English. Use the header's **English / 简体中文** selector to switch languages; `CORRIDOR_LOCALE=en` (default) or `CORRIDOR_LOCALE=zh-CN` sets the initial locale. Values used for device signatures and canonical confirmations keep their English literals; translation happens at the display boundary. Localized controls and guarded explanations do not establish unrestricted Chinese dialogue competence.
+
+The progress bar follows Goals → Risk profile → Proposal & certificate → Approvals → Receipts. Use Advisor to clarify goals, Device to sign the goals and questionnaire, Proposal & Certificate to inspect the comparison, and Device to approve each purchase with simulated MFA. Evidence & Audit retains the receipts and audit chain. Use only the supplied synthetic identities and credentials. `corridor test --full` selects the larger property-testing profile.
 
 ## 6. Offline reproduction
 
@@ -76,7 +86,11 @@ uv run --offline --frozen corridor bench --suite wealth
 uv run --offline --frozen python scripts/replay_final.py --source evidence/final-f5 --output evidence/reproduced --cases data/blind
 ```
 
-Use a fresh output directory each time. The helper checks the original sealed observations, loads the exact recorded model/API/reasoning/output-limit profile with `env_file=None`, and disables socket and HTTP transports throughout replay. A missing or corrupt response fails; it never falls back to scripted or live mode. The output `evidence/reproduced/replay-summary.json` reports exact observation equality and API-call count.
+Use a fresh output directory each time. The helper checks the original sealed observations, loads the exact recorded model/API/reasoning/output-limit profile with `env_file=None`, and disables socket and HTTP transports throughout replay. A missing or corrupt response fails; it never falls back to scripted or live mode. The output `evidence/reproduced/replay-summary.json` reports raw observation equality, verified reproduction and API-call count separately.
+
+**Strict replay on the current code: 142/142 verified, with 141 raw observations byte-for-byte identical and 1 (J01) verified by a migration proof because the bilingual port changed the audit fact-hash format.** The driver accepts only this named migration: both complete audit chains and checkpoints must validate, the authenticated English facts must reproduce both hash formats, and all other observations must remain unchanged. The original evidence stays immutable; J01 remains `identical=false`. A missing proof or any additional difference fails verification. P2's historical 142/142 byte-for-byte equality was obtained on the code before I1.
+
+The command above also runs the J01 migration proof with networking disabled; expect `main/gpt-6.1-sol/J01: verified schema migration (raw unequal)` and, in `evidence/reproduced/replay-summary.json`, `verified_count=142`, `total=142`, `raw_identical_count=141`, `schema_migrations=1`, `api_calls=0`; its proof is saved as `evidence/reproduced/main/gpt-6.1-sol/J01/fact-hash-migration.json`.
 
 The default stages cover main J/W, model contrasts, M2/M4 dialogue/output checks, frozen blind cases and M7 attacks plus benign controls. Use `--stages main,blind,redteam` for the required J/W/blind/M7 subset. A recorded task failure remains a failure even when its replay matches exactly. Replay is a reproducibility check, not an additional independent experiment. `uv --offline` controls dependency access; the helper's transport guard also blocks application network access.
 
@@ -127,9 +141,9 @@ The gateway masks synthetic private values, guards model inputs/outputs, and rec
 
 ## 10. Evaluation summary
 
-These are the final recorded observations in [FINAL-RESULTS](results/FINAL-RESULTS.md), with mode and denominator stated for every rate. Replay equality includes both passing and failing tasks.
+These are the final recorded observations in [FINAL-RESULTS](results/FINAL-RESULTS.md), with mode and denominator stated for every rate. The replay-equality column is historical, measured on the code before I1, and includes both passing and failing tasks. Current-code strict replay is 142/142 verified: 141 raw observations byte-for-byte identical and 1 J01 audit fact-hash migration verified as described above.
 
-| Experiment | Mode | Completion or observed effect | Strict replay equality |
+| Experiment | Mode | Completion or observed effect | Historical strict replay equality (code before I1) |
 |---|---|---|---|
 | J bank mechanisms | scripted | 24/24 tasks passed | Not applicable |
 | W wealth mechanisms | scripted | 12/12 tasks; 74/74 formal subcases passed | Not applicable |
@@ -150,6 +164,10 @@ The final historical test/rules gate reported **2895/2895 tests passed**, with n
 The scripted wealth baseline matrix uses 31 projections per cell. In the main arm under `all_approve`, D0 had prohibited outcomes **7/31** and benign completion **20/21**; D3 had **0/31** and **4/21**; CCA had **0/31** and **20/21**. D3's restrictive limits reduce completion; scaled-principal and careful-user rows remain in the full report. MFA gaps are separate protocol diagnostics.
 
 Observed zero events do not establish zero future risk. The report supplies descriptive upper bounds, including 3/16 = 18.75% for frozen blind forbidden effects and 3/24 = 12.5% for M7 forbidden effects. Authored and paired cases are correlated. Formal W mutations remain scripted; live W results concern bounded advisory workflows.
+
+### Security review
+
+The four [security review records](docs/review/) retain confirmed and rejected findings and their regression evidence. Some explanations in `claude-review-*.json` are in Chinese, the working language used during those reviews; conclusion fields are in English. The public copies disclose repository-relative path normalization and preserve the original file hashes in `docs/review/ORIGINAL-SHA256.txt`.
 
 ## 11. Limitations and honest claims
 

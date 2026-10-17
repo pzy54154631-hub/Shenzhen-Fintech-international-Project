@@ -1,13 +1,15 @@
 [browser]
 gatherUsageStats = false
 
+[client]
+toolbarMode = "minimal"
+
 [server]
-address = "127.0.0.1"
 headless = true
 
 [theme]
-primaryColor = "#584174"
-backgroundColor = "#f7f5fa"
+primaryColor = "#13786c"
+backgroundColor = "#f5f8f8"
 secondaryBackgroundColor = "#ffffff"
-textColor = "#292437"
+textColor = "#162c36"
 font = "sans serif"

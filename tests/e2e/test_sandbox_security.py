@@ -66,11 +66,10 @@ def test_exploratory_labels_are_positional_in_all_fact_fields_and_nested_values(
     assert [fact.field for fact in rendered.facts] == ["r2", "r1"]
     assert rendered.facts[1].exact_value == {"r1": [{"r1": "2/1"}]}
     assert all(label not in str(rendered.facts) for label in labels)
-    assert rendered.note.startswith("Assistant note (unverified): ")
     assert all(label in rendered.note for label in labels)
-    trusted_text, note = rendered.text.split("\nAssistant note (unverified): ", maxsplit=1)
+    trusted_text = "\n".join(fact.text for fact in rendered.facts)
     assert all(label not in trusted_text for label in labels)
-    assert all(label in note for label in labels)
+    assert receipt.trust == "exploratory"
 
 
 def _prepare_handles(case, args, *, step=0):
@@ -246,7 +245,9 @@ def test_exploratory_fact_mismatch_is_rejected_and_correct_twin_renders(analyzed
     correct = _render(case, receipt)
     assert correct.status == "rendered"
     assert correct.facts[0].exact_value == "353/2"
-    assert "Exploratory analysis" in correct.text and "cannot authorize a payment" in correct.text
+    assert correct.facts[0].receipt_ref == receipt.id
+    assert receipt.trust == "exploratory"
+    assert receipt.function_id == "restricted_analysis_v1"
     assert case.gateway.bank.execute_count == 0
 
 

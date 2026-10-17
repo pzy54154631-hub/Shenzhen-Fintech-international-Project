@@ -15,7 +15,9 @@ def test_scripted_judge_exports_verifiable_sources_and_real_effects(tmp_path):
         app, ["judge", "--planner", "scripted", "--tasks", "J01", "--output", str(tmp_path)]
     )
     assert result.exit_code == 0, result.output
-    assert "J01: PASS" in result.output and "not_run" in result.output
+    summary = loads_exact((tmp_path / "scripted/judge.json").read_bytes())
+    assert summary["passed"] == summary["total"] == 1
+    assert summary["results"][0]["real_model_evaluation"] == "not_run"
     directory = tmp_path / "scripted/cca/careful/J01/transfer"
     manifest = loads_exact((directory / "manifest.json").read_bytes())
     assert manifest["sources"] == ["scripted", "scripted", "scripted"]
@@ -49,10 +51,15 @@ socket.create_connection = blocked
 socket.socket.connect = blocked
 from typer.testing import CliRunner
 from corridor.cli import app
+from corridor.schemas.base import loads_exact
+from pathlib import Path
 result = CliRunner().invoke(app, ['judge', '--replay-dir', sys.argv[1], '--output', sys.argv[1]])
 assert result.exit_code == 1, result.output
-assert 'task_id=J01' in result.output and 'step=extract:' in result.output
-assert 'prompt diff' in result.output
+summary = loads_exact((Path(sys.argv[1]) / 'strict/judge.json').read_bytes())
+assert summary['passed'] == 0
+first = summary['results'][0]
+assert first['task_id'] == 'J01' and first['passed'] is False
+assert first['error_type'] == 'ReplayMiss'
 assert 'litellm' not in sys.modules
 """
     result = subprocess.run(
@@ -77,6 +84,7 @@ def test_card_judge_cli_reports_p1_separately(tmp_path):
         app, ["judge", "--planner", "scripted", "--tasks", "J23,J24", "--output", str(tmp_path)]
     )
     assert result.exit_code == 0, result.output
-    assert "J23: PASS" in result.output and "J24: PASS" in result.output
-    assert "P1: 2/2" in result.output
-    assert "P1 excluded" not in result.output
+    summary = loads_exact((tmp_path / "scripted/judge.json").read_bytes())
+    assert summary["passed"] == summary["total"] == 2
+    assert {row["task_id"] for row in summary["results"]} == {"J23", "J24"}
+    assert all(row["passed"] for row in summary["results"])

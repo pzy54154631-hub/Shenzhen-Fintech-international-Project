@@ -9,6 +9,7 @@ from uuid import NAMESPACE_URL, uuid5
 from corridor.crypto.jcs import H, jcs_bytes
 from corridor.crypto.sign import CONTROL, INPUT, verify
 from corridor.gateway.plans import validate_plan
+from corridor.i18n import tr
 from corridor.kernel.allocation import build_allocation
 from corridor.kernel.allocation_execution import (
     allocation_child_intent,
@@ -207,12 +208,17 @@ def draft_allocation(
             "checks": [check.model_dump(mode="json") for check in biac.checks],
             "selection_mode": biac.selection_mode,
             "deviation_notice": (
-                "Deviation from model allocation" if biac.selection_mode != "default" else None
+                tr("Deviation from model allocation", locale="en")
+                if biac.selection_mode != "default"
+                else None
             ),
             "deviations": biac.deviations.model_dump(mode="json") if biac.deviations else None,
-            "notice": (
+            # The overview participates in canonical device confirmation. Translate
+            # its presentation at the UI boundary, never its retained content.
+            "notice": tr(
                 "Each purchase requires separate MFA and approval. "
-                "Settled purchases are not automatically reversed."
+                "Settled purchases are not automatically reversed.",
+                locale="en",
             ),
         }
         return AllocationDraft(parent, tuple(children), biac, overview)
@@ -527,7 +533,7 @@ def allocation_snapshot(gateway: "Gateway", parent_id: str) -> dict[str, Any]:
             ),
             "rule_ids": list(inspection.errors),
             "audit_checkpoint": gateway.audit.checkpoint(),
-            "resume_notice": (
+            "resume_notice": tr(
                 "Stopped, failed, handed-off and unknown plans do not resume automatically."
             ),
         }

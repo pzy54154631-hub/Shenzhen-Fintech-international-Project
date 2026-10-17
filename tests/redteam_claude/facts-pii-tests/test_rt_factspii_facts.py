@@ -34,12 +34,17 @@ def test_old_query_receipt_cannot_claim_pending_transfer_success():
         ),
         "C_DEMO",
     )
-    assert "Query completed" in rendered.text
-    assert "Transfer settled" not in rendered.text
+    assert rendered.status == "rendered"
+    assert query.receipt.kind == "balance_query"
+    assert [(fact.receipt_ref, fact.field, fact.exact_value) for fact in rendered.facts] == [
+        (query.receipt.id, "status", "settled"),
+        (query.receipt.id, "balance_after", query.receipt.exact_effects[0].after),
+    ]
     assert chat.state.security.unknown_intent_ids
     assert "C_DEMO" in chat.state.security.locked_at
     pending = chat.gateway.render_narrative(Narrative(), "C_DEMO")
-    assert "Results awaiting reconciliation" in pending.text
+    assert pending.facts == []
+    assert chat.state.security.unknown_intent_ids
 
 
 # ---- passing regression probes (kept; not findings) -------------------------------------
@@ -52,7 +57,7 @@ def test_old_query_receipt_cannot_claim_pending_transfer_success():
 def test_completion_claims_in_note_without_receipt_are_replaced(note):
     chat, _ = make_conversation(task_id="RT_FACT_NOTE")
     rendered = chat.gateway.render_narrative(Narrative(note=note), "C_DEMO")
-    assert note not in rendered.text and "Transfer settled" not in rendered.text
+    assert note not in rendered.text and rendered.facts == []
     assert "RCPT-MISMATCH" in rendered.rule_ids
 
 
@@ -62,7 +67,10 @@ def test_query_receipt_status_cannot_be_rendered_as_transfer_success():
     rendered = chat.gateway.render_narrative(
         Narrative(fact_refs=[FactRef(receipt_ref=query.receipt.id, field="status")]), "C_DEMO"
     )
-    assert "Transfer settled" not in rendered.text
+    assert rendered.status == "rendered" and query.receipt.kind == "balance_query"
+    assert [(fact.receipt_ref, fact.field, fact.exact_value) for fact in rendered.facts] == [
+        (query.receipt.id, "status", "settled")
+    ]
     bad = chat.gateway.render_narrative(
         Narrative(fact_refs=[FactRef(receipt_ref=query.receipt.id, field="amount")]), "C_DEMO"
     )
@@ -76,4 +84,4 @@ def test_unknown_transfer_never_renders_success_or_amount():
         rendered = chat.gateway.render_narrative(
             Narrative(fact_refs=[FactRef(receipt_ref=key, field="status")]), "C_DEMO"
         )
-        assert "Transfer settled" not in rendered.text
+        assert rendered.status == "rejected" and rendered.facts == []
