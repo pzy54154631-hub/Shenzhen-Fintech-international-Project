@@ -1,0 +1,1 @@
+{"kernel_verdict":{"counterexample_code":"bank_obligation_failed","dependency_hash":null,"first":"PROV-FIELD","obligation":"PROV","outcome":"Reject","required_factors":[],"rule_ids":["PROV-FIELD","PROV-MISMATCH"],"tier":null,"tier_basis":{},"verified_facts":{}},"plan_rule_ids":["PLAN-SCOPE"]}

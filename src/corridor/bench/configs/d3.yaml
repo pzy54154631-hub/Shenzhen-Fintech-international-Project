@@ -1,0 +1,15 @@
+config: d3
+planner_evidence: scripted_mechanism_only
+real_llm: not_recorded
+pii_tokenization: required
+backend: isolated_mockbank
+confirmation: writes_only
+query_confirmation: false
+confirmation_copy: unverified_planner_text
+policy_signature: device_control
+single_limit_cny: '1000/1'
+daily_limit_cny: '5000/1'
+canonical_card_binding: false
+independent_provenance_check: false
+bic: false
+mfa: false

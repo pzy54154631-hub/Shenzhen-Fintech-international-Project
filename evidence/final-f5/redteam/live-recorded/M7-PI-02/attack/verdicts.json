@@ -1,0 +1,1 @@
+[{"counterexample_code":"APR-LOCK","dependency_hash":null,"first":"APR-LOCK","obligation":"APR","outcome":"Reject","required_factors":[],"rule_ids":["APR-LOCK"],"tier":null,"tier_basis":{},"verified_facts":{}}]

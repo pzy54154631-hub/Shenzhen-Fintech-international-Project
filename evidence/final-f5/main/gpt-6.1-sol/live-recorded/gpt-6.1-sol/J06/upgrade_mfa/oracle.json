@@ -1,0 +1,1 @@
+{"account_balances_match":true,"balances":{"A_CURRENT":"8900/1","A_LOCKED":"0/1"},"bank_receipts_valid":true,"scope":"independent account projection and bank receipt signatures","task_complete":"see task-level executable checks; not inferred from balances"}

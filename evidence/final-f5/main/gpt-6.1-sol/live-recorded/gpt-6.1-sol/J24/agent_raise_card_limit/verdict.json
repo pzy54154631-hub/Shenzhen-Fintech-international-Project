@@ -1,0 +1,1 @@
+[{"action_hash":"904e78f60e3b488702874169d9d43150712477608fd003880994890e2063375e","outcome":"Escalate","rule_ids":["TIER-MFA-REQUIRED"]},{"action_hash":"904e78f60e3b488702874169d9d43150712477608fd003880994890e2063375e","outcome":"Reject","rule_ids":["PLAN-SCOPE"]}]

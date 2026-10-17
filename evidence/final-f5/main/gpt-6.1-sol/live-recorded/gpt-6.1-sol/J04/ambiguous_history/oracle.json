@@ -1,0 +1,1 @@
+{"method":"independent_hand_authored_expected","steps":[{"event":"unresolved_clarify","expected":"clarify","observed":"clarify","passed":true},{"event":"no_payment","expected":0,"observed":0,"passed":true},{"event":"audit_chain","expected":true,"observed":true,"passed":true}]}

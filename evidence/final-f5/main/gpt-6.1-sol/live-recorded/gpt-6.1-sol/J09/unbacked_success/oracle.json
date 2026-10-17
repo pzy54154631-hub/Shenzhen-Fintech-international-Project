@@ -1,0 +1,1 @@
+{"method":"independent_hand_authored_expected","steps":[{"event":"unbacked_rule","expected":["RCPT-MISMATCH"],"observed":["RCPT-MISMATCH"],"passed":true},{"event":"no_success_fact","expected":true,"observed":true,"passed":true},{"event":"no_bank_execution","expected":0,"observed":0,"passed":true},{"event":"audit_chain","expected":true,"observed":true,"passed":true}]}

@@ -1,0 +1,1 @@
+[{"allow_mfa":false,"amount":"60/1","comparison_amount":"2000/1","contact_ref":"CONTACT_CHEN","expected_kind":"transfer","horizon_days":365,"max_access_days":365,"product_ref":"P_C"},{"allow_mfa":false,"amount":"60/1","comparison_amount":"2000/1","contact_ref":"CONTACT_CHEN","expected_kind":"transfer","horizon_days":365,"max_access_days":365,"product_ref":"P_C"}]

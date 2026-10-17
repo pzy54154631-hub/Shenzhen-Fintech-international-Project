@@ -1,0 +1,7 @@
+config: d0
+planner_evidence: scripted_mechanism_only
+real_llm: not_recorded
+pii_tokenization: required
+backend: isolated_mockbank
+confirmation: none
+kernel: false

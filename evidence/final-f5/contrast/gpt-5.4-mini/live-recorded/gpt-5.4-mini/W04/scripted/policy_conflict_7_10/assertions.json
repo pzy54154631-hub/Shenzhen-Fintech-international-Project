@@ -1,0 +1,1 @@
+[{"assertion":"invalid_signed_policy","expected":true,"observed":true,"passed":true,"subcase":"policy_conflict_7_10"},{"assertion":"invalid_policy_rejected","expected":"Reject","observed":"Reject","passed":true,"subcase":"policy_conflict_7_10"}]

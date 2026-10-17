@@ -1,0 +1,1 @@
+[{"allow_mfa":true,"amount":"1000/1","comparison_amount":"1000/1","contact_ref":"CONTACT_CHEN","expected_completion":"purchase_product","horizon_days":365,"max_access_days":365,"product_ref":"P_C","scripted_kind":"purchase_product"}]

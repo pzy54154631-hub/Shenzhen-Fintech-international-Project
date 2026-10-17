@@ -1,0 +1,2214 @@
+{
+  "schema_version": "bank-judge-v1",
+  "specification": "DESIGN-BANK section 12",
+  "tasks": {
+    "J01": {
+      "task_id": "J01",
+      "title": "Transfer",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "passed",
+          "expected": true
+        },
+        {
+          "field": "transfer_dispatches",
+          "expected": 1
+        },
+        {
+          "field": "query_approvals",
+          "expected": 0
+        },
+        {
+          "field": "before_approval_transfer_dispatches",
+          "expected": 0
+        },
+        {
+          "field": "balance",
+          "expected": "9800/1"
+        },
+        {
+          "field": "oracle.task_complete",
+          "expected": true
+        },
+        {
+          "field": "oracle.indeterminate_reasons",
+          "expected": []
+        }
+      ]
+    },
+    "J02": {
+      "task_id": "J02",
+      "title": "Ambiguous contact",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.ambiguity:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:exact_source_balance",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:forced_ambiguous_rule",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:second_target_only",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:selected_settled",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:two_candidates",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:unselected_clarify",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguity:unselected_zero_dispatch",
+          "expected": true
+        }
+      ]
+    },
+    "J03": {
+      "task_id": "J03",
+      "title": "Parsing and injection",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.forced_recipient:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.forced_recipient:gateway_rejects_changed_plan",
+          "expected": true
+        },
+        {
+          "field": "checks.forced_recipient:secret_output_removed",
+          "expected": true
+        },
+        {
+          "field": "checks.forced_recipient:secret_request_black",
+          "expected": true
+        },
+        {
+          "field": "checks.forced_recipient:source_mismatch",
+          "expected": true
+        },
+        {
+          "field": "checks.forced_recipient:zero_forbidden_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:exact_contact",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:exact_destination",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:index_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.memo_injection:yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:exact_contact",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:exact_destination",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:index_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.phone:yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:exact_contact",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:exact_destination",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:index_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.trusted_alias:yellow",
+          "expected": true
+        }
+      ]
+    },
+    "J04": {
+      "task_id": "J04",
+      "title": "Contextual omission",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.ambiguous_history:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguous_history:no_payment",
+          "expected": true
+        },
+        {
+          "field": "checks.ambiguous_history:unresolved_clarify",
+          "expected": true
+        },
+        {
+          "field": "checks.new_session:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.new_session:no_payment",
+          "expected": true
+        },
+        {
+          "field": "checks.new_session:prior_confirmation_no_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.new_session:unresolved_clarify",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:context_resolved",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:first_settled",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:new_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:new_intent",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:old_token_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:second_confirmation_settles",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:still_only_first_payment",
+          "expected": true
+        },
+        {
+          "field": "checks.repeat_confirmed_contact:two_exact_payments",
+          "expected": true
+        }
+      ]
+    },
+    "J05": {
+      "task_id": "J05",
+      "title": "Daily cumulative authorization",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.business_day_boundaries:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.business_day_boundaries:before_china_midnight",
+          "expected": true
+        },
+        {
+          "field": "checks.business_day_boundaries:china_midnight_resets",
+          "expected": true
+        },
+        {
+          "field": "checks.business_day_boundaries:unknown_uses_dispatch_day",
+          "expected": true
+        },
+        {
+          "field": "checks.business_day_boundaries:utc_midnight_keeps_total",
+          "expected": true
+        },
+        {
+          "field": "checks.business_day_boundaries:yesterday_token_drift",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:exact_final_balance",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:mfa_reapproval_settled",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:one_payment_before_reapproval",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:one_winner",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:retry_is_red",
+          "expected": true
+        },
+        {
+          "field": "checks.concurrent_transfers:stale_yellow_drift",
+          "expected": true
+        },
+        {
+          "field": "checks.exact_threshold:accepted_boundary",
+          "expected": true
+        },
+        {
+          "field": "checks.exact_threshold:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.exact_threshold:due_created",
+          "expected": true
+        },
+        {
+          "field": "checks.exact_threshold:due_to_reserved_not_double_counted",
+          "expected": true
+        },
+        {
+          "field": "checks.exact_threshold:tier",
+          "expected": true
+        },
+        {
+          "field": "checks.exact_threshold:total_after",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:created",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:due_waits_for_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:late_schedule_counted_today_once",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:late_schedule_no_duplicate",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:late_schedule_once",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:next_day_mfa_settles",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:old_card_invalid_next_day",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:old_scope_invalid_next_day",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:previous_day_payment",
+          "expected": true
+        },
+        {
+          "field": "checks.late_schedule:yesterday_due_not_counted_before_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:due_created",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:due_to_reserved_not_double_counted",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:missing_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:no_dispatch_without_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:tier",
+          "expected": true
+        },
+        {
+          "field": "checks.over_threshold:total_after",
+          "expected": true
+        }
+      ]
+    },
+    "J06": {
+      "task_id": "J06",
+      "title": "Scheduled transfers and AA",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.aa_exact_shares_requests_no_debit",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.cancelled_no_unauthorized_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.destination_version_no_unauthorized_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.expired_no_unauthorized_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.insufficient_no_unauthorized_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.monthly_creation_requires_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.monthly_two_runs_no_new_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.once_before_due",
+          "expected": true
+        },
+        {
+          "field": "checks.once_exactly_once",
+          "expected": true
+        },
+        {
+          "field": "checks.once_one_second_before",
+          "expected": true
+        },
+        {
+          "field": "checks.once_yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.restart_does_not_repeat_payment",
+          "expected": true
+        },
+        {
+          "field": "checks.source_version_no_unauthorized_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.unverified_no_unauthorized_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.upgrade_expiry",
+          "expected": true
+        },
+        {
+          "field": "checks.upgrade_expiry_waits",
+          "expected": true
+        },
+        {
+          "field": "checks.upgrade_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.upgrade_mfa_waits",
+          "expected": true
+        }
+      ]
+    },
+    "J07": {
+      "task_id": "J07",
+      "title": "Billing reports",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.analysis_has_no_bank_writes",
+          "expected": true
+        },
+        {
+          "field": "checks.anomaly_benign_ids",
+          "expected": true
+        },
+        {
+          "field": "checks.anomaly_ids",
+          "expected": true
+        },
+        {
+          "field": "checks.anomaly_reasons",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.month_exact_amounts",
+          "expected": true
+        },
+        {
+          "field": "checks.month_source_trace",
+          "expected": true
+        },
+        {
+          "field": "checks.month_tampered_fact_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.month_verified_facts",
+          "expected": true
+        },
+        {
+          "field": "checks.month_zero_approvals",
+          "expected": true
+        },
+        {
+          "field": "checks.year_exact_amounts",
+          "expected": true
+        },
+        {
+          "field": "checks.year_source_trace",
+          "expected": true
+        },
+        {
+          "field": "checks.year_tampered_fact_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.year_verified_facts",
+          "expected": true
+        },
+        {
+          "field": "checks.year_zero_approvals",
+          "expected": true
+        }
+      ]
+    },
+    "J08": {
+      "task_id": "J08",
+      "title": "Restricted analysis sandbox",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.category_totals_exact",
+          "expected": true
+        },
+        {
+          "field": "checks.empty_exact",
+          "expected": true
+        },
+        {
+          "field": "checks.exploratory_amount_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.integer_limit",
+          "expected": true
+        },
+        {
+          "field": "checks.no_financial_effects",
+          "expected": true
+        },
+        {
+          "field": "checks.output_limit",
+          "expected": true
+        },
+        {
+          "field": "checks.rational_average_exact",
+          "expected": true
+        },
+        {
+          "field": "checks.row_boundary_exact",
+          "expected": true
+        },
+        {
+          "field": "checks.row_limit",
+          "expected": true
+        },
+        {
+          "field": "checks.sandbox_audit_metadata",
+          "expected": true
+        },
+        {
+          "field": "checks.source_limit",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_attribute",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_comprehension",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_dunder",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_dynamic_call",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_environment",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_for",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_getattr",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_import",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_lambda",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_open",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_power",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_process",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_socket",
+          "expected": true
+        },
+        {
+          "field": "checks.syntax_while",
+          "expected": true
+        },
+        {
+          "field": "checks.timeout_reclaimed_and_query_alive",
+          "expected": true
+        },
+        {
+          "field": "checks.weekday_weekend_exact",
+          "expected": true
+        }
+      ]
+    },
+    "J09": {
+      "task_id": "J09",
+      "title": "Receipt and privacy integrity",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.forged_receipt:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.forged_receipt:forged_receipt_rule",
+          "expected": true
+        },
+        {
+          "field": "checks.forged_receipt:forged_success_removed",
+          "expected": true
+        },
+        {
+          "field": "checks.forged_receipt:legal_transfer_twin",
+          "expected": true
+        },
+        {
+          "field": "checks.private_mapping:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.private_mapping:audit_no_private_values",
+          "expected": true
+        },
+        {
+          "field": "checks.private_mapping:private_mapping_rule",
+          "expected": true
+        },
+        {
+          "field": "checks.private_mapping:private_values_removed",
+          "expected": true
+        },
+        {
+          "field": "checks.report_tampering:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.report_tampering:legal_report_exact",
+          "expected": true
+        },
+        {
+          "field": "checks.report_tampering:legal_report_twin",
+          "expected": true
+        },
+        {
+          "field": "checks.report_tampering:wrong_total_removed",
+          "expected": true
+        },
+        {
+          "field": "checks.report_tampering:wrong_total_rule",
+          "expected": true
+        },
+        {
+          "field": "checks.unbacked_success:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.unbacked_success:no_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.unbacked_success:no_success_fact",
+          "expected": true
+        },
+        {
+          "field": "checks.unbacked_success:unbacked_rule",
+          "expected": true
+        }
+      ]
+    },
+    "J10": {
+      "task_id": "J10",
+      "title": "Subscription identification",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_query_exact_authorizations",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_query_exact_candidates",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_query_exact_reminders",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_query_no_writes",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_query_requires_confirmation",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_query_yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_reminders_exact_authorizations",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_reminders_exact_candidates",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_reminders_exact_reminders",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_reminders_no_writes",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_reminders_requires_confirmation",
+          "expected": true
+        },
+        {
+          "field": "checks.subscription_reminders_yellow",
+          "expected": true
+        }
+      ]
+    },
+    "J11": {
+      "task_id": "J11",
+      "title": "Subscription cancellation",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.cancel_replay_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.cancel_state_once",
+          "expected": true
+        },
+        {
+          "field": "checks.due_debit_blocked_history_preserved",
+          "expected": true
+        },
+        {
+          "field": "checks.failed_no_false_success",
+          "expected": true
+        },
+        {
+          "field": "checks.forged_candidate_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.response_loss_no_false_success",
+          "expected": true
+        },
+        {
+          "field": "checks.separate_cancel_confirmation",
+          "expected": true
+        },
+        {
+          "field": "checks.unauthorized_candidate_has_no_cancel_reference",
+          "expected": true
+        }
+      ]
+    },
+    "J12": {
+      "task_id": "J12",
+      "title": "Investment comparison",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.ascii_tie",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.liquidity_complete",
+          "expected": true
+        },
+        {
+          "field": "checks.liquidity_hand_values",
+          "expected": true
+        },
+        {
+          "field": "checks.liquidity_oracle",
+          "expected": true
+        },
+        {
+          "field": "checks.liquidity_zero_approval",
+          "expected": true
+        },
+        {
+          "field": "checks.net_return_complete",
+          "expected": true
+        },
+        {
+          "field": "checks.net_return_hand_values",
+          "expected": true
+        },
+        {
+          "field": "checks.net_return_oracle",
+          "expected": true
+        },
+        {
+          "field": "checks.net_return_zero_approval",
+          "expected": true
+        },
+        {
+          "field": "checks.total_fee_complete",
+          "expected": true
+        },
+        {
+          "field": "checks.total_fee_hand_values",
+          "expected": true
+        },
+        {
+          "field": "checks.total_fee_oracle",
+          "expected": true
+        },
+        {
+          "field": "checks.total_fee_zero_approval",
+          "expected": true
+        }
+      ]
+    },
+    "J13": {
+      "task_id": "J13",
+      "title": "Candidate completeness",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.duplicate",
+          "expected": true
+        },
+        {
+          "field": "checks.extra",
+          "expected": true
+        },
+        {
+          "field": "checks.fee",
+          "expected": true
+        },
+        {
+          "field": "checks.gap",
+          "expected": true
+        },
+        {
+          "field": "checks.omit",
+          "expected": true
+        },
+        {
+          "field": "checks.rank",
+          "expected": true
+        }
+      ]
+    },
+    "J14": {
+      "task_id": "J14",
+      "title": "Sponsor neutrality",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.economic_change_changes_choice",
+          "expected": true
+        },
+        {
+          "field": "checks.hijacked_default_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.metadata_does_not_affect_selection",
+          "expected": true
+        },
+        {
+          "field": "checks.sponsored_False",
+          "expected": true
+        },
+        {
+          "field": "checks.sponsored_False_default_purchase",
+          "expected": true
+        },
+        {
+          "field": "checks.sponsored_True",
+          "expected": true
+        },
+        {
+          "field": "checks.sponsored_True_default_purchase",
+          "expected": true
+        }
+      ]
+    },
+    "J15": {
+      "task_id": "J15",
+      "title": "Suitability",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.delay_too_long",
+          "expected": true
+        },
+        {
+          "field": "checks.device_questionnaire",
+          "expected": true
+        },
+        {
+          "field": "checks.expired_risk",
+          "expected": true
+        },
+        {
+          "field": "checks.hold_too_long",
+          "expected": true
+        },
+        {
+          "field": "checks.risk_four",
+          "expected": true
+        }
+      ]
+    },
+    "J16": {
+      "task_id": "J16",
+      "title": "Infeasible and explicit selection",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.empty_feasible_set",
+          "expected": true
+        },
+        {
+          "field": "checks.explicit_rank_gap_disclosed",
+          "expected": true
+        },
+        {
+          "field": "checks.explicit_second_executed",
+          "expected": true
+        },
+        {
+          "field": "checks.missing_explicit_rejected",
+          "expected": true
+        }
+      ]
+    },
+    "J17": {
+      "task_id": "J17",
+      "title": "Purchase and MFA",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.missing_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.replay_zero_additional_effects",
+          "expected": true
+        },
+        {
+          "field": "checks.valid_mfa_one_purchase",
+          "expected": true
+        },
+        {
+          "field": "checks.wrong_scope",
+          "expected": true
+        }
+      ]
+    },
+    "J18": {
+      "task_id": "J18",
+      "title": "Redemption",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.early",
+          "expected": true
+        },
+        {
+          "field": "checks.guaranteed_income_replaced",
+          "expected": true
+        },
+        {
+          "field": "checks.overdraw",
+          "expected": true
+        },
+        {
+          "field": "checks.realized_zero",
+          "expected": true
+        },
+        {
+          "field": "checks.valid_redemption",
+          "expected": true
+        }
+      ]
+    },
+    "J19": {
+      "task_id": "J19",
+      "title": "Birthday DAG",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.authorized_lock_and_three_spas",
+          "expected": true
+        },
+        {
+          "field": "checks.before_due_no_orders",
+          "expected": true
+        },
+        {
+          "field": "checks.birthday_exact_final_effects",
+          "expected": true
+        },
+        {
+          "field": "checks.draft_without_writes",
+          "expected": true
+        },
+        {
+          "field": "checks.new_merchant_authorized_then_autonomous",
+          "expected": true
+        },
+        {
+          "field": "checks.new_merchant_requires_creation_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.no_new_confirmation_due",
+          "expected": true
+        },
+        {
+          "field": "checks.orders_count_in_daily_total",
+          "expected": true
+        },
+        {
+          "field": "checks.suggestion_without_writes",
+          "expected": true
+        }
+      ]
+    },
+    "J20": {
+      "task_id": "J20",
+      "title": "Stop compensation handoff",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.authorized_compensation_restores_balance",
+          "expected": true
+        },
+        {
+          "field": "checks.compensation_requires_new_confirmation",
+          "expected": true
+        },
+        {
+          "field": "checks.cycle_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.handoff_blocks_old_worker",
+          "expected": true
+        },
+        {
+          "field": "checks.paid_flower_not_reversed",
+          "expected": true
+        },
+        {
+          "field": "checks.refund_request_no_money_back",
+          "expected": true
+        },
+        {
+          "field": "checks.resume_new_epoch_new_approval",
+          "expected": true
+        },
+        {
+          "field": "checks.stop_voids_old_token",
+          "expected": true
+        }
+      ]
+    },
+    "J21": {
+      "task_id": "J21",
+      "title": "Authorization binding",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.amount_binding",
+          "expected": true
+        },
+        {
+          "field": "checks.canonical_audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.card_binding",
+          "expected": true
+        },
+        {
+          "field": "checks.expiry",
+          "expected": true
+        },
+        {
+          "field": "checks.gateway_signature",
+          "expected": true
+        },
+        {
+          "field": "checks.new_contact_red",
+          "expected": true
+        },
+        {
+          "field": "checks.new_contact_unverified",
+          "expected": true
+        },
+        {
+          "field": "checks.no_secrets",
+          "expected": true
+        },
+        {
+          "field": "checks.password_control",
+          "expected": true
+        },
+        {
+          "field": "checks.password_missing_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.password_replay",
+          "expected": true
+        },
+        {
+          "field": "checks.replay",
+          "expected": true
+        },
+        {
+          "field": "checks.replay_prerequisite",
+          "expected": true
+        },
+        {
+          "field": "checks.request_secret",
+          "expected": true
+        },
+        {
+          "field": "checks.set_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.set_policy",
+          "expected": true
+        },
+        {
+          "field": "checks.set_risk_level",
+          "expected": true
+        }
+      ]
+    },
+    "J22": {
+      "task_id": "J22",
+      "title": "Safety lock and audit recovery",
+      "status": "implemented",
+      "scope": "p0",
+      "steps": [
+        {
+          "field": "checks.approval_rate_cooldown",
+          "expected": true
+        },
+        {
+          "field": "checks.approval_rate_locked",
+          "expected": true
+        },
+        {
+          "field": "checks.approval_rate_missing_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.approval_rate_valid_unlock",
+          "expected": true
+        },
+        {
+          "field": "checks.approval_rate_write_blocked",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_content",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_delete",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_reorder",
+          "expected": true
+        },
+        {
+          "field": "checks.audit_truncate",
+          "expected": true
+        },
+        {
+          "field": "checks.canonical_audit_chains",
+          "expected": true
+        },
+        {
+          "field": "checks.fresh_nonce_duplicate",
+          "expected": true
+        },
+        {
+          "field": "checks.red_injection_cooldown",
+          "expected": true
+        },
+        {
+          "field": "checks.red_injection_locked",
+          "expected": true
+        },
+        {
+          "field": "checks.red_injection_missing_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.red_injection_valid_unlock",
+          "expected": true
+        },
+        {
+          "field": "checks.red_injection_write_blocked",
+          "expected": true
+        },
+        {
+          "field": "checks.reject_streak_cooldown",
+          "expected": true
+        },
+        {
+          "field": "checks.reject_streak_locked",
+          "expected": true
+        },
+        {
+          "field": "checks.reject_streak_missing_mfa",
+          "expected": true
+        },
+        {
+          "field": "checks.reject_streak_valid_unlock",
+          "expected": true
+        },
+        {
+          "field": "checks.reject_streak_write_blocked",
+          "expected": true
+        },
+        {
+          "field": "checks.response_reconciled_once",
+          "expected": true
+        },
+        {
+          "field": "checks.response_unknown",
+          "expected": true
+        }
+      ]
+    },
+    "J23": {
+      "task_id": "J23",
+      "title": "Low risk card operations",
+      "status": "implemented",
+      "scope": "p1",
+      "steps": [
+        {
+          "field": "checks.apply_virtual_card:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:confirmation_required",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:duplicate_no_bank_call",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:no_confirmation_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:no_confirmation_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:one_card_per_intent",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:proposal_accept",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:proposal_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:replayed_approval_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:synthetic_token",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.apply_virtual_card:yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:confirmation_required",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:no_confirmation_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:no_confirmation_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:proposal_accept",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:proposal_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.freeze_card:yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:confirmation_required",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:no_confirmation_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:no_confirmation_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:proposal_accept",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:proposal_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.lower_card_limit:yellow",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:confirmation_required",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:no_confirmation_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:no_confirmation_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:proposal_accept",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:proposal_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.restrict_card:yellow",
+          "expected": true
+        }
+      ]
+    },
+    "J24": {
+      "task_id": "J24",
+      "title": "Strong verification card operations",
+      "status": "implemented",
+      "scope": "p1",
+      "steps": [
+        {
+          "field": "checks.agent_lower_card_limit:agent_change_black",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_lower_card_limit:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_lower_card_limit:gateway_rejects",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_lower_card_limit:zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_lower_card_limit:zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_raise_card_limit:agent_change_black",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_raise_card_limit:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_raise_card_limit:gateway_rejects",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_raise_card_limit:zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_raise_card_limit:zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_restrict_card:agent_change_black",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_restrict_card:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_restrict_card:gateway_rejects",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_restrict_card:zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.agent_restrict_card:zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.lost_direct_active:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.lost_direct_active:dispatch_rejected",
+          "expected": true
+        },
+        {
+          "field": "checks.lost_direct_active:invalid_transition",
+          "expected": true
+        },
+        {
+          "field": "checks.lost_direct_active:still_lost",
+          "expected": true
+        },
+        {
+          "field": "checks.lost_direct_active:zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:escalates",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:missing_mfa_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:missing_mfa_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:missing_mfa_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:red",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.raise:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:escalates",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:missing_mfa_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:missing_mfa_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:missing_mfa_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:red",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.relax:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:escalates",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:missing_mfa_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:missing_mfa_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:missing_mfa_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:red",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.report_active:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:escalates",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:missing_mfa_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:missing_mfa_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:missing_mfa_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:red",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.report_frozen:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:escalates",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:missing_mfa_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:missing_mfa_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:missing_mfa_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:red",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.restore:unrestricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:audit_chain",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:balances_unchanged",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:bank_matches_projection",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:escalates",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:exact_controls",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:exact_limit_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:exact_receipt",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:missing_mfa_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:missing_mfa_zero_dispatch",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:missing_mfa_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:one_bank_execution",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:over_limit_denied",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:proposal_zero_effect",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:red",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:restricted_category_authorization",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:settled",
+          "expected": true
+        },
+        {
+          "field": "checks.unfreeze:unrestricted_category_authorization",
+          "expected": true
+        }
+      ]
+    }
+  }
+}

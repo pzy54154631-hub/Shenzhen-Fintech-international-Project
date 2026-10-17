@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "corridor"
+version = "0.1.0"
+description = "Auditable synthetic wealth advisory for Fintechathon Topic B"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "pydantic>=2", "pynacl", "typer", "httpx", "pyyaml", "pdfplumber",
+  "pillow", "qrcode", "reportlab", "litellm==1.105.1", "streamlit==1.50.0", "matplotlib",
+  "tzdata", "rfc8785==0.1.4",
+]
+
+[dependency-groups]
+dev = ["hypothesis", "pytest", "ruff", "mypy", "import-linter", "types-PyYAML"]
+
+[project.scripts]
+corridor = "corridor.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/corridor"]
+
+[tool.uv]
+cache-dir = ".uv-cache"
+
+[tool.ruff]
+preview = true
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "PLW1514"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/corridor/kernel", "src/corridor/schemas", "src/corridor/crypto", "src/corridor/stores", "src/corridor/gateway", "src/corridor/eval/reforacle"]
+
+[tool.pytest.ini_options]
+enable_assertion_pass_hook = true
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["rule(id): golden coverage of a registered rule", "perf: performance checks"]
+
+[tool.importlinter]
+root_package = "corridor"
+
+[[tool.importlinter.contracts]]
+name = "Trusted core cannot import untrusted layers"
+type = "forbidden"
+source_modules = ["corridor.kernel", "corridor.stores", "corridor.schemas", "corridor.crypto"]
+forbidden_modules = ["corridor.agent", "corridor.ui", "corridor.bench", "corridor.eval", "corridor.sim", "corridor.gateway"]
+
+[[tool.importlinter.contracts]]
+name = "Independent MockBank and oracle"
+type = "forbidden"
+source_modules = ["corridor.eval.mockbank", "corridor.eval.reforacle"]
+forbidden_modules = ["corridor.kernel", "corridor.stores", "corridor.gateway", "corridor.agent"]
