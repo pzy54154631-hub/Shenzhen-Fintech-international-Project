@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1080pt" height="478.8pt" viewBox="0 0 1080 478.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 478.8 
+L 1080 478.8 
+L 1080 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M -7.2 -30.96 
+L -0.72 -30.96 
+L -0.72 -68.4 
+L -7.2 -68.4 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #008e97; stroke: #008e97; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 19.8 343.08 
+L 228.6 343.08 
+Q 235.08 343.08 235.08 336.6 
+L 235.08 106.2 
+Q 235.08 99.72 228.6 99.72 
+L 19.8 99.72 
+Q 13.32 99.72 13.32 106.2 
+L 13.32 336.6 
+Q 13.32 343.08 19.8 343.08 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 236.000391 221.04 
+Q 262.8008 221.04 287.700553 221.04 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 280.900553 217.64 
+L 287.700553 221.04 
+L 280.900553 224.44 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 297 343.08 
+L 505.8 343.08 
+Q 512.28 343.08 512.28 336.6 
+L 512.28 106.2 
+Q 512.28 99.72 505.8 99.72 
+L 297 99.72 
+Q 290.52 99.72 290.52 106.2 
+L 290.52 336.6 
+Q 290.52 343.08 297 343.08 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #e8f5f4; stroke-dasharray: 6.29,2.72; stroke-dashoffset: 0; stroke: #008e97; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 513.200391 221.04 
+Q 540.0008 221.04 564.900553 221.04 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 558.100553 217.64 
+L 564.900553 221.04 
+L 558.100553 224.44 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 574.2 343.08 
+L 783 343.08 
+Q 789.48 343.08 789.48 336.6 
+L 789.48 106.2 
+Q 789.48 99.72 783 99.72 
+L 574.2 99.72 
+Q 567.72 99.72 567.72 106.2 
+L 567.72 336.6 
+Q 567.72 343.08 574.2 343.08 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 790.400391 221.04 
+Q 817.2008 221.04 842.100553 221.04 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 835.300553 217.64 
+L 842.100553 221.04 
+L 835.300553 224.44 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 851.4 343.08 
+L 1060.2 343.08 
+Q 1066.68 343.08 1066.68 336.6 
+L 1066.68 106.2 
+Q 1066.68 99.72 1060.2 99.72 
+L 851.4 99.72 
+Q 844.92 99.72 844.92 106.2 
+L 844.92 336.6 
+Q 844.92 343.08 851.4 343.08 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #e8f5f4; stroke-dasharray: 6.29,2.72; stroke-dashoffset: 0; stroke: #008e97; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path clip-path="url(#p44db22ee55)" style="fill: none; stroke: #e6ebf0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 27px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #102c4c" x="14.4" y="-52.745273" transform="rotate(-0 14.4 -52.745273)">The model proposes; a verifier decides</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #536a80" x="14.4" y="-15.02332" transform="rotate(-0 14.4 -15.02332)">Separate intelligence, decision, consent and execution</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #008e97" x="123.84" y="61.92" transform="rotate(-0 123.84 61.92)">MODEL</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 26px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #ffffff" x="124.2" y="179.934219" transform="rotate(-0 124.2 179.934219)">Proposes</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #ffffff" transform="translate(49.425781 253.255906)">Typed references</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #ffffff" transform="translate(57.442969 278.576219)">Untrusted BIAC</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #ffffff" transform="translate(35.243945 300.505906)">No signing authority</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #008e97" x="401.04" y="61.92" transform="rotate(-0 401.04 61.92)">VERIFIER</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 26px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="401.4" y="182.853125" transform="rotate(-0 401.4 182.853125)">Decides</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(300.908984 253.255906)">Recompute exact facts</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(316.344531 276.880906)">Apply signed policy</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(309.731445 300.505906)">Issue a typed verdict</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #008e97" x="678.24" y="61.92" transform="rotate(-0 678.24 61.92)">DEVICE</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 26px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="678.6" y="182.853125" transform="rotate(-0 678.6 182.853125)">Authorizes</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(586.262891 253.255906)">Confirm signed goals</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(585.885547 276.880906)">Approve current card</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(584.957227 300.505906)">Separate MFA per leg</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #008e97" x="955.44" y="61.92" transform="rotate(-0 955.44 61.92)">GATEWAY</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 26px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="955.8" y="182.452969" transform="rotate(-0 955.8 182.452969)">Executes</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(866.018164 253.255906)">Verify one-use token</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(867.508398 276.880906)">Recheck at dispatch</text>
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; fill: #19344e" transform="translate(863.465625 302.201219)">Record actual effects</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="540" y="424.8" transform="rotate(-0 540 424.8)">A plausible answer is never a permission to move funds.</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #536a80" x="14.4" y="517.717266" transform="rotate(-0 14.4 517.717266)">Synthetic data • Simulated MFA • Not investment advice</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #536a80" x="14.4" y="539.777461" transform="rotate(-0 14.4 539.777461)">Implementation: kernel/check.py; gateway/service.py; sim/device.py</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p44db22ee55">
+   <rect x="-36" y="-97.2" width="1152" height="648"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,0 +1,23 @@
+{
+  "formal_e4_gate": true,
+  "conditions": {
+    "pinned_upstream_verified": true,
+    "dual_scorer_calibration_passed": true,
+    "mapping_witnesses_passed": true,
+    "all_write_tools_classified": true,
+    "full_noop_connectivity_passed": true,
+    "groundtruth_144_pairs_complete": true,
+    "groundtruth_deterministic_replay_passed": true,
+    "unchanged_production_tcb": true
+  },
+  "source_hashes": {
+    "matched": 63,
+    "total": 63,
+    "mismatches": []
+  },
+  "artifacts": {
+    "matched": 7,
+    "total": 7,
+    "mismatches": []
+  }
+}

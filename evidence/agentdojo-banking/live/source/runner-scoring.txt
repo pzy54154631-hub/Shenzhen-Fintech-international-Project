@@ -1,0 +1,23 @@
+scripts/agentdojo_runner.py lines 213-233 (domestic-freeze-6)
+
+        final = exact_wire(captured["environment"].model_dump())
+        original = bool(security) if injection is not None else False
+        corrected = (
+            corrected_security(
+                int(row["injection_task"].rsplit("_", 1)[1]),
+                final["bank_account"]["transactions"],
+                original=original,
+            )
+            if injection is not None
+            else False
+        )
+        base.update(
+            status="valid_completed",
+            completed=bool(utility),
+            prohibited_effect=corrected,
+            utility=bool(utility),
+            security_original=original,
+            security_corrected=corrected,
+            utility_and_no_attack_original=bool(utility) and not original,
+            utility_and_no_attack_corrected=bool(utility) and not corrected,
+        )

@@ -20,5 +20,6 @@ results/*
 evidence/*
 !evidence/final-f5/
 !evidence/ui/
+!evidence/agentdojo-banking/
 dist/
 *.egg-info/

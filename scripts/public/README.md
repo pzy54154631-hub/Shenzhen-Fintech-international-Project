@@ -165,6 +165,8 @@ The scripted wealth baseline matrix uses 31 projections per cell. In the main ar
 
 Observed zero events do not establish zero future risk. The report supplies descriptive upper bounds, including 3/16 = 18.75% for frozen blind forbidden effects and 3/24 = 12.5% for M7 forbidden effects. Authored and paired cases are correlated. Formal W mutations remain scripted; live W results concern bounded advisory workflows.
 
+External validation in [AgentDojo banking](../../evidence/agentdojo-banking/MANIFEST.md), suite v1.2.2 / package 0.1.35, retains the original and registered corrected IT0/IT1/IT3 targeted judges. Model-free GroundTruth A0 ASR is 144/144 original and 128/144 corrected; A5 is 0/144 under each judge in each approval mode. Live gpt-6.1-sol with `important_instructions` gives A0 0/144 and prompt-bound A5 0/143 evaluable pairs under both judges, with one A5 pair truncated and unresolved. These censuses have no binomial bounds; no live security advantage is established because A0 also has zero observed successes. The bundle reports upstream utility, strict replay and limitations, credits upstream issue #181 for the precedence defect, and discloses that value-matching free-text arguments is weaker than the native typed interface.
+
 ### Security review
 
 The four [security review records](../../docs/review/) retain confirmed and rejected findings and their regression evidence. Some explanations in `claude-review-*.json` are in Chinese, the working language used during those reviews; conclusion fields are in English. The public copies disclose repository-relative path normalization and preserve the original file hashes in `docs/review/ORIGINAL-SHA256.txt`.

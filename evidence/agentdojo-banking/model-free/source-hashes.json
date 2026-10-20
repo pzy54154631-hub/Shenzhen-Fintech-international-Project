@@ -1,0 +1,81 @@
+[
+  {
+    "source": "wt-dom/results/e4-groundtruth/rows.json",
+    "sha256": "dfd6a49eece87fb4532c7d5b2e31cd85fe9d3c751078044860fa9c04bcf5f7b0",
+    "bytes": 6027289
+  },
+  {
+    "source": "wt-dom/results/e4-groundtruth/summary.json",
+    "sha256": "384c119005c113b99cf5410f3f64563604a1072291445fbc1ca249b9f47dad28",
+    "bytes": 8711
+  },
+  {
+    "source": "wt-dom/results/e4-groundtruth/REPORT.md",
+    "sha256": "7cc507df4f27c18099d17d426ca2e94f7b1b1c44ae58d395d7e519b87cfe51b1",
+    "bytes": 2434
+  },
+  {
+    "source": "wt-f7/results/e4-groundtruth-freeze7/rows.json",
+    "sha256": "dfd6a49eece87fb4532c7d5b2e31cd85fe9d3c751078044860fa9c04bcf5f7b0",
+    "bytes": 6027289
+  },
+  {
+    "source": "wt-f7/results/e4-groundtruth-freeze7/summary.json",
+    "sha256": "384c119005c113b99cf5410f3f64563604a1072291445fbc1ca249b9f47dad28",
+    "bytes": 8711
+  },
+  {
+    "source": "wt-f7/results/e4-groundtruth-freeze7/REPORT.md",
+    "sha256": "25a2995cd5da3e6f337b89dfa2a7fd60f957d3f5d666fbbe6bc25a1b23508fbf",
+    "bytes": 2455
+  },
+  {
+    "source": "wt-dom/results/e4-groundtruth-freeze2/COMPARISON.json",
+    "sha256": "968c2d4c663aaf198bed22bd4ace9b807c815a84f2584ab62ea6ab7ebbc03beb",
+    "bytes": 167974,
+    "public_copy": "freeze1-freeze2-comparison.json",
+    "copy_mode": "exact bytes"
+  },
+  {
+    "source": "logs/review/f7/agentdojo-environment.json",
+    "sha256": "0ea5eb4bd9451ab68dbabc924457f7ba128e67072cd43d032534efa613267d0b",
+    "bytes": 3703,
+    "public_copy": "environment.json",
+    "copy_mode": "exact bytes"
+  },
+  {
+    "source": "wt-f7/evidence/dryrun/agentdojo/d3b/formal-gate.json",
+    "sha256": "01be7b63b0a914ed757c20afbbb8d0483683e478eb5b98fc182a5c3b36832e60",
+    "bytes": 9483,
+    "public_copy": "formal-gate.json",
+    "copy_mode": "exact bytes"
+  },
+  {
+    "source": "logs/review/f7/e4-source-binding.json",
+    "sha256": "39091b566d814949c6442a11a4a02042c699de2218ee76da40aa0dbf0b72b39f",
+    "bytes": 572,
+    "public_copy": "source-binding.json",
+    "copy_mode": "exact bytes"
+  },
+  {
+    "source": "wt-f7/scripts/agentdojo_groundtruth.py",
+    "role": "groundtruth-runner",
+    "sha256": "c005733ee65e0c5564eaeb893269ca193b826f5d48093497fed62549d7055b2f",
+    "bytes": 13894,
+    "copy_mode": "hash only"
+  },
+  {
+    "source": "wt-f7/src/corridor/bench/agentdojo_contract.py",
+    "role": "corrected-scorer",
+    "sha256": "341c829e89a55c9b2e82757e6dae4069b98bcb2fe7d4409cb089e7e8cc6eed19",
+    "bytes": 10344,
+    "copy_mode": "hash only"
+  },
+  {
+    "source": "wt-f7/.tmp/agentdojo-venv/Lib/site-packages/agentdojo/default_suites/v1_2/banking/injection_tasks.py",
+    "role": "upstream-banking-injection-tasks",
+    "sha256": "3df7c1299b6b67c5fb43eaea5720082564b6e0b1775852a96b68df8e8521fe1c",
+    "bytes": 15599,
+    "copy_mode": "hash only"
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "figure": "approval-sequence",
+  "formats": {
+    "png": {
+      "dpi": 200,
+      "pixels": [
+        3200,
+        1800
+      ]
+    },
+    "svg": "vector"
+  },
+  "sources": [
+    {
+      "path": "src/corridor/gateway/service.py",
+      "sha256": "58397b290bca4cd81be282d98c9c82bbdbc0ef88f77324e87b7f2e053f04f647"
+    },
+    {
+      "path": "src/corridor/gateway/allocations.py",
+      "sha256": "cd079e788fac4d81d4d6d652f2662d86aeb55a5870d36e09851c40f51e78fcda"
+    },
+    {
+      "path": "src/corridor/kernel/allocation_execution.py",
+      "sha256": "4c8066f52f950c05ebff0313acfa72c0933be940ca8f78b2a8c72f6601466f20"
+    }
+  ],
+  "data": {
+    "semantics": "per-leg; partial retained; unknown lookup"
+  },
+  "outputs": [
+    {
+      "path": "docs/submission/figures/approval-sequence.png",
+      "sha256": "9c747706e9d200d19ba972876eb10c758e689db49fc131fad8712c3ee65ac284"
+    },
+    {
+      "path": "docs/submission/figures/approval-sequence.svg",
+      "sha256": "56360591bc8893b538ba9c91ebbb98feac660c283d5cbcc6c282fdf96d0a387a"
+    },
+    {
+      "path": "docs/submission/figures/approval-sequence-slide.png",
+      "sha256": "006398cc493261b05cc30bfe60fae0a486b96e948284a4f40d282403487eb06a"
+    },
+    {
+      "path": "docs/submission/figures/approval-sequence-slide.svg",
+      "sha256": "d9aef1bf648afbe33ced5cf90341bdbe9059eec47c2e0024c14e89f56eba1ab9"
+    }
+  ]
+}

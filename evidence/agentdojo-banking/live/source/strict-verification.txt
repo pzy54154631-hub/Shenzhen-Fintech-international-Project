@@ -1,0 +1,73 @@
+scripts/run_live_zh.py lines 911-973 and 1108-1114 (domestic-freeze-6)
+
+                    # This extra process grace is only for startup/final evidence sealing.
+                    return record_worker_interruption(folder, row, "worker_timeout", error)
+                except OSError as error:
+                    return record_worker_interruption(folder, row, "worker_launch_error", error)
+
+            def replay(rows):
+                verified = True
+                for row in rows:
+                    folder = (
+                        args.output
+                        / "episodes"
+                        / block["block_id"]
+                        / row["config"]
+                        / str(row["attempt"])
+                    )
+                    if not (folder / "result.json").is_file():
+                        verified = False
+                        continue
+                    executable = (
+                        str(ROOT / ".tmp/agentdojo-venv/Scripts/python.exe")
+                        if block["experiment"] == "E4"
+                        else sys.executable
+                    )
+                    entry = (
+                        ROOT / "scripts/agentdojo_run.py"
+                        if block["experiment"] == "E4"
+                        else Path(__file__).resolve()
+                    )
+                    command = [
+                        executable,
+                        str(entry),
+                        "--worker",
+                        str(folder / "spec.json"),
+                        "--strict",
+                        "--output",
+                        str(folder / "strict" / "result.json"),
+                    ]
+                    try:
+                        original = loads_exact((folder / "result.json").read_bytes())
+                        result = subprocess.run(
+                            command,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                            timeout=WORKER_TIMEOUT_SECONDS,
+                            cwd=ROOT,
+                        )
+                        strict_path = folder / "strict/result.json"
+                        matched = (
+                            result.returncode == 0
+                            and strict_path.is_file()
+                            and observation_hash(replay_projection(original))
+                            == observation_hash(
+                                replay_projection(loads_exact(strict_path.read_bytes()))
+                            )
+                        )
+                        if original.get("interrupted_prefix"):
+                            # Checkpoints can replay an observed prefix but do not contain
+                            # independently exported effects of an interrupted tool call.
+                            matched = False
+                    except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired):
+                        matched = False
+                    verified = verified and matched
+                return verified
+
+    if args.worker:
+        spec = loads_exact(args.worker.read_bytes())
+        if args.strict:
+            with network_disabled():
+                worker(spec, args.output, "strict", env_file=args.env_file)
+        else:
+            worker(spec, args.output, "record", env_file=args.env_file)

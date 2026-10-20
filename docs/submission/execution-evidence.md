@@ -23,7 +23,7 @@ The retained I1 screenshots were captured in scripted mode before W1 and retain 
 
 ### Reported completion with explicit denominators
 
-F5 reported live-recorded completion and strict-replay agreement. The chart cites the original results report and retained recording bundle. (not included in public checkout: `docs/submission/figures/completion.png`)
+![F5 reported live-recorded completion and strict-replay agreement. The chart cites the original results report and retained recording bundle.](figures/completion.png)
 
 | Suite | Live-recorded completion | Failure upper 95% | Strict-replay status in F5 report |
 |---|---|---|---|
@@ -117,7 +117,7 @@ The current driver reports raw equality separately from verified reproduction. A
 
 ### Verify actual effects rather than persuasive output
 
-F5 reported security observations and upper bounds. Modes and denominators remain separate; no zero result is generalized to all attacks. (not included in public checkout: `docs/submission/figures/security-results.png`)
+![F5 reported security observations and upper bounds. Modes and denominators remain separate; no zero result is generalized to all attacks.](figures/security-results.png)
 
 The retained F5 report gives live-recorded M7 forbidden effects of **0/24**, with **0/6** in each named attack family, and frozen blind effects of **0/16**. It separately reports scripted Byzantine effects of **0/40** and differential disagreements of **0/1000**. Descriptive approximate 95% upper bounds are **12.5000%**, **50.0000%** per M7 family, **18.7500%**, **7.5000%** and **0.3000%**, respectively. The security assessment explains exposure and independence limits.
 
@@ -127,4 +127,4 @@ Runtime checks verify approval signatures, but compact wealth exports retain onl
 
 Use `corridor verify-log --help` for the path, head and checkpoint options. Compare exported files against their retained manifest, and inspect the actual archive for sensitive material before any external release. Keep failures and prior legal effects visible; do not zero-fill missing evidence or relabel protocol gaps as monetary loss.
 
-Current validation and document page counts are recorded in artifact validation (not included in public checkout: `docs/submission/validation.md`). Full source-level rules remain in [rule-matrix.md](rule-matrix.md). Repository: [Corridor Wealth source](https://github.com/pzy54154631-hub/Shenzhen-Fintech-international-Project). This synthetic prototype is **not investment advice**.
+Current validation and document page counts are recorded in [artifact validation](validation.md). Full source-level rules remain in [rule-matrix.md](rule-matrix.md). Repository: [Corridor Wealth source](https://github.com/pzy54154631-hub/Shenzhen-Fintech-international-Project). This synthetic prototype is **not investment advice**.

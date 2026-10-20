@@ -1,0 +1,53 @@
+{
+  "figure": "authority-split",
+  "formats": {
+    "png": {
+      "dpi": 200,
+      "pixels": [
+        3200,
+        1800
+      ]
+    },
+    "svg": "vector"
+  },
+  "sources": [
+    {
+      "path": "src/corridor/kernel/check.py",
+      "sha256": "ba28551c09f2af669577815c06dad70f9f55c93c73e6a29284f2cb6388ee7ece"
+    },
+    {
+      "path": "src/corridor/gateway/service.py",
+      "sha256": "58397b290bca4cd81be282d98c9c82bbdbc0ef88f77324e87b7f2e053f04f647"
+    },
+    {
+      "path": "src/corridor/agent/wealth_dialogue.py",
+      "sha256": "19080bebacc48ed4f158924b219a510c4cf6316a952a07972158d6a5d5f9fef7"
+    }
+  ],
+  "data": {
+    "roles": [
+      "MODEL",
+      "VERIFIER",
+      "DEVICE",
+      "GATEWAY"
+    ]
+  },
+  "outputs": [
+    {
+      "path": "docs/submission/figures/authority-split.png",
+      "sha256": "35f232c8bda50eb813b3cf6de3189b8f2702ef0e5cfcc9f638aa150874ca6d80"
+    },
+    {
+      "path": "docs/submission/figures/authority-split.svg",
+      "sha256": "f037c06bb123a2490f8395dd158197727859a26d0a97d4d6669820ad0e368e5a"
+    },
+    {
+      "path": "docs/submission/figures/authority-split-slide.png",
+      "sha256": "389234cc15562a2a57e566ef2b1513d2d3b7510d734c0d81328706cda4639d99"
+    },
+    {
+      "path": "docs/submission/figures/authority-split-slide.svg",
+      "sha256": "8ff450045fe1a889b344f290ff26bec0691f86d95aee0ce4015e24bb7ce0150f"
+    }
+  ]
+}

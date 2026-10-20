@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1080pt" height="478.8pt" viewBox="0 0 1080 478.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 478.8 
+L 1080 478.8 
+L 1080 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M -7.2 -30.96 
+L -0.72 -30.96 
+L -0.72 -68.4 
+L -7.2 -68.4 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #008e97; stroke: #008e97; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 9 61.56 
+L 178.2 61.56 
+Q 184.68 61.56 184.68 55.08 
+L 184.68 26.28 
+Q 184.68 19.8 178.2 19.8 
+L 9 19.8 
+Q 2.52 19.8 2.52 26.28 
+L 2.52 55.08 
+Q 2.52 61.56 9 61.56 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 289.8 61.56 
+L 459 61.56 
+Q 465.48 61.56 465.48 55.08 
+L 465.48 26.28 
+Q 465.48 19.8 459 19.8 
+L 289.8 19.8 
+Q 283.32 19.8 283.32 26.28 
+L 283.32 55.08 
+Q 283.32 61.56 289.8 61.56 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 570.6 61.56 
+L 739.8 61.56 
+Q 746.28 61.56 746.28 55.08 
+L 746.28 26.28 
+Q 746.28 19.8 739.8 19.8 
+L 570.6 19.8 
+Q 564.12 19.8 564.12 26.28 
+L 564.12 55.08 
+Q 564.12 61.56 570.6 61.56 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 851.4 61.56 
+L 1020.6 61.56 
+Q 1027.08 61.56 1027.08 55.08 
+L 1027.08 26.28 
+Q 1027.08 19.8 1020.6 19.8 
+L 851.4 19.8 
+Q 844.92 19.8 844.92 26.28 
+L 844.92 55.08 
+Q 844.92 61.56 851.4 61.56 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 270 118.8 
+L 1026 118.8 
+L 1026 84.24 
+L 270 84.24 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #e8f5f4"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 95.60094 147.6 
+Q 233.998621 147.6 370.495644 147.6 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 363.695644 144.2 
+L 370.495644 147.6 
+L 363.695644 151 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 376.40094 198 
+Q 514.798621 198 651.295644 198 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 644.495644 194.6 
+L 651.295644 198 
+L 644.495644 201.4 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 653.19906 248.4 
+Q 514.801379 248.4 378.304356 248.4 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #008e97; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 385.104356 251.8 
+L 378.304356 248.4 
+L 385.104356 245 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #008e97; stroke: #008e97; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 376.40094 298.8 
+Q 655.199295 298.8 932.096993 298.8 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 925.296993 295.4 
+L 932.096993 298.8 
+L 925.296993 302.2 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #102c4c; stroke: #102c4c; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 933.99906 349.2 
+Q 655.200705 349.2 378.303007 349.2 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #008e97; stroke-width: 1.7; stroke-linecap: round"/>
+    <path d="M 385.103007 352.6 
+L 378.303007 349.2 
+L 385.103007 345.8 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #008e97; stroke: #008e97; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 19.8 466.92 
+L 342.36 466.92 
+Q 348.84 466.92 348.84 460.44 
+L 348.84 392.04 
+Q 348.84 385.56 342.36 385.56 
+L 19.8 385.56 
+Q 13.32 385.56 13.32 392.04 
+L 13.32 460.44 
+Q 13.32 466.92 19.8 466.92 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #e8f5f4; stroke-dasharray: 6.29,2.72; stroke-dashoffset: 0; stroke: #008e97; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 378.36 466.92 
+L 700.92 466.92 
+Q 707.4 466.92 707.4 460.44 
+L 707.4 392.04 
+Q 707.4 385.56 700.92 385.56 
+L 378.36 385.56 
+Q 371.88 385.56 371.88 392.04 
+L 371.88 460.44 
+Q 371.88 466.92 378.36 466.92 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 737.64 466.92 
+L 1060.2 466.92 
+Q 1066.68 466.92 1066.68 460.44 
+L 1066.68 392.04 
+Q 1066.68 385.56 1060.2 385.56 
+L 737.64 385.56 
+Q 731.16 385.56 731.16 392.04 
+L 731.16 460.44 
+Q 731.16 466.92 737.64 466.92 
+z
+" clip-path="url(#p44db22ee55)" style="fill: #ffffff; stroke: #102c4c; stroke-width: 1.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 93.6 376.56 
+L 93.6 61.2 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #e6ebf0; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 374.4 376.56 
+L 374.4 61.2 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #e6ebf0; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 655.2 376.56 
+L 655.2 61.2 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #e6ebf0; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 936 376.56 
+L 936 61.2 
+" clip-path="url(#p44db22ee55)" style="fill: none; stroke: #e6ebf0; stroke-width: 2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path clip-path="url(#p44db22ee55)" style="fill: none; stroke: #e6ebf0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 27px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #102c4c" x="14.4" y="-52.745273" transform="rotate(-0 14.4 -52.745273)">Every leg needs fresh authority</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #536a80" x="14.4" y="-15.02332" transform="rotate(-0 14.4 -15.02332)">A multi-leg plan is sequential; earlier settled purchases remain real</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="93.6" y="47.390625" transform="rotate(-0 93.6 47.390625)">Client device</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="374.4" y="45.417656" transform="rotate(-0 374.4 45.417656)">Gateway</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="655.2" y="47.390625" transform="rotate(-0 655.2 47.390625)">Pure kernel</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="936" y="45.576563" transform="rotate(-0 936 45.576563)">Synthetic bank</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #19344e" x="648" y="105.676875" transform="rotate(-0 648 105.676875)">APR-BUDGET preflight: all remaining approvals fit before any dispatch</text>
+   </g>
+   <g id="text_8">
+    <g id="patch_16">
+     <path d="M 122.507773 139.535 
+L 345.492227 139.535 
+L 345.492227 120.003789 
+L 122.507773 120.003789 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 15.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="234" y="133.796367" transform="rotate(-0 234 133.796367)">Current leg: MFA + approval</text>
+   </g>
+   <g id="text_9">
+    <g id="patch_17">
+     <path d="M 402.944492 189.935 
+L 626.655508 189.935 
+L 626.655508 170.403789 
+L 402.944492 170.403789 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 15.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="514.8" y="184.196367" transform="rotate(-0 514.8 184.196367)">Token verification + recheck</text>
+   </g>
+   <g id="text_10">
+    <g id="patch_18">
+     <path d="M 402.69625 240.335 
+L 626.90375 240.335 
+L 626.90375 220.803789 
+L 402.69625 220.803789 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 15.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #008e97" x="514.8" y="234.596367" transform="rotate(-0 514.8 234.596367)">Accept only for current facts</text>
+   </g>
+   <g id="text_11">
+    <g id="patch_19">
+     <path d="M 510.100625 290.735 
+L 800.299375 290.735 
+L 800.299375 271.203789 
+L 510.100625 271.203789 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 15.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="655.2" y="284.996367" transform="rotate(-0 655.2 284.996367)">Consume authority; dispatch this leg</text>
+   </g>
+   <g id="text_12">
+    <g id="patch_20">
+     <path d="M 520.577656 341.135 
+L 789.822344 341.135 
+L 789.822344 321.603789 
+L 520.577656 321.603789 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 15.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #008e97" x="655.2" y="335.396367" transform="rotate(-0 655.2 335.396367)">Signed outcome → receipt + audit</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="181.08" y="415.568594" transform="rotate(-0 181.08 415.568594)">Settled → next leg</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #19344e" x="181.08" y="447.700906" transform="rotate(-0 181.08 447.700906)">Fresh card, MFA and approval</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="539.64" y="415.642812" transform="rotate(-0 539.64 415.642812)">Stop / failure → partial</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #19344e" x="539.64" y="447.700906" transform="rotate(-0 539.64 447.700906)">Keep settled holdings and cash</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #102c4c" x="898.92" y="415.642812" transform="rotate(-0 898.92 415.642812)">Unknown → lookup</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 17.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #19344e" x="898.92" y="447.700906" transform="rotate(-0 898.92 447.700906)">Keep reservation; never resend</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #536a80" x="14.4" y="517.717266" transform="rotate(-0 14.4 517.717266)">Simulated MFA. APR-BUDGET is a preflight check, not a concurrent reservation or atomic transaction.</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #536a80" x="14.4" y="539.777461" transform="rotate(-0 14.4 539.777461)">Source: gateway/{service,allocations}.py; a changed goal or trusted context invalidates old approval.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p44db22ee55">
+   <rect x="-36" y="-97.2" width="1152" height="648"/>
+  </clipPath>
+ </defs>
+</svg>

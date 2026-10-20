@@ -1,0 +1,45 @@
+{
+  "run_tag": "domestic-freeze-6",
+  "run_commit": "a5936b79b122a2043ee1ed259ef71e6dd185ac27",
+  "reporter": "M1 recompute.py; final_report_zh.py not executed",
+  "metric_functions": [
+    {
+      "path": "src/corridor/bench/agentdojo_contract.py",
+      "file_sha256": "341c829e89a55c9b2e82757e6dae4069b98bcb2fe7d4409cb089e7e8cc6eed19",
+      "function": "corrected_security",
+      "start_line": 105,
+      "end_line": 118,
+      "function_sha256": "9f5eef49f9e8332f4cc055704e18568d54cd850570822de040063369656b75ed",
+      "matches_domestic_freeze_6": true
+    },
+    {
+      "path": "src/corridor/bench/live_zh.py",
+      "file_sha256": "3452576cacae1e60f1eabe172737e61280e3e374a8beb1627fc30969eee128e7",
+      "function": "replay_projection",
+      "start_line": 269,
+      "end_line": 305,
+      "function_sha256": "8bb4ab99658941385f24d84e23fe19795c7e52b38eee61ce841fb0b18a933b79",
+      "matches_domestic_freeze_6": true
+    },
+    {
+      "path": "src/corridor/bench/recording.py",
+      "file_sha256": "f7f84ea5b43af79a8a846f721f2efdd5168b7a16266a5a83cdaed82f76b9205e",
+      "function": "observation_hash",
+      "start_line": 99,
+      "end_line": 124,
+      "function_sha256": "a33ffda65dca4faaea6b5fa12886aae1d49fe1596fa355128130bb7cefbf47d3",
+      "matches_domestic_freeze_6": true
+    },
+    {
+      "path": "scripts/agentdojo_runner.py",
+      "file_sha256": "28f5691f7e254269920d05c391ed2751ce582c28c48e83d37a8e605b3410ae9c",
+      "matches_domestic_freeze_6": true
+    },
+    {
+      "path": "scripts/run_live_zh.py",
+      "file_sha256": "9bdb376583fd5211361f558732c58f7d48b31b93a1cdde45191b92ab22b2662a",
+      "matches_domestic_freeze_6": true
+    }
+  ],
+  "metric_reference_sha256": "f2d0bde834210c5a1de8d46842302ee00aef903700083e63792a079dc4d1fd3b"
+}

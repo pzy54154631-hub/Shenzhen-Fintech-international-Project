@@ -1,0 +1,269 @@
+{
+  "figure": "agentdojo-banking",
+  "formats": {
+    "png": {
+      "dpi": 200,
+      "pixels": [
+        3200,
+        1800
+      ]
+    },
+    "svg": "vector"
+  },
+  "sources": [
+    {
+      "path": "evidence/agentdojo-banking/model-free/summary.json",
+      "sha256": "b42c878264f368a17b9b5b6d2cbe209f2ac4351f4ab75265a8bfb8c17c9a45d2"
+    },
+    {
+      "path": "evidence/agentdojo-banking/live/summary.json",
+      "sha256": "5e0f111ee6f01729762cbea1e4cad9aa6f668a205d08ceb9a9f1cd4d53e56809"
+    }
+  ],
+  "data": {
+    "sources": [
+      {
+        "path": "evidence/agentdojo-banking/model-free/summary.json",
+        "sha256": "b42c878264f368a17b9b5b6d2cbe209f2ac4351f4ab75265a8bfb8c17c9a45d2"
+      },
+      {
+        "path": "evidence/agentdojo-banking/live/summary.json",
+        "sha256": "5e0f111ee6f01729762cbea1e4cad9aa6f668a205d08ceb9a9f1cd4d53e56809"
+      }
+    ],
+    "suite": "AgentDojo banking v1.2.2 (package 0.1.35)",
+    "judges": {
+      "original": "AgentDojo v1.2.2 original",
+      "corrected": "Corridor registered corrected IT0/IT1/IT3; other targets and utility unchanged"
+    },
+    "rows": [
+      {
+        "mode": "model-free",
+        "model": "none (GroundTruth replay)",
+        "config": "A_null",
+        "approval_mode": "prompt-bound",
+        "original": [
+          0,
+          144
+        ],
+        "corrected": [
+          0,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0
+      },
+      {
+        "mode": "model-free",
+        "model": "none (GroundTruth replay)",
+        "config": "A0",
+        "approval_mode": "prompt-bound",
+        "original": [
+          144,
+          144
+        ],
+        "corrected": [
+          128,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0
+      },
+      {
+        "mode": "model-free",
+        "model": "none (GroundTruth replay)",
+        "config": "A5",
+        "approval_mode": "prompt-bound",
+        "original": [
+          0,
+          144
+        ],
+        "corrected": [
+          0,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0
+      },
+      {
+        "mode": "model-free",
+        "model": "none (GroundTruth replay)",
+        "config": "A5",
+        "approval_mode": "auto-deny",
+        "original": [
+          0,
+          144
+        ],
+        "corrected": [
+          0,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0
+      },
+      {
+        "mode": "model-free",
+        "model": "none (GroundTruth replay)",
+        "config": "A5",
+        "approval_mode": "auto-approve",
+        "original": [
+          0,
+          144
+        ],
+        "corrected": [
+          0,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0
+      },
+      {
+        "mode": "live",
+        "model": "gpt-6.1-sol",
+        "config": "A0",
+        "approval_mode": "prompt-bound",
+        "original": [
+          0,
+          144
+        ],
+        "corrected": [
+          0,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0,
+        "benign": [
+          11,
+          16
+        ],
+        "attack_utility": [
+          97,
+          144
+        ],
+        "benign_evaluable": [
+          11,
+          16
+        ],
+        "attack_utility_evaluable": [
+          97,
+          144
+        ]
+      },
+      {
+        "mode": "live",
+        "model": "gpt-6.1-sol",
+        "config": "A5",
+        "approval_mode": "prompt-bound",
+        "original": [
+          0,
+          143
+        ],
+        "corrected": [
+          0,
+          143
+        ],
+        "planned": 144,
+        "truncated": 1,
+        "benign": [
+          8,
+          16
+        ],
+        "attack_utility": [
+          72,
+          144
+        ],
+        "benign_evaluable": [
+          8,
+          15
+        ],
+        "attack_utility_evaluable": [
+          72,
+          143
+        ]
+      },
+      {
+        "mode": "live",
+        "model": "gpt-6.1-sol",
+        "config": "A5",
+        "approval_mode": "auto-deny",
+        "original": [
+          0,
+          143
+        ],
+        "corrected": [
+          0,
+          143
+        ],
+        "planned": 144,
+        "truncated": 1,
+        "benign": [
+          7,
+          16
+        ],
+        "attack_utility": [
+          63,
+          144
+        ],
+        "benign_evaluable": [
+          7,
+          15
+        ],
+        "attack_utility_evaluable": [
+          63,
+          143
+        ]
+      },
+      {
+        "mode": "live",
+        "model": "gpt-6.1-sol",
+        "config": "A5",
+        "approval_mode": "auto-approve",
+        "original": [
+          0,
+          144
+        ],
+        "corrected": [
+          0,
+          144
+        ],
+        "planned": 144,
+        "truncated": 0,
+        "benign": [
+          8,
+          16
+        ],
+        "attack_utility": [
+          72,
+          144
+        ],
+        "benign_evaluable": [
+          8,
+          15
+        ],
+        "attack_utility_evaluable": [
+          72,
+          144
+        ]
+      }
+    ],
+    "population": "Full-suite census; no binomial confidence intervals"
+  },
+  "outputs": [
+    {
+      "path": "docs/submission/figures/agentdojo-banking.png",
+      "sha256": "ac72bf0f1e74ea8a499471be450b0d927cc25e89ab01a9b361354bb509a761ca"
+    },
+    {
+      "path": "docs/submission/figures/agentdojo-banking.svg",
+      "sha256": "35a6b0fabf109aa3689a5e1cd46a2197bd0a409d9822c8a9a3fa6b9429bcdab5"
+    },
+    {
+      "path": "docs/submission/figures/agentdojo-banking-slide.png",
+      "sha256": "52de77670d58c56c776de1b890a1057d7df81b42efbd72985c64f5ab9e994463"
+    },
+    {
+      "path": "docs/submission/figures/agentdojo-banking-slide.svg",
+      "sha256": "144668e43b7e054aa48500ae45a25b0ec2fbb5246669ea6d3e8a0f4d3cd03145"
+    }
+  ]
+}

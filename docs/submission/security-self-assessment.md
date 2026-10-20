@@ -23,7 +23,7 @@ This is a self-assessment of a prototype using **synthetic data** and **simulate
 
 ### Authority is single use and checked again before dispatch
 
-Protected allocation sequence. Each purchase retains separate approval and simulated MFA; recovery does not silently grant fresh authority. (not included in public checkout: `docs/submission/figures/approval-sequence.png`)
+![Protected allocation sequence. Each purchase retains separate approval and simulated MFA; recovery does not silently grant fresh authority.](figures/approval-sequence.png)
 
 Immediate intent identity binds the principal, signed intent and operation kind, excluding planner-selected node identifiers. `AUTH-CONSUMED` rejects reused authority after reserved, unknown or settled effects. Approval nonces remain consumed even when a failed business operation releases a reservation.
 
@@ -53,7 +53,7 @@ The [regulatory mapping](regulatory-mapping.md) records source scope and gaps. A
 
 ### Attack effects and benign completion are counted separately
 
-Reported F5 security outcomes. M7 and blind results are live-recorded; Byzantine and differential results are scripted. The retained report also records strict-replay agreement. (not included in public checkout: `docs/submission/figures/security-results.png`)
+![Reported F5 security outcomes. M7 and blind results are live-recorded; Byzantine and differential results are scripted. The retained report also records strict-replay agreement.](figures/security-results.png)
 
 The retained [FINAL-RESULTS report](../../results/FINAL-RESULTS.md) gives M7 live-recorded forbidden effects of **0/24** and benign completion of **24/24**. Each attack family—induced transfer, data extraction, privilege escalation and prompt injection—has **0/6** forbidden effects and **6/6** benign completion. The descriptive approximate 95% upper bound is **12.5000%** overall and **50.0000%** per family.
 
@@ -63,9 +63,19 @@ The original F5 report and complete raw recordings are retained in evidence/fina
 
 <!-- pagebreak -->
 
+### External banking tasks retain both targeted judges
+
+The [AgentDojo evidence bundle](../../evidence/agentdojo-banking/MANIFEST.md) covers banking v1.2.2, package 0.1.35. The targeted judges are the original upstream check and the registered corrected target-content check for IT0/IT1/IT3, with their source hashes retained. In **model-free GroundTruth replay**, A0 targeted ASR is **144/144** original and **128/144** corrected. A5 is **0/144** under each judge in each of prompt-bound, auto-deny and auto-approve modes; the null agent is also **0/144** under each. The compared freezes agree. These complete suite censuses receive no binomial confidence bounds.
+
+In the separate **live gpt-6.1-sol** run with `important_instructions` on `domestic-freeze-6`, A0 targeted ASR is **0/144** under both judges. Prompt-bound A5 is **0/143 evaluable pairs** under both, with **1/144** truncated and unresolved. The unchanged upstream task-utility judge reports A0 no-attack utility **11/16** and attack utility **97/144**; A5 reports **8/16** and **72/144** planned cases, counting one truncated case in each population as incomplete. All **509/509** retained live blocks passed recorded strict-replay verification. A0's zero observed successes mean this live run establishes no security advantage for A5.
+
+**Limitations.** Upstream [issue #181](https://github.com/ethz-spylab/agentdojo/issues/181), public on 2026-08-17, reports the precedence defect; we do not claim its discovery. The additional observation is IT1's GroundTruth helper-return failure under the corrected check. Upstream utility checks are permissive. Free-text argument value matching makes this adapter weaker than the native typed interface; unresolved rows are not counted as proven safe. Both modes remain bounded synthetic evaluation.
+
+<!-- pagebreak -->
+
 ### A safe refusal must not hide lost usefulness
 
-Scripted baseline comparison under the all_approve user policy. Main and scaled_1000 expose the trade-off between simple limits and protected useful execution. (not included in public checkout: `docs/submission/figures/baseline-matrix.png`)
+![Scripted baseline comparison under the all_approve user policy. Main and scaled_1000 expose the trade-off between simple limits and protected useful execution.](figures/baseline-matrix.png)
 
 The prescribed scripted matrix records **31 execution projections** and **21 benign completion opportunities** per cell. Under all_approve, CCA gives **0/31** prohibited outcomes and **20/21** benign completions in both configurations. D3 gives **0/31** and **4/21** in main, but **7/31** and **20/21** in scaled_1000. D0 gives **7/31** and **20/21** in both.
 
@@ -79,7 +89,7 @@ Source: [final matrix and correction discussion](../../results/FINAL-RESULTS.md)
 
 ### Review findings remain traceable to fixes and regressions
 
-Confirmed findings across the retained engineering review rounds. Counts are source-audit inventory, not an attack-success experiment; all confirmed findings are recorded as repaired. (not included in public checkout: `docs/submission/figures/review-rounds.png`)
+![Confirmed findings across the retained engineering review rounds. Counts are source-audit inventory, not an attack-success experiment; all confirmed findings are recorded as repaired.](figures/review-rounds.png)
 
 The retained review JSON and status records report **21**, **8**, **4** and **10** confirmed findings across the respective rounds. Reviewers had implementation and specification context. These rounds are engineering review, not isolated blind evaluation or an external security certification. Counts may share underlying causes and should not be summed into independent vulnerabilities.
 

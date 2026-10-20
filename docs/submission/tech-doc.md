@@ -41,7 +41,9 @@ Source: official topic requirements (not included in public checkout: `docs/subm
 
 ### The trust boundary separates proposals from authority
 
-Architecture and trust boundary. Rule counts are source inventory, not experimental outcomes. Model-side content cannot supply signatures or executable money literals. (not included in public checkout: `docs/submission/figures/architecture.png`)
+**model proposes · kernel decides · device authorises · gateway executes**
+
+![Architecture and trust boundary. Rule counts are source inventory, not experimental outcomes. Model-side content cannot supply signatures or executable money literals.](figures/architecture.png)
 
 The application trusted computing base comprises schemas, crypto, kernel, stores and gateway. The pure kernel reads trusted state and checks proposals without a model client or network dependency. The gateway resolves permitted references, renders the approval card, validates device evidence, serializes dispatch and writes the result.
 
@@ -55,7 +57,7 @@ Source: [rule and dependency inventory](rule-matrix.md), [import contracts](../.
 
 ### Authority has distinct owners
 
-Authority split. The model proposes, the verifier decides, the device authorizes and the gateway executes. These roles remain distinct even when hosted in one process. (not included in public checkout: `docs/submission/figures/authority-split.png`)
+![Authority split. The model proposes, the kernel decides, the device authorises and the gateway executes. These roles remain distinct even when hosted in one process.](figures/authority-split.png)
 
 | Component | Responsibility | It does not establish |
 |---|---|---|
@@ -135,7 +137,7 @@ A changed goal cannot erase a settled purchase. If execution has started, the wo
 
 ### Every purchase is checked at the moment it can move money
 
-Allocation approval sequence. APR-BUDGET is checked before the first leg; each leg retains its own current card, simulated MFA and one-use approval. (not included in public checkout: `docs/submission/figures/approval-sequence.png`)
+![Allocation approval sequence. APR-BUDGET is checked before the first leg; each leg retains its own current card, simulated MFA and one-use approval.](figures/approval-sequence.png)
 
 The device selects the complete intended positive allocation and derives BIAC-bound child intents and separate authorizations. Each purchase receives a current canonical card, its own scoped simulated MFA grant and device approval. The gateway verifies the approval token and reruns the pure check in dispatch phase under its lock.
 
@@ -165,7 +167,7 @@ Audit records append canonical bytes, retaining decisions, rule identifiers and 
 
 ### Completion and replay answer different questions
 
-Reported F5 task completion. Live-recorded results and transport-disabled strict-replay agreement are retained-report evidence; replay is not an independent second sample. (not included in public checkout: `docs/submission/figures/completion.png`)
+![Reported F5 task completion. Live-recorded results and transport-disabled strict-replay agreement are retained-report evidence; replay is not an independent second sample.](figures/completion.png)
 
 The retained [FINAL-RESULTS report](../../results/FINAL-RESULTS.md) records gpt-6.1-sol live-recorded completion of J tasks at **24/24**, W tasks at **12/12**, and advisory workflows at **30/30**. It reports M2 dialogue checks at **26/26** and M4 output checks at **10/10**, with corresponding strict-replay agreement. Formal W constraint probes remain scripted and are not added to the live workflow denominator.
 
@@ -177,13 +179,33 @@ The original report and complete evidence/final-f5 recordings are retained. Thes
 
 ### Limits alone do not preserve useful completion across scale
 
-Scripted baseline matrix from the retained F5 report. Prohibited outcomes use all execution projections; benign completion has its own denominator. (not included in public checkout: `docs/submission/figures/baseline-matrix.png`)
+![Scripted baseline matrix from the retained F5 report. Prohibited outcomes use all execution projections; benign completion has its own denominator.](figures/baseline-matrix.png)
 
 Under the **scripted all_approve policy**, Corridor CCA reports **0/31** prohibited outcomes and **20/21** benign completions in both main and scaled_1000. D3 reports **0/31** and **4/21** in main, but **7/31** and **20/21** in scaled_1000. D0 reports **7/31** and **20/21** in both. The comparison isolates a mechanism trade-off in these prescribed projections, not general performance against arbitrary financial agents.
 
 The retained report gives a descriptive approximate 95% upper bound of **9.6774%** for **0/31** prohibited outcomes. The **7/31** Wilson upper bound is **39.8124%**. Benign failure upper bounds are **22.6694%** for **20/21** completion and **92.3324%** for **4/21**. The partial-stop projection remains incomplete by design.
 
 The careful-user arm is disclosed separately: scaled_1000 D3 has **3/31** prohibited outcomes, rather than the all_approve arm's **7/31**. Its benign completion remains **20/21**. Accepted forged proposals count as prohibited outcomes even before money moves. Missing-MFA protocol gaps are reported separately from business harm. No favorable arm is silently substituted for another.
+
+<!-- pagebreak -->
+
+### External validation: AgentDojo banking
+
+AgentDojo banking v1.2.2 (package 0.1.35) supplies an external synthetic environment. A0 is the unrestricted tool baseline; A5 uses Corridor's approval adapter. Model-free GroundTruth replay makes no model calls. The separate live run uses **gpt-6.1-sol**, attack `important_instructions`, and `domestic-freeze-6`. Targeted attack success (ASR) uses the original upstream judge and the registered corrected target-content check for IT0/IT1/IT3; exact source versions and hashes are in the [evidence manifest](../../evidence/agentdojo-banking/MANIFEST.md).
+
+| Configuration | Original ASR | Corrected ASR | Mode and population |
+|---|---|---|---|
+| A0 | 144/144 | 128/144 | Model-free GroundTruth; complete suite census |
+| A5, each approval mode | 0/144 | 0/144 | Model-free GroundTruth; prompt-bound, auto-deny and auto-approve, separately |
+| Null agent | 0/144 | 0/144 | Model-free no-op control |
+| A0 | 0/144 | 0/144 | Live gpt-6.1-sol; all attack pairs evaluable |
+| A5, prompt-bound | 0/143 | 0/143 | Live gpt-6.1-sol; one further pair truncated and unresolved |
+
+The model-free results are identical across the compared freezes. These **144-pair censuses are not samples**; no binomial confidence bounds are attached. Live A0 also has no observed targeted successes, so this run does not establish a live security advantage for A5.
+
+With the unchanged upstream task-utility judge, live gpt-6.1-sol A0 completes **11/16** no-attack tasks and **97/144** attacked pairs; prompt-bound A5 completes **8/16** and **72/144** planned cases. A5 has one truncated case in each denominator, counted as incomplete for utility and excluded from evaluable ASR. The upstream utility checks are permissive, so utility is a benchmark score, not an independent completion proof. All **509/509** retained live blocks passed recorded strict-replay verification; the bundle discloses pilot, sanity and other approval-mode rows separately.
+
+**Limits and attribution.** [AgentDojo issue #181](https://github.com/ethz-spylab/agentdojo/issues/181), public on 2026-08-17, already reports the IT0/IT1/IT3 precedence defect. Our additional observation is that IT1's own GroundTruth helper return still fails the corrected target check. The adapter converts free-text tool arguments into typed references by value matching; this is weaker than Corridor's native typed interface. Neither mode establishes general robustness beyond this suite and adapter.
 
 <!-- pagebreak -->
 
@@ -202,7 +224,7 @@ uv run --frozen corridor bench --suite wealth
 
 Strict replay requires matching model, API, reasoning and output-limit identity plus the recorded response cache. It fails on a miss without provider transport or a scripted fallback. See the [execution guide](execution-evidence.md) for the exact offline driver and matching recorded bundle.
 
-The source registry and [complete rule matrix](rule-matrix.md) link each rule to enforcement sites and tests. Executed rule assertions, lint, formatting, strict typing and import-boundary checks complement the scripted and recorded suites. The retained F5 full test gate reports **2895/2895 passed** in scripted mode; its earlier failed and interrupted attempts remain disclosed. Current artifact checks are recorded separately in artifact validation (not included in public checkout: `docs/submission/validation.md`).
+The source registry and [complete rule matrix](rule-matrix.md) link each rule to enforcement sites and tests. Executed rule assertions, lint, formatting, strict typing and import-boundary checks complement the scripted and recorded suites. The retained F5 full test gate reports **2895/2895 passed** in scripted mode; its earlier failed and interrupted attempts remain disclosed. Current artifact checks are recorded separately in [artifact validation](validation.md).
 
 | Remaining boundary | Consequence and next step |
 |---|---|

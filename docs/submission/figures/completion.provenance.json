@@ -1,0 +1,118 @@
+{
+  "figure": "completion",
+  "formats": {
+    "png": {
+      "dpi": 200,
+      "pixels": [
+        3200,
+        1800
+      ]
+    },
+    "svg": "vector"
+  },
+  "sources": [
+    {
+      "path": "results/FINAL-RESULTS.md",
+      "sha256": "aca067a455386ec9f2619be57e03b9df98bc159304c00ca509fba6a68c8888da"
+    }
+  ],
+  "data": [
+    {
+      "label": "main J / gpt-6.1-sol",
+      "mode": "live-recorded",
+      "numerator": 24,
+      "denominator": 24,
+      "upper_95_percent": 12.5,
+      "source_row": [
+        "main J / gpt-6.1-sol",
+        "live-recorded; live-recorded 24/24; not recorded 0",
+        "24/24",
+        "approximately min(1, 3/24) = 12.5000%",
+        "24/24; mismatch upper approximately min(1, 3/24) = 12.5000%",
+        "[evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json](../evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json)"
+      ],
+      "source": "results/FINAL-RESULTS.md"
+    },
+    {
+      "label": "main W / gpt-6.1-sol",
+      "mode": "live-recorded",
+      "numerator": 12,
+      "denominator": 12,
+      "upper_95_percent": 25.0,
+      "source_row": [
+        "main W / gpt-6.1-sol",
+        "live-recorded; live-recorded 12/12; not recorded 0",
+        "12/12",
+        "approximately min(1, 3/12) = 25.0000%",
+        "12/12; mismatch upper approximately min(1, 3/12) = 25.0000%",
+        "[evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json](../evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json)"
+      ],
+      "source": "results/FINAL-RESULTS.md"
+    },
+    {
+      "label": "main W / gpt-6.1-sol advisory workflows",
+      "mode": "live-recorded",
+      "numerator": 30,
+      "denominator": 30,
+      "upper_95_percent": 10.0,
+      "source_row": [
+        "main W / gpt-6.1-sol advisory workflows",
+        "live-recorded; live-recorded 12/12; not recorded 0; formal probes scripted",
+        "30/30",
+        "approximately min(1, 3/30) = 10.0000%",
+        "Task-level equality above",
+        "[evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json](../evidence/final-f5/main/gpt-6.1-sol/recording-gpt-6.1-sol.json)"
+      ],
+      "source": "results/FINAL-RESULTS.md"
+    },
+    {
+      "label": "M2",
+      "mode": "live-recorded",
+      "numerator": 26,
+      "denominator": 26,
+      "upper_95_percent": 11.5385,
+      "source_row": [
+        "M2",
+        "live-recorded; live-recorded 26/26",
+        "26/26",
+        "approximately min(1, 3/26) = 11.5385%",
+        "[evidence/final-f5/dialogue/dialogue-recording.json](../evidence/final-f5/dialogue/dialogue-recording.json)"
+      ],
+      "source": "results/FINAL-RESULTS.md"
+    },
+    {
+      "label": "M4",
+      "mode": "live-recorded",
+      "numerator": 10,
+      "denominator": 10,
+      "upper_95_percent": 30.0,
+      "source_row": [
+        "M4",
+        "live-recorded; live-recorded 10/10",
+        "10/10",
+        "approximately min(1, 3/10) = 30.0000%",
+        "[evidence/final-f5/dialogue/dialogue-recording.json](../evidence/final-f5/dialogue/dialogue-recording.json)"
+      ],
+      "source": "results/FINAL-RESULTS.md"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "docs/submission/figures/completion.png",
+      "sha256": "2cbe3f3aaf8ee7245bf0065990dcd8e2a91afa93e2b6788fde775863098e2789"
+    },
+    {
+      "path": "docs/submission/figures/completion.svg",
+      "sha256": "d1a98e416ebd96cfb3f947cd7cf8139d9aba67a2fa3665ba7d91548b34bbda81"
+    },
+    {
+      "path": "docs/submission/figures/completion-slide.png",
+      "sha256": "96f48f1a7323136f8101c5a10e9a045aa7801a771e153d257bbfff7b81ff1e0d"
+    },
+    {
+      "path": "docs/submission/figures/completion-slide.svg",
+      "sha256": "2ad6520e773ec741c7d658bfd2a87ad7e91ba1cb9642d966ce31143bf0cbcb7b"
+    }
+  ],
+  "evidence": "Original F5 report and recorded bundle retained in this repository"
+}

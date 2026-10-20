@@ -1,0 +1,174 @@
+{
+  "figure": "review-rounds",
+  "formats": {
+    "png": {
+      "dpi": 200,
+      "pixels": [
+        3200,
+        1800
+      ]
+    },
+    "svg": "vector"
+  },
+  "sources": [
+    {
+      "path": "docs/review/claude-review-1.json",
+      "sha256": "932ea6dc8679abe102918d3abb61f1a9aee0be3dbeaabd7641a6dec85a97cf88"
+    },
+    {
+      "path": "docs/status/F1.md",
+      "sha256": "f021365ed094987dd944bad7836426e67bb7e87c40bbe8bca8b32873607f5d40"
+    },
+    {
+      "path": "docs/review/claude-review-2.json",
+      "sha256": "43b2ece473051c2f9cda6d236ef30ca0dbe1942dd1129305ae724ca077a8c2a9"
+    },
+    {
+      "path": "docs/status/F2.md",
+      "sha256": "14e1cc6744377dd7c72e4aeecdb266f0ebd9d12da8de318a8972ab0fa2ca2b80"
+    },
+    {
+      "path": "docs/review/claude-review-3.json",
+      "sha256": "6851a413bcf6c0da5b6af1a76ab938fa1da6adafd1c4b9542ecb45e30b43ce76"
+    },
+    {
+      "path": "docs/status/F3.md",
+      "sha256": "bc010037e9872370a4d247a2353fd5923831b6826e9d10edb853d25bad8af00d"
+    },
+    {
+      "path": "docs/review/claude-review-4.json",
+      "sha256": "a24dd5222af3c8becc77afcb25ae5ec206e85697fb8aa5782b46a786d72a89ca"
+    },
+    {
+      "path": "docs/status/F5.md",
+      "sha256": "3d0ddc493dd6c20581e89c397e4e6b636ec110913794e609e7a213e2ceaf5393"
+    }
+  ],
+  "data": [
+    {
+      "round": 1,
+      "confirmed": 21,
+      "confirmed_ids": [
+        "KPROV-1",
+        "KPROV-2",
+        "KPROV-4",
+        "KPROV-5",
+        "KPROV-6",
+        "KPROV-7",
+        "TMS-1",
+        "TMS-2",
+        "TMS-4",
+        "GD-1",
+        "GD-2",
+        "GD-3",
+        "GD-4",
+        "GD-6",
+        "GD-7",
+        "GD-8",
+        "FPII-1",
+        "FPII-2",
+        "FPII-3",
+        "FPII-5",
+        "FPII-7"
+      ],
+      "rejected": 5,
+      "source": {
+        "path": "docs/review/claude-review-1.json",
+        "sha256": "932ea6dc8679abe102918d3abb61f1a9aee0be3dbeaabd7641a6dec85a97cf88"
+      },
+      "repair_status": {
+        "path": "docs/status/F1.md",
+        "sha256": "f021365ed094987dd944bad7836426e67bb7e87c40bbe8bca8b32873607f5d40"
+      },
+      "mode": "engineering-review"
+    },
+    {
+      "round": 2,
+      "confirmed": 8,
+      "confirmed_ids": [
+        "BIC-1",
+        "BIC-2",
+        "BIC-3",
+        "BIC-5",
+        "DSC-2",
+        "DSC-4",
+        "SBX-MEMERR-1",
+        "SBX-LABEL-1"
+      ],
+      "rejected": 4,
+      "source": {
+        "path": "docs/review/claude-review-2.json",
+        "sha256": "43b2ece473051c2f9cda6d236ef30ca0dbe1942dd1129305ae724ca077a8c2a9"
+      },
+      "repair_status": {
+        "path": "docs/status/F2.md",
+        "sha256": "14e1cc6744377dd7c72e4aeecdb266f0ebd9d12da8de318a8972ab0fa2ca2b80"
+      },
+      "mode": "engineering-review"
+    },
+    {
+      "round": 3,
+      "confirmed": 4,
+      "confirmed_ids": [
+        "RT3-BIAC-02",
+        "RT3-AX-1",
+        "RT3-LLMDLG-01",
+        "RT3-LLMDLG-02"
+      ],
+      "rejected": 2,
+      "source": {
+        "path": "docs/review/claude-review-3.json",
+        "sha256": "6851a413bcf6c0da5b6af1a76ab938fa1da6adafd1c4b9542ecb45e30b43ce76"
+      },
+      "repair_status": {
+        "path": "docs/status/F3.md",
+        "sha256": "bc010037e9872370a4d247a2353fd5923831b6826e9d10edb853d25bad8af00d"
+      },
+      "mode": "engineering-review"
+    },
+    {
+      "round": 4,
+      "confirmed": 10,
+      "confirmed_ids": [
+        "RT4-F3TCB-01",
+        "RT4-F3TCB-03",
+        "RT4-F3TCB-04",
+        "RT4-F3TCB-05",
+        "RT4-E2E-1",
+        "RT4-E2E-2",
+        "RT4-E2E-3",
+        "RT4-E2E-4",
+        "RT4-EVALINT-01",
+        "RT4-EVALINT-05"
+      ],
+      "rejected": 4,
+      "source": {
+        "path": "docs/review/claude-review-4.json",
+        "sha256": "a24dd5222af3c8becc77afcb25ae5ec206e85697fb8aa5782b46a786d72a89ca"
+      },
+      "repair_status": {
+        "path": "docs/status/F5.md",
+        "sha256": "3d0ddc493dd6c20581e89c397e4e6b636ec110913794e609e7a213e2ceaf5393"
+      },
+      "mode": "engineering-review"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "docs/submission/figures/review-rounds.png",
+      "sha256": "29bf2664d86ed11db953f9fe57097998973e7cdc7240456e12a05379e6ae224b"
+    },
+    {
+      "path": "docs/submission/figures/review-rounds.svg",
+      "sha256": "32293aaf0dd67c0b5cf285fe9456ae1e3df271af94d03c30fb9ba8bf85c30d8d"
+    },
+    {
+      "path": "docs/submission/figures/review-rounds-slide.png",
+      "sha256": "50e39959a7abc979e9d55b808f85af01cbd93d9c571c3c8cea19ae02219ecb6d"
+    },
+    {
+      "path": "docs/submission/figures/review-rounds-slide.svg",
+      "sha256": "188828de0d7716cca6ef04257d44a351b8c0e2508c6f7d03fe47168707726b2b"
+    }
+  ]
+}
