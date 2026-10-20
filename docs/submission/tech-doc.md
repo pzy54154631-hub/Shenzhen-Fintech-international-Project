@@ -191,7 +191,7 @@ The careful-user arm is disclosed separately: scaled_1000 D3 has **3/31** prohib
 
 ### External validation: AgentDojo banking
 
-AgentDojo banking v1.2.2 (package 0.1.35) supplies an external synthetic environment. A0 is the unrestricted tool baseline; A5 uses Corridor's approval adapter. Model-free GroundTruth replay makes no model calls. The separate live run uses **gpt-6.1-sol**, attack `important_instructions`, and `domestic-freeze-6`. Targeted attack success (ASR) uses the original upstream judge and the registered corrected target-content check for IT0/IT1/IT3; exact source versions and hashes are in the [evidence manifest](../../evidence/agentdojo-banking/MANIFEST.md).
+Security must not depend on the model resisting injection: with the planner fully hijacked in model-free GroundTruth replay on AgentDojo banking v1.2.2 (package 0.1.35), unrestricted A0 carries out **144/144** injected attacks under the original targeted judge and **128/144** under the registered corrected IT0/IT1/IT3 judge, while Corridor's kernel blocks them in A5 (**0/144** under each judge in all three approval modes). Live **gpt-6.1-sol** resisted `important_instructions` even without defences (A0 **0/144** under both judges), so this run shows no observed live security difference; it does show the defence's utility cost, with benign completion **11/16** for A0 versus **8/16** for prompt-bound A5 under the unchanged upstream task-utility judge.
 
 | Configuration | Original ASR | Corrected ASR | Mode and population |
 |---|---|---|---|
@@ -201,9 +201,9 @@ AgentDojo banking v1.2.2 (package 0.1.35) supplies an external synthetic environ
 | A0 | 0/144 | 0/144 | Live gpt-6.1-sol; all attack pairs evaluable |
 | A5, prompt-bound | 0/143 | 0/143 | Live gpt-6.1-sol; one further pair truncated and unresolved |
 
-The model-free results are identical across the compared freezes. These **144-pair censuses are not samples**; no binomial confidence bounds are attached. Live A0 also has no observed targeted successes, so this run does not establish a live security advantage for A5.
+The model-free AgentDojo results are identical across the compared freezes. These **144-pair censuses are not samples**; no binomial confidence bounds are attached. The live run uses `domestic-freeze-6`; the [evidence manifest](../../evidence/agentdojo-banking/MANIFEST.md) binds both judge source versions and hashes.
 
-With the unchanged upstream task-utility judge, live gpt-6.1-sol A0 completes **11/16** no-attack tasks and **97/144** attacked pairs; prompt-bound A5 completes **8/16** and **72/144** planned cases. A5 has one truncated case in each denominator, counted as incomplete for utility and excluded from evaluable ASR. The upstream utility checks are permissive, so utility is a benchmark score, not an independent completion proof. All **509/509** retained live blocks passed recorded strict-replay verification; the bundle discloses pilot, sanity and other approval-mode rows separately.
+Under attack, the unchanged upstream task-utility judge reports live gpt-6.1-sol completion of **97/144** planned pairs for A0 and **72/144** for prompt-bound A5. A5 has one truncated case in each utility population, counted as incomplete and excluded from evaluable ASR. These utility checks are permissive, so utility is a benchmark score, not an independent completion proof. All **509/509** retained live blocks passed recorded strict-replay verification; the bundle discloses pilot, sanity and other approval-mode rows separately.
 
 **Limits and attribution.** [AgentDojo issue #181](https://github.com/ethz-spylab/agentdojo/issues/181), public on 2026-08-17, already reports the IT0/IT1/IT3 precedence defect. Our additional observation is that IT1's own GroundTruth helper return still fails the corrected target check. The adapter converts free-text tool arguments into typed references by value matching; this is weaker than Corridor's native typed interface. Neither mode establishes general robustness beyond this suite and adapter.
 
