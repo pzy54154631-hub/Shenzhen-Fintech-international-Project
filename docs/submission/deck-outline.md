@@ -6,7 +6,7 @@ Official template retained; estimated delivery 9:10. Timing is a plan, not a mea
 
 Estimated duration: 25 seconds.
 
-Introduce Corridor Wealth for Topic B. Proof-carrying wealth advice: the model proposes, a verifier decides. The project demonstrates synthetic data, simulated MFA and bank execution. It is not investment advice. The supplied official template's artwork and masters are reused, with its event label localized to English and the current submission year. The repository URL identifies the public source project; the team name remains unfilled pending the user's identity value.
+Introduce Corridor Wealth for Topic B, by Model Proposes, Kernel Disposes. Proof-carrying wealth advice: the model proposes, a verifier decides. The project demonstrates synthetic data, simulated MFA and bank execution. It is not investment advice. The supplied official template's artwork and masters are reused, with its event label localized to English and the current submission year. The repository URL identifies the public source project.
 
 ## Slide 2 — Fluent advice can still sell, calculate or act wrongly — 0:25–1:05
 

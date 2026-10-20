@@ -2,16 +2,16 @@
 
 [English](DEPLOY.md)
 
-应用默认进入**演示模式**，使用 scripted planner，不调用 API。服务器配置 key 后，访客输入访问码可选择**真实 AI**；也可使用自带 OpenAI key（BYOK）。两种模式的金融数据、设备认证和交易均为合成模拟，内核与网关检查完全相同。
+目前没有已上线的网站。运行 `uv run --frozen corridor demo` 即可在本地进入**演示模式**，使用 scripted planner，无需 API key，不调用 API。本地**真实 AI**模式可使用自带 OpenAI key（BYOK），或在服务器配置 key 后输入访问码启用。详见[本地运行说明](#依赖与本地验证)；下方 Cloud 部署步骤为可选项。两种模式的金融数据、设备认证和交易均为合成模拟，内核与网关检查完全相同。
 
 ## 创建应用
 
 1. 使用 GitHub 登录 [Streamlit Community Cloud](https://share.streamlit.io/)，从已有仓库创建应用。
 2. 选择仓库 `pzy54154631-hub/Shenzhen-Fintech-international-Project`、分支 `main`、入口 `streamlit_app.py`。
 3. 打开 **Advanced settings**，选择 **Python 3.11**，按下方示例填写 Secrets。不配置凭据时提供演示模式和 BYOK。
-4. 部署后打开应用，检查英文与简体中文界面。部署成功后，将两份公开 README 的 `{{LIVE_URL}}` 替换为实际网址；评委访问码单独放在提交材料中。
+4. 部署后打开应用，检查英文与简体中文界面。仅在部署成功后，向两份公开 README 添加实际网址；如需提供评委访问码，单独放在提交材料中。
 
-仓库、入口、Python 与 Secrets 设置以 [Streamlit 部署说明](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy) 为依据。本仓库提供部署准备；网址占位符不表示网站已经上线。
+仓库、入口、Python 与 Secrets 设置以 [Streamlit 部署说明](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy) 为依据。本说明仅提供可选的部署准备。
 
 ## 配置密钥与消费预算
 

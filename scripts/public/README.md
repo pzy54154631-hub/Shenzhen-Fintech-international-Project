@@ -6,9 +6,9 @@
 
 This is a Fintechathon 2026 International Track research prototype. All financial data and transactions are synthetic. The model proposes; a model-independent kernel checks every permitted action. [FINAL-RESULTS](../../results/FINAL-RESULTS.md) is the authoritative measurement record.
 
-## Live demo
+## Local demo
 
-[Open the online demo]({{LIVE_URL}}) — deployment URL pending. **Demo mode** uses the scripted planner without API calls. **Real AI** requires a configured server key and the access code, or your own OpenAI key (BYOK), held only in the current session's memory. Judges: the access code is in the submission materials. Both modes retain identical kernel and gateway checks, separate simulated MFA for each purchase, and synthetic transactions. The page shows planner source and remaining server budget; live failures are explicit. See [deployment instructions](../../docs/DEPLOY.md).
+After [setup](#4-quickstart-windows-macos-and-linux), run `uv run --frozen corridor demo` to launch the demo locally in **Demo mode**, using the scripted planner without any API key. **Real AI** also runs locally, using your own OpenAI key (BYOK), held only in the current session's memory, or an access code when the local server has a configured key. Both modes retain identical kernel and gateway checks, separate simulated MFA for each purchase, and synthetic transactions. The page shows planner source and remaining server budget; live failures are explicit. See the [local live-mode configuration and optional Streamlit Cloud deployment instructions](../../docs/DEPLOY.md). No hosted demo is currently deployed.
 
 ## 2. Topic B requirements
 

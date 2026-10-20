@@ -16,16 +16,18 @@ Presentation notes allocate 550 seconds (9:10); this is an estimate, not a timed
 From the repository root, with installed LibreOffice and `pdftoppm` available:
 
 ```powershell
-uv run --frozen --with matplotlib --with python-docx --with python-pptx --with playwright --with pypdf python docs/submission/build_submission.py --qa-dir ../logs/review/m1/submission
+uv run --frozen --with matplotlib --with python-docx --with python-pptx --with playwright --with pypdf python docs/submission/build_submission.py --qa-dir ../logs/review/m1c/submission
 ```
 
-Omit `--capture-screens` to reuse the retained screenshots. The builder regenerates eight PNG/SVG figures, three DOCX files and PowerPoint, then exports all four PDFs through installed LibreOffice, rasterizes every page, checks the OOXML packages and permitted placeholders, and runs the numerical checker. Authoring dependencies are ephemeral; `pyproject.toml` and `uv.lock` are unchanged. M1 reused the retained screenshots without opening credential files or invoking a model.
+Omit `--capture-screens` to reuse the retained screenshots. The builder regenerates eight PNG/SVG figures, three DOCX files and PowerPoint, then exports all four PDFs through installed LibreOffice, rasterizes every page, checks the OOXML packages and rejects unresolved placeholders, and runs the numerical checker. Authoring dependencies are ephemeral; `pyproject.toml` and `uv.lock` are unchanged. M1 reused the retained screenshots without opening credential files or invoking a model.
 
 I2 reuses the I1 screenshots captured before W1; it does not claim newly captured W1 views. The original capture manifest and image bytes are unchanged. The retained-source record (not included in public checkout: `docs/submission/provenance/retained-screenshot-sources.json`) binds the exact capture-manifest hash and the six known old/current source-hash pairs. The checker rejects any additional source change or capture-manifest change.
 
 ## Visual and source checks
 
-The final review individually inspected all 44 freshly rendered pages/slides for overflow, overlap, blank pages, missing glyphs and readable content. All passed. Page images and contact sheets are retained in `../logs/review/m1/submission/`. The artifact manifest (not included in public checkout: `docs/submission/artifact-manifest.json`) binds output and rendered-page hashes, and the visual review (not included in public checkout: `docs/submission/provenance/visual-review.json`) records the review basis. Original templates remain unchanged. Only `{{TEAM_NAME}}` remains in the rendered documents; the public README also retains `{{LIVE_URL}}`. The repository is [Corridor Wealth source](https://github.com/pzy54154631-hub/Shenzhen-Fintech-international-Project).
+The final review individually inspected all 44 freshly rendered pages/slides for overflow, overlap, blank pages, missing glyphs and readable content. All passed. Page images and contact sheets are retained in `../logs/review/m1c/submission/`. The artifact manifest (not included in public checkout: `docs/submission/artifact-manifest.json`) binds output and rendered-page hashes, and the visual review (not included in public checkout: `docs/submission/provenance/visual-review.json`) records the review basis. Original templates remain unchanged. The official team name is **Model Proposes, Kernel Disposes**; no unresolved placeholders remain in the submission artifacts or READMEs. The repository is [Corridor Wealth source](https://github.com/pzy54154631-hub/Shenzhen-Fintech-international-Project).
+
+No hosted demo is available. Run `uv run --frozen corridor demo` locally in scripted mode without an API key. Local live mode uses the user's own OpenAI key or an access code when a server key is configured. See the [run instructions](../../README.md#local-demo) and [optional Cloud deployment instructions](../DEPLOY.md).
 
 Fourteen retained I1 UI scenes are retained in the screenshot manifest (not included in public checkout: `docs/submission/figures/screens/manifest.json`), with full 1920 × 1080 images and focused evidence crops. They identify synthetic data or simulated authentication. They are scripted demonstrations, not live evaluation evidence. The UI exposes existing authenticated correction differences and wires the masked simulated factor input through the existing MFA validator; authorization and execution rules are unchanged.
 
@@ -43,7 +45,7 @@ The exact offline command was `uv run --offline --frozen python scripts/replay_f
 
 The rebuild uses the explicitly requested existing build pipeline and LibreOffice at `C:/Program Files/LibreOffice/program/soffice.exe`. The renderer path is configurable with `--soffice` and recorded in the artifact manifest. Poppler rasterizes the freshly exported PDFs.
 
-The rule registry was recounted: **43 kernel rules, 25 gateway rules and 3 sandbox rules, 71 total**. The deck uses enlarged risk-profile and certificate-highlight screenshots, the repository corpus path `data/blind`, and the measured replay result. The team name remains pending the user's identity value.
+The rule registry was recounted: **43 kernel rules, 25 gateway rules and 3 sandbox rules, 71 total**. The deck uses enlarged risk-profile and certificate-highlight screenshots, the repository corpus path `data/blind`, and the measured replay result. The cover and document metadata identify **Model Proposes, Kernel Disposes**.
 
 M1 passed 37 builder and numerical-check regression tests and 169 public-export tests, with no failures, plus repository ruff lint and formatting checks. Both AgentDojo offline verifiers passed: 720 model-free rows across five census cells, and 509 live blocks with 680 strict-replay witnesses. Public export scans cover decoded Office text, PDF pages and metadata, and raw bytes; exact hash-bound compressed-image exceptions are documented in the private scan audit.
 

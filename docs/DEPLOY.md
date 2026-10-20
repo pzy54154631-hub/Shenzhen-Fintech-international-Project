@@ -2,16 +2,16 @@
 
 [简体中文](DEPLOY.zh-CN.md)
 
-The app starts in **Demo mode** with a scripted planner and no API calls. **Real AI** is available after a visitor enters the server access code, when a server key is configured, or supplies their own OpenAI key (BYOK). Financial data, device authentication and transactions remain synthetic in both modes; the kernel and gateway checks are identical.
+No hosted deployment is available. The demo runs locally with `uv run --frozen corridor demo` in **Demo mode**, using a scripted planner without an API key or API calls. Local **Real AI** is available after a user supplies their own OpenAI key (BYOK), or enters the access code when a server key is configured. See [local run instructions](#dependencies-and-local-verification). The Cloud deployment steps below are optional. Financial data, device authentication and transactions remain synthetic in both modes; the kernel and gateway checks are identical.
 
 ## Create the app
 
 1. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/) with GitHub and create an app from an existing repository.
 2. Select repository `pzy54154631-hub/Shenzhen-Fintech-international-Project`, branch `main`, and entrypoint `streamlit_app.py`.
 3. Open **Advanced settings**, choose **Python 3.11**, and paste your deployment secrets using the example below. Leave credentials empty to offer Demo mode and BYOK only.
-4. Deploy, open the app, and verify the English and Simplified Chinese interfaces. Replace `{{LIVE_URL}}` in both public READMEs with the assigned app URL after deployment. Supply the judges' access code separately in the submission materials.
+4. Deploy, open the app, and verify the English and Simplified Chinese interfaces. Only after a deployment is available, add its assigned app URL to both public READMEs. Supply any judges' access code separately in the submission materials.
 
-The repository, entrypoint, Python and secrets controls follow [Streamlit's deployment instructions](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy). This repository contains deployment preparation; a placeholder URL does not claim an active deployment.
+The repository, entrypoint, Python and secrets controls follow [Streamlit's deployment instructions](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy). These instructions provide optional deployment preparation.
 
 ## Configure secrets and spending
 

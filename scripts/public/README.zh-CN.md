@@ -6,9 +6,9 @@
 
 这是 Fintechathon 2026 国际赛道的研究原型。所有金融数据和交易均为合成数据。模型提出建议；独立于模型的内核（kernel）核验每个获准执行的动作。[FINAL-RESULTS](../../results/FINAL-RESULTS.md) 是测量结果的权威记录。
 
-## 在线演示
+## 本地演示
 
-[打开在线演示]({{LIVE_URL}})——部署网址待补充。**演示模式**使用 scripted planner，不调用 API。**真实 AI**需要服务器已配置 key 并验证访问码，或由访客自带 OpenAI key（BYOK）；BYOK 仅保存在当前会话内存中。评委访问码见提交材料。两种模式保持完全相同的内核与网关检查、每笔购买独立的模拟 MFA，以及合成交易。页面显示 planner 来源与服务器剩余额度，live 失败明确报错。详见[部署说明](../../docs/DEPLOY.zh-CN.md)。
+完成[环境准备](#4-快速开始windowsmacos-和-linux)后，运行一条命令 `uv run --frozen corridor demo` 即可在本地启动**演示模式**，使用 scripted planner，无需任何 API key。**真实 AI**也在本地运行，可使用自己的 OpenAI key（BYOK，供当前会话使用并仅保存在内存中），或在本地服务器已配置 key 时使用访问码。两种模式保持完全相同的内核与网关检查、每笔购买独立的模拟 MFA，以及合成交易。页面显示 planner 来源与服务器剩余额度，live 失败明确报错。详见[本地实时模式配置与可选的 Streamlit Cloud 部署说明](../../docs/DEPLOY.zh-CN.md)。目前没有已托管的在线演示。
 
 ## 2. Topic B 赛题要求
 
